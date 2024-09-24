@@ -32,7 +32,7 @@ class _HomeScreenState extends State<HomeScreen>
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
-            label: 'Home',
+            label: 'Hom',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.shopping_cart),
