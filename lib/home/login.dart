@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:myapp/home/register.dart';
+import 'package:myapp/home/home_screen.dart';
 
 class SignInScreen extends StatelessWidget {
   final _formKey = GlobalKey<FormState>();
@@ -82,11 +83,17 @@ class SignInScreen extends StatelessWidget {
                           ),
                         ),
                         // Tombol Sign In
+                        // ... kode lainnya ...
                         ElevatedButton(
                           onPressed: () {
                             if (_formKey.currentState!.validate()) {
                               _formKey.currentState!.save();
-                              // Aksi setelah validasi berhasil
+                              // Navigasi ke HomeScreen setelah validasi berhasil
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => HomeScreen()),
+                              );
                             }
                           },
                           style: ElevatedButton.styleFrom(
@@ -98,12 +105,12 @@ class SignInScreen extends StatelessWidget {
                           ),
                           child: const Text("Sign in"),
                         ),
+// ... kode lainnya ...
+
                         const SizedBox(height: 16.0),
                         // Tombol "Forgot Password"
                         TextButton(
-                          onPressed: () {
-                            // Aksi saat tombol "Forgot Password?" diklik
-                          },
+                          onPressed: () {},
                           child: Text(
                             'Forgot Password?',
                             style: Theme.of(context)
@@ -118,7 +125,6 @@ class SignInScreen extends StatelessWidget {
                                 ),
                           ),
                         ),
-                        // Tombol "Sign Up"
                         TextButton(
                           onPressed: () {
                             // Navigasi ke SignUpScreen ketika tombol "Sign Up" diklik
