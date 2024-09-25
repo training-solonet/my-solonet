@@ -4,6 +4,7 @@ import 'package:myapp/home/login.dart';
 import 'package:myapp/help/help_screen.dart';
 import 'package:myapp/profile/profile_screen.dart';
 import 'package:myapp/home/home_content.dart';
+import 'package:myapp/upgrade/upgrade_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -127,11 +128,4 @@ class _HomeScreenState extends State<HomeScreen> {
 
 // Placeholder screens for Upgrade and Profile
 
-class UpgradeScreen extends StatelessWidget {
-  const UpgradeScreen({Key? key}) : super(key: key);
 
-  @override
-  Widget build(BuildContext context) {
-    return const Center(child: Text('Upgrade Screen'));
-  }
-}
