@@ -50,67 +50,78 @@ class HomePageContent extends StatelessWidget {
             ),
             const SizedBox(height: 10),
             SizedBox(
-              height: 180,
+              height: 160,
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
-                itemCount: 3,
+                itemCount: 8,
                 itemBuilder: (context, index) {
                   return Container(
-                    margin: const EdgeInsets.only(right: 10, bottom: 10),
+                    width: 120,
+                    margin: const EdgeInsets.only(right: 3, bottom: 3),
                     child: Card(
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: BorderRadius.circular(8),
                       ),
-                      elevation: 3.0,
-                      child: Container(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Column(
-                          children: [
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(8.0),
-                              child: Image.network(
-                                'https://via.placeholder.com/150',
-                                height: 80,
-                                width: 80,
-                                fit: BoxFit.cover,
+                      clipBehavior: Clip.antiAliasWithSaveLayer,
+                      elevation: 5.0,
+                      shadowColor: Colors.black38,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding:
+                                const EdgeInsets.fromLTRB(6.5, 6.5, 6.5, 0),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(8),
+                              child: Column(
+                                children: [
+                                  Image.network(
+                                    'https://via.placeholder.com/150',
+                                    height: 80,
+                                    width: double.infinity,
+                                    fit: BoxFit.cover,
+                                  ),
+                                ],
                               ),
-                            ),
-                            const SizedBox(height: 4.0),
-                            Column(
+                            )
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(7, 7, 7, 0),
+                            child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
                                   'Product Title',
-                                  style: const TextStyle(
+                                  style: TextStyle(
+                                    fontSize: 9.5,
                                     fontFamily: 'Poppins',
-                                    fontSize: 10.0,
+                                    color: Colors.grey[800],
                                     fontWeight: FontWeight.w600,
                                   ),
-                                  overflow: TextOverflow.ellipsis,
                                 ),
-                                const SizedBox(height: 2.0),
-                                Text(
-                                  'Rp 150000',
-                                  style: const TextStyle(
-                                    fontFamily: 'Poppins',
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.w500,
-                                    color: Colors.blue,
-                                  ),
-                                ),
-                                const SizedBox(height: 2.0),
                                 const Text(
                                   'Category',
                                   style: TextStyle(
+                                    fontSize: 6.5,
                                     fontFamily: 'Poppins',
-                                    fontSize: 8,
                                     color: Colors.black54,
+                                  ),
+                                ),
+                                const SizedBox(height: 5),
+                                const Text(
+                                  'Rp 150000',
+                                  style: TextStyle(
+                                    fontSize: 9.5,
+                                    fontFamily: 'Poppins',
+                                    color:
+                                        const Color.fromARGB(255, 34, 50, 64),
+                                    fontWeight: FontWeight.w500,
                                   ),
                                 ),
                               ],
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                     ),
                   );
