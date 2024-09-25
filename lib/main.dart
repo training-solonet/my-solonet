@@ -6,6 +6,7 @@ import 'home/register.dart';
 import 'constants.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:lottie/lottie.dart';
 
 void main() {
   runApp(const MyApp());
