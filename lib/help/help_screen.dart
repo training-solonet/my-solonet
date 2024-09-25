@@ -39,7 +39,7 @@ class HelpScreen extends StatelessWidget {
               ...[
                 _buildItem(Icons.phone, 'Call Center', '+62 815-4201-7888'),
                 _buildItem(Icons.email, 'Email us to', 'solonet@solonet.net.id'),
-                _buildItem(Icons.message, 'Message us on', 'Instagram'),
+                _buildItem(Icons.alternate_email, 'Message us on', 'Instagram'),
               ],
               Padding(
                 padding: const EdgeInsets.only(top: 30.0), // Atur padding top di sini

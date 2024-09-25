@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:myapp/home/register.dart';
 import 'package:myapp/home/home_screen.dart';
+import 'package:lottie/lottie.dart';
 
 class SignInScreen extends StatelessWidget {
   final _formKey = GlobalKey<FormState>();
