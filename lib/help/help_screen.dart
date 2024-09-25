@@ -7,12 +7,15 @@ class HelpScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Help',
-            style: TextStyle(
-              color: Colors.black,
-              fontWeight: FontWeight.bold,
-              fontSize: 20,
-            )),
+        title: const Text(
+          'Help',
+          style: TextStyle(
+            color: Colors.black,
+            fontFamily: 'Poppins',
+            fontWeight: FontWeight.w500,
+            fontSize: 20,
+          ),
+        ),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(4.0), // Set the border height
           child: Container(
@@ -35,24 +38,26 @@ class HelpScreen extends StatelessWidget {
             children: [
               ...[
                 _buildItem(Icons.phone, 'Call Center', '+62 815-4201-7888'),
-                _buildItem(
-                    Icons.email, 'Email us to', 'solonet@solonet.net.id'),
+                _buildItem(Icons.email, 'Email us to', 'solonet@solonet.net.id'),
                 _buildItem(Icons.message, 'Message us on', 'Instagram'),
               ],
               Padding(
-                padding: const EdgeInsets.only(
-                    top: 30.0), // Atur padding top di sini
+                padding: const EdgeInsets.only(top: 30.0), // Atur padding top di sini
                 child: const Text(
                   'Application',
                   style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black),
+                    fontFamily: 'Poppins',
+                    fontSize: 18,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.black,
+                  ),
                 ),
               ),
+              const SizedBox(height: 10),
               ...[
                 _buildItem(null, 'FAQ', null),
-                _buildItem(null, 'Application Review', null),
+                _buildItem(null, 'Terms of Service', null),
+                _buildItem(null, 'Privacy Policy', null),
               ],
             ],
           ),
@@ -67,7 +72,11 @@ class HelpScreen extends StatelessWidget {
       children: [
         Text(
           title,
-          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          style: const TextStyle(
+            fontFamily: 'Poppins',
+            fontSize: 18,
+            fontWeight: FontWeight.w500,
+          ),
         ),
         const SizedBox(height: 10),
         ...children,
@@ -101,15 +110,22 @@ class HelpScreen extends StatelessWidget {
                   children: [
                     Text(
                       title,
-                      style: const TextStyle(fontSize: 14, color: Colors.black),
+                      style: const TextStyle(
+                        fontFamily: 'Poppins',
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.black,
+                      ),
                     ),
                     if (subtitle != null)
                       Text(
                         subtitle,
                         style: const TextStyle(
-                            fontSize: 14,
-                            color: Colors.blueGrey,
-                            fontWeight: FontWeight.bold),
+                          fontFamily: 'Poppins',
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.blueGrey,
+                        ),
                       ),
                   ],
                 ),
