@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:myapp/upgrade/detail_product_screen.dart';
 
 class UpgradeScreen extends StatefulWidget {
   const UpgradeScreen({Key? key}) : super(key: key);
@@ -69,16 +70,18 @@ class _UpgradeScreenState extends State<UpgradeScreen> {
               child: ListView(
                 padding: EdgeInsets.zero, // Remove extra padding inside the ListView
                 children: [
-                  buildCard("Fiber 50", "Rp 229.000/bulan"),
+                  buildCard("Fiber 50", "Rp 229.000/bulan", context),
                   buildCard(
                     "Fiber 100",
                     "Kecepatan Internet s/d 100 Mbps\nRp 429.000/bulan",
+                    context,
                   ),
                   buildCard(
                     "Fiber 250",
                     "Kecepatan Internet s/d 250 Mbps\nRp 799.000/bulan",
+                    context,
                   ),
-                  buildCard("Fiber 500", "Rp 1.399.000/bulan"),
+                  buildCard("Fiber 500", "Rp 1.399.000/bulan", context),
                 ],
               ),
             ),
@@ -124,47 +127,60 @@ class _UpgradeScreenState extends State<UpgradeScreen> {
     );
   }
 
-  Widget buildCard(String title, String subtitle) {
-    return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      elevation: 2,
-      margin: const EdgeInsets.only(bottom: 20),
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Row(
-              children: [
-                Icon(Icons.wifi, size: 36, color: Colors.blue),
-                const SizedBox(width: 10),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      title,
-                      style: const TextStyle(
-                        fontFamily: 'Poppins',
-                        fontSize: 18,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    const SizedBox(height: 5),
-                    Text(
-                      subtitle,
-                      style: const TextStyle(
-                        fontFamily: 'Poppins',
-                        fontSize: 13,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.grey,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
+  Widget buildCard(String title, String subtitle, BuildContext context) {
+    return InkWell(
+      onTap: () {
+        // Navigasi ke layar detail produk saat card di klik
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => DetailProductScreen(
+              productTitle: title, // Mengirim judul produk ke layar detail
             ),
-            const Icon(Icons.chevron_right, size: 24, color: Colors.blue),
-          ],
+          ),
+        );
+      },
+      child: Card(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        elevation: 2,
+        margin: const EdgeInsets.only(bottom: 20),
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
+                  Icon(Icons.wifi, size: 36, color: Colors.blue),
+                  const SizedBox(width: 10),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        style: const TextStyle(
+                          fontFamily: 'Poppins',
+                          fontSize: 18,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      const SizedBox(height: 5),
+                      Text(
+                        subtitle,
+                        style: const TextStyle(
+                          fontFamily: 'Poppins',
+                          fontSize: 13,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.grey,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              const Icon(Icons.chevron_right, size: 24, color: Colors.blue),
+            ],
+          ),
         ),
       ),
     );
