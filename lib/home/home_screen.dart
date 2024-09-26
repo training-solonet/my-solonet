@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:myapp/constants.dart';
-import 'package:myapp/home/login.dart';
-import 'package:myapp/help/help_screen.dart';
-import 'package:myapp/profile/profile_screen.dart';
-import 'package:myapp/home/home_content.dart';
-import 'package:myapp/upgrade/upgrade_screen.dart';
+import 'package:mysolonet/constants.dart';
+import 'package:mysolonet/home/login.dart';
+import 'package:mysolonet/help/help_screen.dart';
+import 'package:mysolonet/profile/profile_screen.dart';
+import 'package:mysolonet/home/home_content.dart';
+import 'package:mysolonet/upgrade/upgrade_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
