@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'change_profile.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({Key? key}) : super(key: key);
@@ -67,7 +68,10 @@ class ProfileScreen extends StatelessWidget {
                 IconButton(
                   icon: const Icon(Icons.edit),
                   onPressed: () {
-                    // Aksi untuk edit profil
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => ChangeProfileScreen()),
+                    );
                   },
                 )
               ],
