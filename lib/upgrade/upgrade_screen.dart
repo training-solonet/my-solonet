@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:myapp/upgrade/detail_product_screen.dart';
+import 'package:mysolonet/upgrade/detail_product_screen.dart';
 
 class UpgradeScreen extends StatefulWidget {
   const UpgradeScreen({Key? key}) : super(key: key);

@@ -19,8 +19,12 @@ class DetailProductScreen extends StatelessWidget {
           },
         ),
         title: Text(
-          productTitle, // Menggunakan productTitle untuk judul AppBar
-          style: const TextStyle(color: Colors.black),
+          'Detail Product',
+          style: const TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.bold,
+            fontFamily: 'Poppins',
+          ),
         ),
         centerTitle: true,
       ),
@@ -29,15 +33,15 @@ class DetailProductScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Content Section
             Center(
               child: Column(
                 children: [
                   Text(
-                    productTitle, // Menggunakan productTitle untuk judul produk
+                    productTitle,
                     style: const TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
+                      fontFamily: 'Poppins',
                     ),
                     textAlign: TextAlign.center,
                   ),
@@ -48,13 +52,16 @@ class DetailProductScreen extends StatelessWidget {
                       fontSize: 32,
                       fontWeight: FontWeight.bold,
                       color: Colors.black,
+                      fontFamily: 'Poppins',
                     ),
                   ),
                   const Text(
-                    'Rp1.500', // Harga produk
+                    'Paket Internet Fiber 50',
                     style: TextStyle(
                       fontSize: 16,
                       color: Colors.grey,
+                      fontWeight: FontWeight.w500,
+                      fontFamily: 'Poppins',
                     ),
                   ),
                   const SizedBox(height: 10),
@@ -68,8 +75,13 @@ class DetailProductScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: const Text(
-                      'Voice All Operator', // Contoh fitur produk
-                      style: TextStyle(fontSize: 14),
+                      'Internet',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: 'Poppins',
+                      ),
                     ),
                   ),
                 ],
@@ -97,11 +109,11 @@ class DetailProductScreen extends StatelessWidget {
                   ),
                   _buildExpandableItem(
                     title: 'Deskripsi',
-                    icon: Icons.plus_one,
+                    icon: Icons.arrow_drop_down,
                   ),
                   _buildExpandableItem(
                     title: 'S&K',
-                    icon: Icons.plus_one,
+                    icon: Icons.arrow_drop_down,
                   ),
                 ],
               ),
@@ -120,17 +132,21 @@ class DetailProductScreen extends StatelessWidget {
                   children: [
                     const Text(
                       'Harga Total',
-                      style: TextStyle(fontSize: 16),
+                      style: TextStyle(fontSize: 16,
+                      fontFamily: 'Poppins',),
                     ),
                     const Text(
                       'Rp1.500', // Harga produk
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
+                        fontFamily: 'Poppins',
                       ),
                     ),
-                    const SizedBox(height: 4),
-                    Center(
+                    const SizedBox(height: 8),
+                    Container(
+                      width: double.infinity,
+                      margin: const EdgeInsets.symmetric(horizontal: 5),
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.blueAccent,
@@ -147,7 +163,11 @@ class DetailProductScreen extends StatelessWidget {
                         },
                         child: const Text(
                           'Beli Sekarang',
-                          style: TextStyle(fontSize: 16),
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.white,
+                            fontFamily: 'Poppins',
+                          ),
                         ),
                       ),
                     ),
