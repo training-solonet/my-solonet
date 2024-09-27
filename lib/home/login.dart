@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mysolonet/home/register.dart';
 import 'package:mysolonet/home/home_screen.dart';
-import 'package:lottie/lottie.dart';
 
 class SignInScreen extends StatelessWidget {
   final _formKey = GlobalKey<FormState>();
@@ -20,76 +19,140 @@ class SignInScreen extends StatelessWidget {
               child: Column(
                 children: [
                   SizedBox(height: constraints.maxHeight * 0.1),
-                  // Gambar logo aplikasi
                   Image.asset(
                     "assets/images/solonet.png",
                     height: 100,
-                    width: 140,
-                  ),
-                  SizedBox(height: constraints.maxHeight * 0.1),
-                  // Judul layar "Sign In"
-                  Text(
-                    "Sign In",
-                    style: Theme.of(context)
-                        .textTheme
-                        .headlineSmall!
-                        .copyWith(fontWeight: FontWeight.bold),
+                    width: 180,
                   ),
                   SizedBox(height: constraints.maxHeight * 0.05),
-                  // Form input untuk email dan password
+                  const Text(
+                    "Login",
+                    style: TextStyle(
+                      fontSize: 32.0,
+                      fontFamily: 'Poppins',
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(height: constraints.maxHeight * 0.05),
                   Form(
                     key: _formKey,
                     child: Column(
                       children: [
-                        // Input email
+                        const Padding(
+                          padding: EdgeInsets.only(left: 8.0),
+                          child: Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              'Email / Nomor Whatsapp',
+                              style: TextStyle(
+                                color: Colors.black87,
+                                fontSize: 14.5,
+                                fontFamily: 'Poppins',
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 6.0),
                         TextFormField(
                           decoration: const InputDecoration(
-                            hintText: 'Nomor Telepon',
+                            hintText: 'Masukkan Email / Nomor Whatsapp',
                             filled: true,
                             fillColor: Color(0xFFF5FCF9),
                             contentPadding: EdgeInsets.symmetric(
-                                horizontal: 24.0, vertical: 16.0),
+                                horizontal: 24.0, vertical: 10.0),
                             border: OutlineInputBorder(
                               borderSide: BorderSide.none,
                               borderRadius:
                                   BorderRadius.all(Radius.circular(50)),
                             ),
                           ),
-                          keyboardType: TextInputType.number,
-                          onSaved: (email) {
-                            // Simpan data email
-                          },
+                          keyboardType: TextInputType.url,
+                          onSaved: (email) {},
                         ),
-                        // Jarak antar input
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 16.0),
-                          child: TextFormField(
-                            obscureText:
-                                true, // Untuk menyembunyikan teks password
-                            decoration: const InputDecoration(
-                              hintText: 'Password',
-                              filled: true,
-                              fillColor: Color(0xFFF5FCF9),
-                              contentPadding: EdgeInsets.symmetric(
-                                  horizontal: 24.0, vertical: 16.0),
-                              border: OutlineInputBorder(
-                                borderSide: BorderSide.none,
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(50)),
+                        const SizedBox(height: 16.0),
+                        const Padding(
+                          padding: EdgeInsets.only(left: 8.0),
+                          child: Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              'Password',
+                              style: TextStyle(
+                                color: Colors.black87,
+                                fontSize: 14.5,
+                                fontFamily: 'Poppins',
+                                fontWeight: FontWeight.w600,
                               ),
                             ),
-                            onSaved: (password) {
-                              // Simpan data password
-                            },
                           ),
                         ),
-                        // Tombol Sign In
-                        // ... kode lainnya ...
+                        const SizedBox(height: 6.0),
+                        TextFormField(
+                          obscureText: true,
+                          decoration: const InputDecoration(
+                            hintText: 'Masukkan Password',
+                            filled: true,
+                            fillColor: Color(0xFFF5FCF9),
+                            contentPadding: EdgeInsets.symmetric(
+                                horizontal: 24.0, vertical: 10.0),
+                            border: OutlineInputBorder(
+                              borderSide: BorderSide.none,
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(50)),
+                            ),
+                          ),
+                          onSaved: (password) {
+                            // Simpan data password
+                          },
+                        ),
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: TextButton(
+                            onPressed: () {},
+                            child: const Text('Forgot Password?',
+                                style: TextStyle(
+                                  fontSize: 10.5,
+                                  fontFamily: 'Poppins',
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.lightBlue,
+                                )),
+                          ),
+                        ),
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: TextButton(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => SignUpScreen()),
+                              );
+                            },
+                            child: const Text.rich(
+                              TextSpan(
+                                text: "Don’t have an account? ",
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.grey,
+                                  fontFamily: 'Poppins',
+                                  fontWeight: FontWeight.w500,
+                                ),
+                                children: [
+                                  TextSpan(
+                                    text: "Sign Up",
+                                    style: TextStyle(
+                                      color: Colors.lightBlue,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
                         ElevatedButton(
                           onPressed: () {
                             if (_formKey.currentState!.validate()) {
                               _formKey.currentState!.save();
-                              // Navigasi ke HomeScreen setelah validasi berhasil
                               Navigator.pushReplacement(
                                 context,
                                 MaterialPageRoute(
@@ -104,57 +167,49 @@ class SignInScreen extends StatelessWidget {
                             minimumSize: const Size(double.infinity, 48),
                             shape: const StadiumBorder(),
                           ),
-                          child: const Text("Sign in"),
-                        ),
-// ... kode lainnya ...
-
-                        const SizedBox(height: 16.0),
-                        // Tombol "Forgot Password"
-                        TextButton(
-                          onPressed: () {},
-                          child: Text(
-                            'Forgot Password?',
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyMedium!
-                                .copyWith(
-                                  color: Theme.of(context)
-                                      .textTheme
-                                      .bodyLarge!
-                                      .color!
-                                      .withOpacity(0.64),
-                                ),
+                          child: const Text(
+                            "Masuk",
+                            style: TextStyle(
+                              fontFamily: 'Poppins',
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
-                        TextButton(
+                        const SizedBox(height: 16.0),
+                        const Text(
+                          "or",
+                          style: TextStyle(
+                            color: Colors.black87,
+                            fontSize: 14.5,
+                            fontFamily: 'Poppins',
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        const SizedBox(height: 16.0),
+                        ElevatedButton.icon(
                           onPressed: () {
-                            // Navigasi ke SignUpScreen ketika tombol "Sign Up" diklik
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => SignUpScreen()),
-                            );
+                            // Fungsi login dengan Google
                           },
-                          child: Text.rich(
-                            const TextSpan(
-                              text: "Don’t have an account? ",
-                              children: [
-                                TextSpan(
-                                  text: "Sign Up",
-                                  style: TextStyle(color: Colors.lightBlue),
-                                ),
-                              ],
+                          style: ElevatedButton.styleFrom(
+                            elevation: 0,
+                            backgroundColor: Colors.white,
+                            foregroundColor: Colors.black,
+                            minimumSize: const Size(double.infinity, 48),
+                            shape: const StadiumBorder(),
+                            side: const BorderSide(color: Colors.black12),
+                          ),
+                          icon: Image.asset(
+                            "assets/images/google.png",
+                            bundle: null,
+                            scale: 1.0,
+                            height: 24,
+                          ),
+                          label: const Text(
+                            "Sign In with Google",
+                            style: TextStyle(
+                              fontFamily: 'Poppins',
+                              fontWeight: FontWeight.w600,
                             ),
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyMedium!
-                                .copyWith(
-                                  color: Theme.of(context)
-                                      .textTheme
-                                      .bodyLarge!
-                                      .color!
-                                      .withOpacity(0.64),
-                                ),
                           ),
                         ),
                       ],
