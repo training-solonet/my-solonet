@@ -1,12 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mysolonet/home/splash/splash_screen.dart';
-import 'home/login.dart';
-import 'package:mysolonet/home/home_screen.dart';
-import 'home/register.dart';
-import 'constants.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-import 'package:lottie/lottie.dart';
+import 'constants.dart'; // Update dengan path yang benar
 
 void main() {
   runApp(const MyApp());
@@ -15,8 +9,6 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -27,8 +19,7 @@ class MyApp extends StatelessWidget {
         textTheme: Theme.of(context).textTheme.apply(bodyColor: kTextColor),
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: const SplashScreen(),
+      home: SplashScreen(), // Pastikan ini adalah SplashScreen yang diperbarui
     );
-
   }
 }
