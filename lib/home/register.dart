@@ -1,6 +1,5 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+import 'package:mysolonet/home/login.dart';
 
 class SignUpScreen extends StatefulWidget {
   SignUpScreen({super.key});
@@ -11,152 +10,207 @@ class SignUpScreen extends StatefulWidget {
 
 class _SignUpScreenState extends State<SignUpScreen> {
   final _formKey = GlobalKey<FormState>();
-  List<dynamic> provinces = []; // List untuk menyimpan data provinsi
-  String? selectedProvince; // Variabel untuk provinsi terpilih
-
-  @override
-  void initState() {
-    super.initState();
-    fetchProvinces(); // Panggil fungsi fetch saat widget diinisialisasi
-  }
-
-  // Fungsi untuk melakukan request data provinsi dari API
-  Future<void> fetchProvinces() async {
-    final response = await http.get(Uri.parse(
-        'https://www.emsifa.com/api-wilayah-indonesia/api/provinces.json'));
-
-    if (response.statusCode == 200) {
-      setState(() {
-        provinces = json.decode(response.body); // Decode dan simpan data
-      });
-    } else {
-      throw Exception('Failed to load provinces');
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
-        child: LayoutBuilder(builder: (context, constraints) {
-          return SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: Column(
-              children: [
-                SizedBox(height: constraints.maxHeight * 0.08),
-                Image.asset(
-                  "assets/images/solonet.png",
-                  height: 100,
-                  width: 140,
-                ),
-                SizedBox(height: constraints.maxHeight * 0.04),
-                Text(
-                  "Sign Up",
-                  style: Theme.of(context)
-                      .textTheme
-                      .headlineSmall!
-                      .copyWith(fontWeight: FontWeight.bold),
-                ),
-                SizedBox(height: constraints.maxHeight * 0.05),
-                Form(
-                  key: _formKey,
-                  child: Column(
-                    children: [
-                      TextFormField(
-                        decoration: const InputDecoration(
-                          hintText: 'Nama Lengkap',
-                          filled: true,
-                          fillColor: Color(0xFFF5FCF9),
-                          contentPadding: EdgeInsets.symmetric(
-                              horizontal: 16.0 * 1.5, vertical: 16.0),
-                          border: OutlineInputBorder(
-                            borderSide: BorderSide.none,
-                            borderRadius: BorderRadius.all(Radius.circular(50)),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Column(
+                children: [
+                  SizedBox(height: constraints.maxHeight * 0.05),
+                  Image.asset(
+                    "assets/images/solonet.png",
+                    height: 100,
+                    width: 180,
+                  ),
+                  SizedBox(height: constraints.maxHeight * 0.025),
+                  const Text(
+                    "Daftar",
+                    style: TextStyle(
+                      fontSize: 32.0,
+                      fontFamily: 'Poppins',
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(height: constraints.maxHeight * 0.05),
+                  Form(
+                    key: _formKey,
+                    child: Column(
+                      children: [
+                        const Padding(
+                          padding: EdgeInsets.only(left: 8.0),
+                          child: Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              'Nama Lengkap',
+                              style: TextStyle(
+                                color: Colors.black87,
+                                fontSize: 14.5,
+                                fontFamily: 'Poppins',
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
                           ),
                         ),
-                        onSaved: (name) {
-                          // Save it
-                        },
-                      ),
-                      const SizedBox(height: 16.0),
-                      TextFormField(
-                        decoration: const InputDecoration(
-                          hintText: 'Nomor Telepon',
-                          filled: true,
-                          fillColor: Color(0xFFF5FCF9),
-                          contentPadding: EdgeInsets.symmetric(
-                              horizontal: 16.0 * 1.5, vertical: 16.0),
-                          border: OutlineInputBorder(
-                            borderSide: BorderSide.none,
-                            borderRadius: BorderRadius.all(Radius.circular(50)),
-                          ),
-                        ),
-                        keyboardType: TextInputType.phone,
-                        onSaved: (phone) {
-                          // Save it
-                        },
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 16.0),
-                        child: TextFormField(
+                        const SizedBox(height: 6.0),
+                        TextFormField(
                           decoration: const InputDecoration(
-                            hintText: 'Password',
+                            hintText: 'Masukkan Nama Lengkap',
                             filled: true,
                             fillColor: Color(0xFFF5FCF9),
                             contentPadding: EdgeInsets.symmetric(
-                                horizontal: 16.0 * 1.5, vertical: 16.0),
+                                horizontal: 24.0, vertical: 10.0),
                             border: OutlineInputBorder(
                               borderSide: BorderSide.none,
                               borderRadius:
                                   BorderRadius.all(Radius.circular(50)),
                             ),
                           ),
-                          obscureText: true,
-                          onSaved: (password) {
-                            // Save it
-                          },
+                          onSaved: (name) {},
                         ),
-                      ),
-                      DropdownButtonFormField<String>(
-                        value: selectedProvince,
-                        items:
-                            provinces.map<DropdownMenuItem<String>>((province) {
-                          return DropdownMenuItem<String>(
-                            value:
-                                province['id'], // Menggunakan ID sebagai value
-                            child: Text(province['name']),
-                          );
-                        }).toList(),
-                        icon: const Icon(Icons.expand_more),
-                        onChanged: (value) {
-                          setState(() {
-                            selectedProvince =
-                                value; // Update provinsi terpilih
-                          });
-                        },
-                        onSaved: (value) {
-                          selectedProvince = value;
-                        },
-                        decoration: const InputDecoration(
-                          hintText: 'Provinsi',
-                          filled: true,
-                          fillColor: Color(0xFFF5FCF9),
-                          contentPadding: EdgeInsets.symmetric(
-                              horizontal: 16.0 * 1.5, vertical: 16.0),
-                          border: OutlineInputBorder(
-                            borderSide: BorderSide.none,
-                            borderRadius: BorderRadius.all(Radius.circular(50)),
+                        const SizedBox(height: 16.0),
+                        const Padding(
+                          padding: EdgeInsets.only(left: 8.0),
+                          child: Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              'Nomor Whatsapp',
+                              style: TextStyle(
+                                color: Colors.black87,
+                                fontSize: 14.5,
+                                fontFamily: 'Poppins',
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
                           ),
                         ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 16.0),
-                        child: ElevatedButton(
+                        const SizedBox(height: 6.0),
+                        TextFormField(
+                          decoration: const InputDecoration(
+                            hintText: 'Masukkan Nomor Whatsapp',
+                            filled: true,
+                            fillColor: Color(0xFFF5FCF9),
+                            contentPadding: EdgeInsets.symmetric(
+                                horizontal: 24.0, vertical: 10.0),
+                            border: OutlineInputBorder(
+                              borderSide: BorderSide.none,
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(50)),
+                            ),
+                          ),
+                          keyboardType: TextInputType.phone,
+                          onSaved: (phone) {},
+                        ),
+                        const SizedBox(height: 16.0),
+                        const Padding(
+                          padding: EdgeInsets.only(left: 8.0),
+                          child: Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              'Email',
+                              style: TextStyle(
+                                color: Colors.black87,
+                                fontSize: 14.5,
+                                fontFamily: 'Poppins',
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 6.0),
+                        TextFormField(
+                          decoration: const InputDecoration(
+                            hintText: 'Masukkan Email',
+                            filled: true,
+                            fillColor: Color(0xFFF5FCF9),
+                            contentPadding: EdgeInsets.symmetric(
+                                horizontal: 24.0, vertical: 10.0),
+                            border: OutlineInputBorder(
+                              borderSide: BorderSide.none,
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(50)),
+                            ),
+                          ),
+                          keyboardType: TextInputType.emailAddress,
+                          onSaved: (email) {},
+                        ),
+                        const SizedBox(height: 16.0),
+                        const Padding(
+                          padding: EdgeInsets.only(left: 8.0),
+                          child: Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              'Password',
+                              style: TextStyle(
+                                color: Colors.black87,
+                                fontSize: 14.5,
+                                fontFamily: 'Poppins',
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 6.0),
+                        TextFormField(
+                          obscureText: true,
+                          decoration: const InputDecoration(
+                            hintText: 'Masukkan Password',
+                            filled: true,
+                            fillColor: Color(0xFFF5FCF9),
+                            contentPadding: EdgeInsets.symmetric(
+                                horizontal: 24.0, vertical: 10.0),
+                            border: OutlineInputBorder(
+                              borderSide: BorderSide.none,
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(50)),
+                            ),
+                          ),
+                          onSaved: (password) {},
+                        ),
+                        const SizedBox(height: 16.0),
+                        const Padding(
+                          padding: EdgeInsets.only(left: 8.0),
+                          child: Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              'Confirm Password',
+                              style: TextStyle(
+                                color: Colors.black87,
+                                fontSize: 14.5,
+                                fontFamily: 'Poppins',
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 6.0),
+                        TextFormField(
+                          obscureText: true,
+                          decoration: const InputDecoration(
+                            hintText: 'Masukkan Confirm Password',
+                            filled: true,
+                            fillColor: Color(0xFFF5FCF9),
+                            contentPadding: EdgeInsets.symmetric(
+                                horizontal: 24.0, vertical: 10.0),
+                            border: OutlineInputBorder(
+                              borderSide: BorderSide.none,
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(50)),
+                            ),
+                          ),
+                          onSaved: (password) {},
+                        ),
+                        const SizedBox(height: 16.0),
+                        ElevatedButton(
                           onPressed: () {
                             if (_formKey.currentState!.validate()) {
                               _formKey.currentState!.save();
-                              // Save data here
+                              // Simpan data form di sini
                             }
                           },
                           style: ElevatedButton.styleFrom(
@@ -166,38 +220,54 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             minimumSize: const Size(double.infinity, 48),
                             shape: const StadiumBorder(),
                           ),
-                          child: const Text("Sign Up"),
-                        ),
-                      ),
-                      TextButton(
-                        onPressed: () {},
-                        child: Text.rich(
-                          const TextSpan(
-                            text: "Already have an account? ",
-                            children: [
-                              TextSpan(
-                                text: "Sign in",
-                                style: TextStyle(color: Colors.lightBlue),
-                              ),
-                            ],
+                          child: const Text(
+                            "Daftar",
+                            style: TextStyle(
+                              fontFamily: 'Poppins',
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
-                          style:
-                              Theme.of(context).textTheme.bodyMedium!.copyWith(
-                                    color: Theme.of(context)
-                                        .textTheme
-                                        .bodyLarge!
-                                        .color!
-                                        .withOpacity(0.64),
-                                  ),
                         ),
-                      ),
-                    ],
+                        // const SizedBox(height: 16.0),
+                        Align(
+                          alignment: Alignment.center,
+                          child: TextButton(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => SignInScreen()),
+                              );
+                            },
+                            child: const Text.rich(
+                              TextSpan(
+                                text: "Already have an account? ",
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.grey,
+                                  fontFamily: 'Poppins',
+                                  fontWeight: FontWeight.w500,
+                                ),
+                                children: [
+                                  TextSpan(
+                                    text: "Sign in",
+                                    style: TextStyle(
+                                      color: Colors.lightBlue,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              ],
-            ),
-          );
-        }),
+                ],
+              ),
+            );
+          },
+        ),
       ),
     );
   }

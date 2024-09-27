@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mysolonet/home/login.dart';
 import 'change_profile.dart';
 
 class ProfileScreen extends StatelessWidget {
@@ -25,7 +26,7 @@ class ProfileScreen extends StatelessWidget {
                 const CircleAvatar(
                   radius: 30,
                   backgroundColor: Colors.green,
-                  child: const Text(
+                  child: Text(
                     'KA',
                     style: TextStyle(
                       fontSize: 24,
@@ -37,13 +38,13 @@ class ProfileScreen extends StatelessWidget {
                 const Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: const [
+                    children: [
                       Text(
                         'Kevin Andra',
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
-                          fontFamily: 'Poppins'
+                          fontFamily: 'Poppins',
                         ),
                       ),
                       Text(
@@ -51,7 +52,7 @@ class ProfileScreen extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 9.5,
                           fontWeight: FontWeight.w600,
-                          fontFamily: 'Poppins'
+                          fontFamily: 'Poppins',
                         ),
                       ),
                       Text(
@@ -59,7 +60,7 @@ class ProfileScreen extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 9.5,
                           fontWeight: FontWeight.w600,
-                          fontFamily: 'Poppins'
+                          fontFamily: 'Poppins',
                         ),
                       ),
                     ],
@@ -73,24 +74,43 @@ class ProfileScreen extends StatelessWidget {
                       MaterialPageRoute(builder: (context) => ChangeProfileScreen()),
                     );
                   },
-                )
+                ),
               ],
             ),
             const Divider(),
             Expanded(
               child: ListView(
-                children: const [
+                children: [
                   _MenuItem(
                     icon: Icons.task,
                     title: 'My Activity',
+                    onTap: () {
+                      // Navigasi ke layar "My Activity"
+                    },
                   ),
                   _MenuItem(
                     icon: Icons.notifications,
                     title: 'Notification',
+                    onTap: () {
+                      // Navigasi ke layar notifikasi
+                    },
                   ),
                   _MenuItem(
                     icon: Icons.alternate_email,
                     title: 'Follow us',
+                    onTap: () {
+                      // Navigasi ke layar follow us
+                    },
+                  ),
+                  _MenuItem(
+                    icon: Icons.logout,
+                    title: 'Logout',
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => SignInScreen()),
+                      );
+                    },
                   ),
                 ],
               ),
@@ -105,13 +125,13 @@ class ProfileScreen extends StatelessWidget {
 class _MenuItem extends StatelessWidget {
   final IconData icon;
   final String title;
-  final String? subtitle;
+  final VoidCallback onTap;
 
   const _MenuItem({
     Key? key,
     required this.icon,
     required this.title,
-    this.subtitle,
+    required this.onTap,
   }) : super(key: key);
 
   @override
@@ -128,9 +148,7 @@ class _MenuItem extends StatelessWidget {
         ),
       ),
       trailing: const Icon(Icons.chevron_right),
-      onTap: () {
-        // Aksi untuk menu item
-      },
+      onTap: onTap,
     );
   }
 }
