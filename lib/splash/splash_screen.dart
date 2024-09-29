@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:mysolonet/home/splash/splash_slide.dart';
+import 'package:mysolonet/splash/splash_slide.dart';
 import 'package:mysolonet/home/login.dart';
 
 class SplashScreen extends StatefulWidget {
