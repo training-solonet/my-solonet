@@ -17,7 +17,7 @@ class SplashScreenState extends State<SplashScreen> {
 
   Future<void> _showSplashScreen() async {
     // Tambahkan durasi 3 detik
-    await Future.delayed(const Duration(seconds: 3));
+    await Future.delayed(const Duration(seconds: 1));
     _checkFirstLaunch();
   }
 

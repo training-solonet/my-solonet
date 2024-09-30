@@ -146,6 +146,39 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           child: Align(
                             alignment: Alignment.centerLeft,
                             child: Text(
+                              'Alamat',
+                              style: TextStyle(
+                                color: Colors.black87,
+                                fontSize: 14.5,
+                                fontFamily: 'Poppins',
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 6.0),
+                        TextFormField(
+                          decoration: const InputDecoration(
+                            hintText: 'Masukkan Alamat',
+                            filled: true,
+                            fillColor: Color(0xFFF5FCF9),
+                            contentPadding: EdgeInsets.symmetric(
+                                horizontal: 24.0, vertical: 10.0),
+                            border: OutlineInputBorder(
+                              borderSide: BorderSide.none,
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(50)),
+                            ),
+                          ),
+                          keyboardType: TextInputType.text,
+                          onSaved: (email) {},
+                        ),
+                        const SizedBox(height: 16.0),
+                        const Padding(
+                          padding: EdgeInsets.only(left: 8.0),
+                          child: Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
                               'Password',
                               style: TextStyle(
                                 color: Colors.black87,
