@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mysolonet/home/login.dart';
+import 'package:mysolonet/Otp/otp_screen.dart';
 
 class SignUpScreen extends StatefulWidget {
   SignUpScreen({super.key});
@@ -210,7 +211,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           onPressed: () {
                             if (_formKey.currentState!.validate()) {
                               _formKey.currentState!.save();
-                              // Simpan data form di sini
+                              // Simpan data form di sini jika diperlukan
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>OtpScreen()), // Arahkan ke OTP Screen
+                              );
                             }
                           },
                           style: ElevatedButton.styleFrom(
