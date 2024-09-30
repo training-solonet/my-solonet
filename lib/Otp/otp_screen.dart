@@ -74,8 +74,8 @@ class _OtpScreenState extends State<OtpScreen> {
                 "Silakan masukkan kode 6 digit OTP yang telah dikirimkan melalui nomor Whatsapp anda",
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  fontFamily: 'Poppins',
-                  fontSize: 13,
+                  fontFamily: 'Poppins', // Apply Poppins font
+                  fontSize: 12,
                   fontWeight: FontWeight.bold,
                   color: Color(0xFF666666),
                 ),

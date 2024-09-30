@@ -124,8 +124,3 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-
-
-// Placeholder screens for Upgrade and Profile
-
-
