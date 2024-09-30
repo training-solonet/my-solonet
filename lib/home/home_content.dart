@@ -17,24 +17,31 @@ class _HomePageContentState extends State<HomePageContent> {
   @override
   void initState() {
     super.initState();
-    // Mulai timer untuk menggeser halaman setiap detik
     _timer = Timer.periodic(const Duration(seconds: 3), (timer) {
-      if (_currentPage < 4) { // 5 item, indeks 0-4
+      if (_currentPage < 4) {
         _currentPage++;
       } else {
-        _currentPage = 0; // Kembali ke awal
+        Future.delayed(const Duration(seconds: 0), () {
+          _currentPage = 0;
+          _pageController.animateToPage(
+            _currentPage,
+            duration: const Duration(milliseconds: 750),
+            curve: Curves.easeInOutCubic,
+          );
+        });
+        return;
       }
       _pageController.animateToPage(
         _currentPage,
-        duration: const Duration(milliseconds: 200),
-        curve: Curves.linear,
+        duration: const Duration(seconds: 2),
+        curve: Curves.easeInOutCubic,
       );
     });
   }
 
   @override
   void dispose() {
-    _timer.cancel(); // Hentikan timer saat widget dibuang
+    _timer.cancel();
     super.dispose();
   }
 
@@ -57,7 +64,7 @@ class _HomePageContentState extends State<HomePageContent> {
             ),
             const SizedBox(height: 10),
             SizedBox(
-              height: 130,
+              height: 157.5,
               child: PageView.builder(
                 controller: _pageController,
                 itemCount: 5,
@@ -69,7 +76,6 @@ class _HomePageContentState extends State<HomePageContent> {
                 itemBuilder: (context, index) {
                   return GestureDetector(
                     onTap: () {
-                      // Navigasi ke DetailPromoScreen saat item ditekan
                       Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -78,20 +84,17 @@ class _HomePageContentState extends State<HomePageContent> {
                       );
                     },
                     child: Container(
-                      width: 280,
+                      width: 280, // Lebar kontainer
                       margin: const EdgeInsets.only(right: 10),
                       decoration: BoxDecoration(
-                        color: Colors.grey,
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      child: Center(
-                        child: Text(
-                          'Promo Item ${index + 1}', // Tampilkan nomor item promo
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(
+                            10),
+                        child: Image.network(
+                          'https://via.placeholder.com/280x157',
+                          fit: BoxFit.cover, 
                         ),
                       ),
                     ),
@@ -130,7 +133,8 @@ class _HomePageContentState extends State<HomePageContent> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Padding(
-                            padding: const EdgeInsets.fromLTRB(6.5, 6.5, 6.5, 0),
+                            padding:
+                                const EdgeInsets.fromLTRB(6.5, 6.5, 6.5, 0),
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(8),
                               child: Column(
@@ -173,8 +177,7 @@ class _HomePageContentState extends State<HomePageContent> {
                                   style: TextStyle(
                                     fontSize: 9.5,
                                     fontFamily: 'Poppins',
-                                    color:
-                                        const Color.fromARGB(255, 34, 50, 64),
+                                    color: Color.fromARGB(255, 34, 50, 64),
                                     fontWeight: FontWeight.w500,
                                   ),
                                 ),

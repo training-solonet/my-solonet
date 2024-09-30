@@ -31,7 +31,7 @@ class _UpgradeScreenState extends State<UpgradeScreen> {
           style: TextStyle(
             color: Colors.white,
             fontFamily: 'Poppins',
-            fontWeight: FontWeight.w500,
+            fontWeight: FontWeight.w600,
             fontSize: 20,
           ),
         ),

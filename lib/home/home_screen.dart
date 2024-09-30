@@ -67,7 +67,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           fontWeight: FontWeight.w500,
                           fontFamily: 'Poppins',
                           fontSize: 12,
-                          color: kTextGray,
+                          color: Colors.white,
                         ),
                       ),
                       Text(
@@ -76,16 +76,18 @@ class _HomeScreenState extends State<HomeScreen> {
                           fontFamily: 'Poppins',
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
+                          color: Colors.white,
                         ),
                       ),
                     ],
                   ),
                   Image.asset(
-                    'assets/images/solonet.png',
+                    'assets/images/solonet_logo.png',
                     height: 25,
                   ),
                 ],
               ),
+              backgroundColor: Colors.blueAccent,
             )
           : null, // Hide AppBar when not on the Home screen
       body: IndexedStack(
