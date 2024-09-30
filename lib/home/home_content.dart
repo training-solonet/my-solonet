@@ -25,7 +25,7 @@ class _HomePageContentState extends State<HomePageContent> {
       }
       _pageController.animateToPage(
         _currentPage,
-        duration: const Duration(seconds: 2),
+        duration: const Duration(milliseconds: 200),
         curve: Curves.linear,
       );
     });
