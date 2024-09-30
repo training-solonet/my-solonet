@@ -1,7 +1,41 @@
 import 'package:flutter/material.dart';
+import 'dart:async'; // Import untuk Timer
 
-class HomePageContent extends StatelessWidget {
+class HomePageContent extends StatefulWidget {
   const HomePageContent({Key? key}) : super(key: key);
+
+  @override
+  _HomePageContentState createState() => _HomePageContentState();
+}
+
+class _HomePageContentState extends State<HomePageContent> {
+  final PageController _pageController = PageController();
+  int _currentPage = 0; // Menyimpan halaman yang sedang ditampilkan
+  late Timer _timer; // Timer untuk menggeser halaman
+
+  @override
+  void initState() {
+    super.initState();
+    // Mulai timer untuk menggeser halaman setiap detik
+    _timer = Timer.periodic(const Duration(seconds: 3), (timer) {
+      if (_currentPage < 4) { // 5 item, indeks 0-4
+        _currentPage++;
+      } else {
+        _currentPage = 0; // Kembali ke awal
+      }
+      _pageController.animateToPage(
+        _currentPage,
+        duration: const Duration(seconds: 2),
+        curve: Curves.linear,
+      );
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel(); // Hentikan timer saat widget dibuang
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,9 +57,14 @@ class HomePageContent extends StatelessWidget {
             const SizedBox(height: 10),
             SizedBox(
               height: 130,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
+              child: PageView.builder(
+                controller: _pageController,
                 itemCount: 5,
+                onPageChanged: (index) {
+                  setState(() {
+                    _currentPage = index;
+                  });
+                },
                 itemBuilder: (context, index) {
                   return Container(
                     width: 280,
@@ -83,7 +122,7 @@ class HomePageContent extends StatelessWidget {
                                   ),
                                 ],
                               ),
-                            )
+                            ),
                           ),
                           Padding(
                             padding: const EdgeInsets.fromLTRB(7, 7, 7, 0),

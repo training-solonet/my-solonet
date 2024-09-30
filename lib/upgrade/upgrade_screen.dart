@@ -12,6 +12,16 @@ class _UpgradeScreenState extends State<UpgradeScreen> {
   // Define which option is currently active
   String activeOption = 'Internet'; // Default is 'Internet'
 
+  // List of products
+  final List<Map<String, String>> products = [
+    {'title': 'FO Up To 7Mbps', 'price': 'Rp 110.000/bulan'},
+    {'title': 'FO Up To 10Mbps', 'price': 'Rp 125.000/bulan'},
+    {'title': 'FO Up To 15Mbps', 'price': 'Rp 150.000/bulan'},
+    {'title': 'FO Up To 20Mbps', 'price': 'Rp 200.000/bulan'},
+    {'title': 'FO Up To 40 Mbps', 'price': 'Rp 500.000/bulan'},
+    {'title': 'FO Up To 50 Mbps', 'price': 'Rp 600.000/bulan'},
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -67,22 +77,15 @@ class _UpgradeScreenState extends State<UpgradeScreen> {
 
             // Content Cards
             Expanded(
-              child: ListView(
-                padding: EdgeInsets.zero, // Remove extra padding inside the ListView
-                children: [
-                  buildCard("Fiber 50", "Rp 229.000/bulan", context),
-                  buildCard(
-                    "Fiber 100",
-                    "Kecepatan Internet s/d 100 Mbps\nRp 429.000/bulan",
+              child: ListView.builder(
+                itemCount: products.length, // Use the length of the product list
+                itemBuilder: (context, index) {
+                  return buildCard(
+                    products[index]['title']!,
+                    products[index]['price']!,
                     context,
-                  ),
-                  buildCard(
-                    "Fiber 250",
-                    "Kecepatan Internet s/d 250 Mbps\nRp 799.000/bulan",
-                    context,
-                  ),
-                  buildCard("Fiber 500", "Rp 1.399.000/bulan", context),
-                ],
+                  );
+                },
               ),
             ),
           ],

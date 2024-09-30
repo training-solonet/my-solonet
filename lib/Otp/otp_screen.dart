@@ -39,7 +39,7 @@ class OtpScreen extends StatelessWidget {
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontFamily: 'Poppins', // Apply Poppins font
-                  fontSize: 13,
+                  fontSize: 12,
                   fontWeight: FontWeight.bold,
                   color: Color(0xFF666666),
                 ),
