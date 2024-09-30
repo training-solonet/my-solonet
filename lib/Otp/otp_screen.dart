@@ -1,13 +1,49 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart'; // Import added
+import 'package:flutter/services.dart';
 
-class OtpScreen extends StatelessWidget {
+class OtpScreen extends StatefulWidget {
   const OtpScreen({super.key});
+
+  @override
+  _OtpScreenState createState() => _OtpScreenState();
+}
+
+class _OtpScreenState extends State<OtpScreen> {
+  final List<TextEditingController> _controllers =
+      List.generate(6, (index) => TextEditingController());
+  final List<FocusNode> _focusNodes = List.generate(6, (index) => FocusNode());
+
+  @override
+  void dispose() {
+    for (var controller in _controllers) {
+      controller.dispose();
+    }
+    for (var focusNode in _focusNodes) {
+      focusNode.dispose();
+    }
+    super.dispose();
+  }
+
+  void _handlePaste(String pastedText) {
+    if (pastedText.length == 6) {
+      for (int i = 0; i < 6; i++) {
+        _controllers[i].text = pastedText[i];
+      }
+      _focusNodes.last.requestFocus(); // Pindah ke field terakhir
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FA), // Background color similar to #f8f9fa
+      backgroundColor: const Color(0xFFF8F9FA),
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(56.0), // tinggi AppBar
+        child: Container(
+          height: 56.0, // sama dengan tinggi AppBar
+          color: Colors.transparent, // menjadikan AppBar tidak terlihat
+        ),
+      ),
       body: Center(
         child: Container(
           width: double.infinity,
@@ -17,8 +53,8 @@ class OtpScreen extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Image.asset( // Changed from Image.network to Image.asset
-                'assets/images/solonet.png', // Replace 'your_image.png' with the actual image file name
+              Image.asset(
+                'assets/images/solonet.png',
                 width: 150,
                 height: 50,
                 fit: BoxFit.contain,
@@ -27,7 +63,7 @@ class OtpScreen extends StatelessWidget {
               const Text(
                 "Verifikasi Kode OTP",
                 style: TextStyle(
-                  fontFamily: 'Poppins', // Apply Poppins font
+                  fontFamily: 'Poppins',
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
                   color: Color(0xFF333333),
@@ -35,32 +71,25 @@ class OtpScreen extends StatelessWidget {
               ),
               const SizedBox(height: 10),
               const Text(
-                "Silakan masukkan kode 6 digit OTP yang telah  dikirimkan melalui nomor Whatsapp anda",
+                "Silakan masukkan kode 6 digit OTP yang telah dikirimkan melalui nomor Whatsapp anda",
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  fontFamily: 'Poppins', // Apply Poppins font
+                  fontFamily: 'Poppins',
                   fontSize: 13,
                   fontWeight: FontWeight.bold,
                   color: Color(0xFF666666),
                 ),
               ),
               const SizedBox(height: 20),
-              // OTP Input Fields
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  _buildOtpField(context),
-                  _buildOtpField(context),
-                  _buildOtpField(context),
-                  _buildOtpField(context),
-                  _buildOtpField(context),
-                  _buildOtpField(context),
-                ],
+                children: List.generate(6, (index) => _buildOtpField(index)),
               ),
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {
-                  // Handle OTP verification action
+                  String otp = _controllers.map((controller) => controller.text).join();
+                  print("OTP entered: $otp");
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF00BCD4),
@@ -72,7 +101,7 @@ class OtpScreen extends StatelessWidget {
                 child: const Text(
                   "Verifikasi",
                   style: TextStyle(
-                    fontFamily: 'Poppins', // Apply Poppins font
+                    fontFamily: 'Poppins',
                     fontSize: 16,
                     color: Colors.white,
                   ),
@@ -82,7 +111,7 @@ class OtpScreen extends StatelessWidget {
               const Text(
                 "Belum menerima kode?",
                 style: TextStyle(
-                  fontFamily: 'Poppins', // Apply Poppins font
+                  fontFamily: 'Poppins',
                   fontSize: 14,
                   color: Color(0xFF666666),
                 ),
@@ -90,7 +119,7 @@ class OtpScreen extends StatelessWidget {
               const Text(
                 "Minta kode baru dalam 00:30 detik",
                 style: TextStyle(
-                  fontFamily: 'Poppins', // Apply Poppins font
+                  fontFamily: 'Poppins',
                   fontSize: 14,
                   color: Color(0xFF333333),
                 ),
@@ -102,48 +131,65 @@ class OtpScreen extends StatelessWidget {
     );
   }
 
-  // Helper function to create OTP text fields
-  Widget _buildOtpField(BuildContext context) {
+  Widget _buildOtpField(int index) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 5),
       width: 40,
       height: 40,
       child: TextFormField(
+        controller: _controllers[index],
+        focusNode: _focusNodes[index],
         maxLength: 1,
         textAlign: TextAlign.center,
         keyboardType: TextInputType.number,
+        inputFormatters: [
+          FilteringTextInputFormatter.digitsOnly,
+        ],
+        onChanged: (value) {
+          if (value.isNotEmpty && index < 5) {
+            FocusScope.of(context).requestFocus(_focusNodes[index + 1]);
+          } else if (value.isEmpty && index > 0) {
+            FocusScope.of(context).requestFocus(_focusNodes[index - 1]);
+          }
+        },
+        onTap: () async {
+          ClipboardData? data = await Clipboard.getData(Clipboard.kTextPlain);
+          if (data != null && data.text!.length == 6) {
+            _handlePaste(data.text!);
+          }
+        },
         decoration: InputDecoration(
           counterText: "",
-          hintText: "•", // Set hint text to dot (•)
+          hintText: "•",
           hintStyle: const TextStyle(
-            fontFamily: 'Poppins', // Apply Poppins font
+            fontFamily: 'Poppins',
             fontSize: 18,
-            color: Colors.grey, // Set color for hint text
+            color: Colors.grey,
           ),
           filled: true,
-          fillColor: const Color(0xFFE0E0E0), // Light grey color for background
-          contentPadding: const EdgeInsets.all(10), // Ensures vertical centering
+          fillColor: const Color(0xFFE0E0E0),
+          contentPadding: const EdgeInsets.all(10),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(5),
             borderSide: const BorderSide(
-              color: Colors.transparent, // No border
+              color: Colors.transparent,
             ),
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(5),
             borderSide: const BorderSide(
-              color: Colors.transparent, // No border when enabled
+              color: Colors.transparent,
             ),
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(5),
             borderSide: const BorderSide(
-              color: Colors.blue, // Border color when focused
+              color: Colors.blue,
             ),
           ),
         ),
         style: const TextStyle(
-          fontFamily: 'Poppins', // Apply Poppins font
+          fontFamily: 'Poppins',
           fontSize: 18,
           color: Colors.black,
         ),
