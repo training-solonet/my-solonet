@@ -1,208 +1,152 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:flutter/services.dart'; // Import added
 
 class OtpScreen extends StatelessWidget {
   const OtpScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        title: const Text(
-          "OTP Verification",
-          style: TextStyle(color: Color(0xFF757575)),
-        ),
-      ),
-      body: SafeArea(
-        child: SizedBox(
+      backgroundColor: const Color(0xFFF8F9FA), // Background color similar to #f8f9fa
+      body: Center(
+        child: Container(
           width: double.infinity,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: SingleChildScrollView(
-              child: Column(
+          margin: const EdgeInsets.symmetric(horizontal: 20),
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Image.asset( // Changed from Image.network to Image.asset
+                'assets/images/solonet.png', // Replace 'your_image.png' with the actual image file name
+                width: 150,
+                height: 50,
+                fit: BoxFit.contain,
+              ),
+              const SizedBox(height: 20),
+              const Text(
+                "Verifikasi Kode OTP",
+                style: TextStyle(
+                  fontFamily: 'Poppins', // Apply Poppins font
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF333333),
+                ),
+              ),
+              const SizedBox(height: 10),
+              const Text(
+                "Silakan masukkan kode 6 digit OTP yang telah  dikirimkan melalui nomor Whatsapp anda",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontFamily: 'Poppins', // Apply Poppins font
+                  fontSize: 13,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF666666),
+                ),
+              ),
+              const SizedBox(height: 20),
+              // OTP Input Fields
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const SizedBox(height: 16),
-                  const Text(
-                    "OTP Verification",
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  const Text(
-                    "We sent your code to +1 898 860 *** \nThis code will expired in 00:30",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(color: Color(0xFF757575)),
-                  ),
-                  // const SizedBox(height: 16),
-                  SizedBox(height: MediaQuery.of(context).size.height * 0.1),
-                  const OtpForm(),
-                  SizedBox(height: MediaQuery.of(context).size.height * 0.2),
-                  TextButton(
-                    onPressed: () {},
-                    child: const Text(
-                      "Resend OTP Code",
-                      style: TextStyle(color: Color(0xFF757575)),
-                    ),
-                  ),
+                  _buildOtpField(context),
+                  _buildOtpField(context),
+                  _buildOtpField(context),
+                  _buildOtpField(context),
+                  _buildOtpField(context),
+                  _buildOtpField(context),
                 ],
               ),
-            ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () {
+                  // Handle OTP verification action
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF00BCD4),
+                  padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(5),
+                  ),
+                ),
+                child: const Text(
+                  "Verifikasi",
+                  style: TextStyle(
+                    fontFamily: 'Poppins', // Apply Poppins font
+                    fontSize: 16,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+              const Text(
+                "Belum menerima kode?",
+                style: TextStyle(
+                  fontFamily: 'Poppins', // Apply Poppins font
+                  fontSize: 14,
+                  color: Color(0xFF666666),
+                ),
+              ),
+              const Text(
+                "Minta kode baru dalam 00:30 detik",
+                style: TextStyle(
+                  fontFamily: 'Poppins', // Apply Poppins font
+                  fontSize: 14,
+                  color: Color(0xFF333333),
+                ),
+              ),
+            ],
           ),
         ),
       ),
     );
   }
-}
 
-const authOutlineInputBorder = OutlineInputBorder(
-  borderSide: BorderSide(color: Color(0xFF757575)),
-  borderRadius: BorderRadius.all(Radius.circular(12)),
-);
-
-class OtpForm extends StatelessWidget {
-  const OtpForm({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Form(
-      child: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              SizedBox(
-                height: 64,
-                width: 64,
-                child: TextFormField(
-                  onSaved: (pin) {},
-                  onChanged: (pin) {
-                    if (pin.isNotEmpty) {
-                      FocusScope.of(context).nextFocus();
-                    }
-                  },
-                  textInputAction: TextInputAction.next,
-                  keyboardType: TextInputType.number,
-                  inputFormatters: [
-                    LengthLimitingTextInputFormatter(1),
-                    FilteringTextInputFormatter.digitsOnly,
-                  ],
-                  style: Theme.of(context).textTheme.titleLarge,
-                  textAlign: TextAlign.center,
-                  decoration: InputDecoration(
-                      hintText: "0",
-                      hintStyle: const TextStyle(color: Color(0xFF757575)),
-                      border: authOutlineInputBorder,
-                      enabledBorder: authOutlineInputBorder,
-                      focusedBorder: authOutlineInputBorder.copyWith(
-                          borderSide:
-                              const BorderSide(color: Color(0xFFFF7643)))),
-                ),
-              ),
-              SizedBox(
-                height: 64,
-                width: 64,
-                child: TextFormField(
-                  onSaved: (pin) {},
-                  onChanged: (pin) {
-                    if (pin.isNotEmpty) {
-                      FocusScope.of(context).nextFocus();
-                    }
-                  },
-                  textInputAction: TextInputAction.next,
-                  keyboardType: TextInputType.number,
-                  inputFormatters: [
-                    LengthLimitingTextInputFormatter(1),
-                    FilteringTextInputFormatter.digitsOnly,
-                  ],
-                  style: Theme.of(context).textTheme.titleLarge,
-                  textAlign: TextAlign.center,
-                  decoration: InputDecoration(
-                      hintText: "0",
-                      hintStyle: const TextStyle(color: Color(0xFF757575)),
-                      border: authOutlineInputBorder,
-                      enabledBorder: authOutlineInputBorder,
-                      focusedBorder: authOutlineInputBorder.copyWith(
-                          borderSide:
-                              const BorderSide(color: Color(0xFFFF7643)))),
-                ),
-              ),
-              SizedBox(
-                height: 64,
-                width: 64,
-                child: TextFormField(
-                  onSaved: (pin) {},
-                  onChanged: (pin) {
-                    if (pin.isNotEmpty) {
-                      FocusScope.of(context).nextFocus();
-                    }
-                  },
-                  textInputAction: TextInputAction.next,
-                  keyboardType: TextInputType.number,
-                  inputFormatters: [
-                    LengthLimitingTextInputFormatter(1),
-                    FilteringTextInputFormatter.digitsOnly,
-                  ],
-                  style: Theme.of(context).textTheme.titleLarge,
-                  textAlign: TextAlign.center,
-                  decoration: InputDecoration(
-                      hintText: "0",
-                      hintStyle: const TextStyle(color: Color(0xFF757575)),
-                      border: authOutlineInputBorder,
-                      enabledBorder: authOutlineInputBorder,
-                      focusedBorder: authOutlineInputBorder.copyWith(
-                          borderSide:
-                              const BorderSide(color: Color(0xFFFF7643)))),
-                ),
-              ),
-              SizedBox(
-                height: 64,
-                width: 64,
-                child: TextFormField(
-                  onSaved: (pin) {},
-                  onChanged: (pin) {
-                    if (pin.isNotEmpty) {
-                      FocusScope.of(context).nextFocus();
-                    }
-                  },
-                  textInputAction: TextInputAction.next,
-                  keyboardType: TextInputType.number,
-                  inputFormatters: [
-                    LengthLimitingTextInputFormatter(1),
-                    FilteringTextInputFormatter.digitsOnly,
-                  ],
-                  style: Theme.of(context).textTheme.titleLarge,
-                  textAlign: TextAlign.center,
-                  decoration: InputDecoration(
-                      hintText: "0",
-                      hintStyle: const TextStyle(color: Color(0xFF757575)),
-                      border: authOutlineInputBorder,
-                      enabledBorder: authOutlineInputBorder,
-                      focusedBorder: authOutlineInputBorder.copyWith(
-                          borderSide:
-                              const BorderSide(color: Color(0xFFFF7643)))),
-                ),
-              ),
-            ],
+  // Helper function to create OTP text fields
+  Widget _buildOtpField(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 5),
+      width: 40,
+      height: 40,
+      child: TextFormField(
+        maxLength: 1,
+        textAlign: TextAlign.center,
+        keyboardType: TextInputType.number,
+        decoration: InputDecoration(
+          counterText: "",
+          hintText: "•", // Set hint text to dot (•)
+          hintStyle: const TextStyle(
+            fontFamily: 'Poppins', // Apply Poppins font
+            fontSize: 18,
+            color: Colors.grey, // Set color for hint text
           ),
-          const SizedBox(height: 24),
-          ElevatedButton(
-            onPressed: () {},
-            style: ElevatedButton.styleFrom(
-              elevation: 0,
-              backgroundColor: const Color(0xFFFF7643),
-              foregroundColor: Colors.white,
-              minimumSize: const Size(double.infinity, 48),
-              shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(16)),
-              ),
+          filled: true,
+          fillColor: const Color(0xFFE0E0E0), // Light grey color for background
+          contentPadding: const EdgeInsets.all(10), // Ensures vertical centering
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(5),
+            borderSide: const BorderSide(
+              color: Colors.transparent, // No border
             ),
-            child: const Text("Continue"),
-          )
-        ],
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(5),
+            borderSide: const BorderSide(
+              color: Colors.transparent, // No border when enabled
+            ),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(5),
+            borderSide: const BorderSide(
+              color: Colors.blue, // Border color when focused
+            ),
+          ),
+        ),
+        style: const TextStyle(
+          fontFamily: 'Poppins', // Apply Poppins font
+          fontSize: 18,
+          color: Colors.black,
+        ),
       ),
     );
   }
