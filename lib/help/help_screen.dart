@@ -10,25 +10,13 @@ class HelpScreen extends StatelessWidget {
         title: const Text(
           'Help',
           style: TextStyle(
-            color: Colors.black,
+            color: Colors.white,
             fontFamily: 'Poppins',
-            fontWeight: FontWeight.w500,
+            fontWeight: FontWeight.w600,
             fontSize: 20,
           ),
         ),
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(4.0), // Set the border height
-          child: Container(
-            decoration: const BoxDecoration(
-              border: Border(
-                bottom: BorderSide(
-                  color: Colors.grey, // Set the border color
-                  width: 2.0, // Set the border width
-                ),
-              ),
-            ),
-          ),
-        ),
+        backgroundColor: Colors.blueAccent,
       ),
       body: SingleChildScrollView(
         child: Padding(

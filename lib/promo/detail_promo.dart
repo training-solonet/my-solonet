@@ -14,11 +14,21 @@ class _DetailPromoScreenState extends State<DetailPromoScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Detail Promo'),
+        title: const Text(
+          'Detail Promo',
+          style: TextStyle(
+            fontFamily: 'Poppins',
+            color: Colors.white,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: const Icon(
+            Icons.arrow_back,
+            color: Colors.white,
+          ),
           onPressed: () {
-            Navigator.pop(context); // Kembali ke layar sebelumnya
+            Navigator.pop(context); 
           },
         ),
         backgroundColor: Colors.blueAccent,
@@ -28,7 +38,6 @@ class _DetailPromoScreenState extends State<DetailPromoScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Gambar Promo
             ClipRRect(
               borderRadius: BorderRadius.circular(10),
               child: Image.network(
@@ -38,38 +47,39 @@ class _DetailPromoScreenState extends State<DetailPromoScreen> {
                 fit: BoxFit.cover,
               ),
             ),
-            const SizedBox(height: 10), // Jarak antara gambar dan keterangan
-
-            // Keterangan Promo
+            const SizedBox(height: 10),
             const Padding(
-              padding: EdgeInsets.all(15.0),
+              padding: EdgeInsets.fromLTRB(0, 5, 0, 0),
               child: Text(
                 'Promo Spesial: Paket Internet Unlimited',
                 style: TextStyle(
+                  fontFamily: 'Poppins',
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                 ),
               ),
             ),
             const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 10.0),
+              padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
               child: Text(
                 'Nikmati kecepatan internet tanpa batas dengan paket ini!',
-                style: TextStyle(fontSize: 14, color: Colors.grey),
+                style: TextStyle(
+                  fontFamily: 'Poppins',
+                  fontSize: 11,
+                  color: Colors.grey,
+                ),
               ),
             ),
-
-             const Divider(
-              thickness: 1, // Ketebalan garis
-              color: Colors.grey, // Warna garis
+            const SizedBox(height: 5),
+            const Divider(
+              thickness: 0.5,
+              color: Colors.grey,
             ),
-            const SizedBox(height: 20),
-
-            // Dropdown untuk syarat dan ketentuan
+            const SizedBox(height: 5),
             GestureDetector(
               onTap: () {
                 setState(() {
-                  _isExpanded = !_isExpanded; // Toggle dropdown
+                  _isExpanded = !_isExpanded;
                 });
               },
               child: Container(
@@ -83,7 +93,11 @@ class _DetailPromoScreenState extends State<DetailPromoScreen> {
                   children: [
                     const Text(
                       'Syarat dan Ketentuan',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                      style: TextStyle(
+                        fontFamily: 'Poppins',
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                     Icon(_isExpanded ? Icons.arrow_drop_up : Icons.arrow_drop_down),
                   ],
@@ -97,7 +111,10 @@ class _DetailPromoScreenState extends State<DetailPromoScreen> {
                   '1. Paket berlaku untuk pengguna baru.\n'
                   '2. Pembayaran harus dilakukan sebelum akhir bulan.\n'
                   '3. Tidak dapat digabung dengan promo lainnya.',
-                  style: const TextStyle(color: Colors.grey),
+                  style: const TextStyle(
+                    fontFamily: 'Poppins',
+                    color: Colors.grey,
+                  ),
                 ),
               ),
           ],
