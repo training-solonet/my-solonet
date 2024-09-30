@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'dart:async'; // Import untuk Timer
+import 'dart:async';
+import 'package:mysolonet/promo/detail_promo.dart'; // Import screen detail promo
 
 class HomePageContent extends StatefulWidget {
   const HomePageContent({Key? key}) : super(key: key);
@@ -66,12 +67,33 @@ class _HomePageContentState extends State<HomePageContent> {
                   });
                 },
                 itemBuilder: (context, index) {
-                  return Container(
-                    width: 280,
-                    margin: const EdgeInsets.only(right: 10),
-                    decoration: BoxDecoration(
-                      color: Colors.grey,
-                      borderRadius: BorderRadius.circular(10),
+                  return GestureDetector(
+                    onTap: () {
+                      // Navigasi ke DetailPromoScreen saat item ditekan
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => DetailPromoScreen(),
+                        ),
+                      );
+                    },
+                    child: Container(
+                      width: 280,
+                      margin: const EdgeInsets.only(right: 10),
+                      decoration: BoxDecoration(
+                        color: Colors.grey,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Center(
+                        child: Text(
+                          'Promo Item ${index + 1}', // Tampilkan nomor item promo
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
                     ),
                   );
                 },
@@ -108,8 +130,7 @@ class _HomePageContentState extends State<HomePageContent> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Padding(
-                            padding:
-                                const EdgeInsets.fromLTRB(6.5, 6.5, 6.5, 0),
+                            padding: const EdgeInsets.fromLTRB(6.5, 6.5, 6.5, 0),
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(8),
                               child: Column(
