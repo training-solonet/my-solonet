@@ -14,8 +14,10 @@ class ProfileScreen extends StatelessWidget {
           style: TextStyle(
             fontFamily: 'Poppins',
             fontWeight: FontWeight.w600,
+            color: Colors.white,
           ),
         ),
+        backgroundColor: Colors.blueAccent,
       ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),

@@ -8,13 +8,14 @@ class ChangeProfileScreen extends StatelessWidget {
         title: const Text(
           'Ubah Profil',
           style: TextStyle(
-            color: Colors.black,
+            color: Colors.white,
             fontWeight: FontWeight.bold,
             fontFamily: 'Poppins', // Font Poppins
           ),
         ),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back,
+          color: Colors.white,),
           onPressed: () {
             Navigator.of(context).pop();
           },
@@ -27,13 +28,13 @@ class ChangeProfileScreen extends StatelessWidget {
             child: const Text(
               'SIMPAN',
               style: TextStyle(
-                color: Colors.black,
+                color: Colors.white,
                 fontFamily: 'Poppins', // Font Poppins
               ),
             ),
           ),
         ],
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.blueAccent,
         elevation: 0,
       ),
       body: Padding(
