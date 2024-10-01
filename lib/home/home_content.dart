@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
-import 'package:mysolonet/promo/detail_promo.dart'; // Import screen detail promo
+import 'package:mysolonet/promo/detail_promo.dart';
+ // Import screen detail promo
 
 class HomePageContent extends StatefulWidget {
   const HomePageContent({Key? key}) : super(key: key);
@@ -87,7 +88,9 @@ class _HomePageContentState extends State<HomePageContent> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => DetailPromoScreen(),
+                          builder: (context) => DetailPromoScreen(
+                            imagePath: imagePath, // Pass imagePath to DetailPromoScreen
+                          ),
                         ),
                       );
                     },

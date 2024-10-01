@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+
 class DetailProductScreen extends StatelessWidget {
   final String productTitle;
 
