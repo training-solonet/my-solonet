@@ -43,7 +43,7 @@ class SignInScreen extends StatelessWidget {
                           child: Align(
                             alignment: Alignment.centerLeft,
                             child: Text(
-                              'Email / Nomor Whatsapp',
+                              'Email / Whatsapp Number',
                               style: TextStyle(
                                 color: Colors.black87,
                                 fontSize: 14.5,
@@ -56,7 +56,7 @@ class SignInScreen extends StatelessWidget {
                         const SizedBox(height: 6.0),
                         TextFormField(
                           decoration: const InputDecoration(
-                            hintText: 'Masukkan Email / Nomor Whatsapp',
+                            hintText: 'Enter Email / Whatsapp Number',
                             filled: true,
                             fillColor: Color(0xFFF5FCF9),
                             contentPadding: EdgeInsets.symmetric(
@@ -90,7 +90,7 @@ class SignInScreen extends StatelessWidget {
                         TextFormField(
                           obscureText: true,
                           decoration: const InputDecoration(
-                            hintText: 'Masukkan Password',
+                            hintText: 'Enter Password',
                             filled: true,
                             fillColor: Color(0xFFF5FCF9),
                             contentPadding: EdgeInsets.symmetric(
@@ -168,7 +168,7 @@ class SignInScreen extends StatelessWidget {
                             shape: const StadiumBorder(),
                           ),
                           child: const Text(
-                            "Masuk",
+                            "Login",
                             style: TextStyle(
                               fontFamily: 'Poppins',
                               fontWeight: FontWeight.bold,

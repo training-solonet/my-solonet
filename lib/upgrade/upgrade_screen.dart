@@ -28,7 +28,7 @@ class _UpgradeScreenState extends State<UpgradeScreen> {
   late Timer _timer;
   int _currentPage = 0;
 
-   @override
+  @override
   void initState() {
     super.initState();
     _timer = Timer.periodic(const Duration(seconds: 3), (timer) {
@@ -75,14 +75,16 @@ class _UpgradeScreenState extends State<UpgradeScreen> {
         backgroundColor: Colors.blueAccent,
       ),
       body: Padding(
-        padding: const EdgeInsets.all(20), // Add padding to the entire body
+        padding:
+            const EdgeInsets.all(16.0), // Tambahkan margin pada seluruh body
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start, // Align all items to the start
+          crossAxisAlignment:
+              CrossAxisAlignment.start, // Align all items to the start
           children: [
             const SizedBox(height: 10),
-            
-             SizedBox(
-              height: 130,
+
+            SizedBox(
+              height: 157.5,
               child: PageView.builder(
                 controller: _pageController,
                 itemCount: 5,
@@ -106,14 +108,15 @@ class _UpgradeScreenState extends State<UpgradeScreen> {
                         context,
                         MaterialPageRoute(
                           builder: (context) => DetailPromoScreen(
-                            imagePath: imagePath, // Pass imagePath to DetailPromoScreen
+                            imagePath:
+                                imagePath, // Pass imagePath to DetailPromoScreen
                           ),
                         ),
                       );
                     },
                     child: Container(
                       width: 280, // Lebar kontainer
-                    margin: EdgeInsets.symmetric(horizontal: 5),
+                      margin: EdgeInsets.symmetric(horizontal: 10),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(10),
                       ),
@@ -136,7 +139,10 @@ class _UpgradeScreenState extends State<UpgradeScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                buildOption('Internet'),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 15),
+                  child: buildOption('Internet'),
+                ),
                 const SizedBox(width: 20), // Space between options
                 buildOption('Wifi Router'),
               ],
@@ -146,15 +152,19 @@ class _UpgradeScreenState extends State<UpgradeScreen> {
 
             // Content Cards
             Expanded(
-              child: ListView.builder(
-                itemCount: products.length, // Use the length of the product list
-                itemBuilder: (context, index) {
-                  return buildCard(
-                    products[index]['title']!,
-                    products[index]['price']!,
-                    context,
-                  );
-                },
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: ListView.builder(
+                  itemCount:
+                      products.length, // Use the length of the product list
+                  itemBuilder: (context, index) {
+                    return buildCard(
+                      products[index]['title']!,
+                      products[index]['price']!,
+                      context,
+                    );
+                  },
+                ),
               ),
             ),
           ],
@@ -170,7 +180,7 @@ class _UpgradeScreenState extends State<UpgradeScreen> {
     return GestureDetector(
       onTap: () {
         setState(() {
-          activeOption = option; 
+          activeOption = option;
         });
       },
       child: Column(
@@ -180,8 +190,12 @@ class _UpgradeScreenState extends State<UpgradeScreen> {
             style: TextStyle(
               fontFamily: 'Poppins',
               fontSize: 16,
-              color: isActive ? Colors.blue : Colors.grey, // Active is blue, inactive is grey
-              fontWeight: isActive ? FontWeight.w500 : FontWeight.w400, // Bold if active
+              color: isActive
+                  ? Colors.blue
+                  : Colors.grey, // Active is blue, inactive is grey
+              fontWeight: isActive
+                  ? FontWeight.w500
+                  : FontWeight.w400, // Bold if active
             ),
           ),
           if (isActive)
@@ -200,7 +214,7 @@ class _UpgradeScreenState extends State<UpgradeScreen> {
   }
 
   // Widget to build product cards with animated scaling effect on tap
- Widget buildCard(String title, String subtitle, BuildContext context) {
+  Widget buildCard(String title, String subtitle, BuildContext context) {
     return InkWell(
       onTap: () {
         // Navigasi ke layar detail produk saat card di klik
