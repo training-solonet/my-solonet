@@ -74,6 +74,14 @@ class _HomePageContentState extends State<HomePageContent> {
                   });
                 },
                 itemBuilder: (context, index) {
+                  // Determine the image based on the index
+                  String imagePath;
+                  if (index == 0 || index == 2 || index == 4) {
+                    imagePath = 'assets/images/Promo Free Pemasangan.png';
+                  } else {
+                    imagePath = 'assets/images/Promoalat.png';
+                  }
+
                   return GestureDetector(
                     onTap: () {
                       Navigator.push(
@@ -90,11 +98,10 @@ class _HomePageContentState extends State<HomePageContent> {
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: ClipRRect(
-                        borderRadius: BorderRadius.circular(
-                            10),
-                        child: Image.network(
-                          'https://via.placeholder.com/280x157',
-                          fit: BoxFit.cover, 
+                        borderRadius: BorderRadius.circular(10),
+                        child: Image.asset(
+                          imagePath, // Display the appropriate image based on the index
+                          fit: BoxFit.cover,
                         ),
                       ),
                     ),
