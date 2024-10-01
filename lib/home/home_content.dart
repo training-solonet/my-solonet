@@ -96,7 +96,7 @@ class _HomePageContentState extends State<HomePageContent> {
                     },
                     child: Container(
                       width: 280, // Lebar kontainer
-                      margin: const EdgeInsets.only(right: 10),
+                      margin: const EdgeInsets.symmetric(horizontal: 5),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(10),
                       ),
