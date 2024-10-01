@@ -1,5 +1,7 @@
+import 'dart:async'; // Required for Timer
 import 'package:flutter/material.dart';
 import 'package:mysolonet/upgrade/detail_product_screen.dart';
+import 'package:mysolonet/promo/detail_promo.dart';
 
 class UpgradeScreen extends StatefulWidget {
   const UpgradeScreen({Key? key}) : super(key: key);
@@ -22,6 +24,41 @@ class _UpgradeScreenState extends State<UpgradeScreen> {
     {'title': 'FO Up To 50 Mbps', 'price': 'Rp 600.000/bulan'},
   ];
 
+  final PageController _pageController = PageController(viewportFraction: 0.9);
+  late Timer _timer;
+  int _currentPage = 0;
+
+   @override
+  void initState() {
+    super.initState();
+    _timer = Timer.periodic(const Duration(seconds: 3), (timer) {
+      if (_currentPage < 4) {
+        _currentPage++;
+      } else {
+        Future.delayed(const Duration(seconds: 0), () {
+          _currentPage = 0;
+          _pageController.animateToPage(
+            _currentPage,
+            duration: const Duration(milliseconds: 750),
+            curve: Curves.easeInOutCubic,
+          );
+        });
+        return;
+      }
+      _pageController.animateToPage(
+        _currentPage,
+        duration: const Duration(seconds: 2),
+        curve: Curves.easeInOutCubic,
+      );
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -43,18 +80,50 @@ class _UpgradeScreenState extends State<UpgradeScreen> {
           crossAxisAlignment: CrossAxisAlignment.start, // Align all items to the start
           children: [
             const SizedBox(height: 10),
-            SizedBox(
+            
+             SizedBox(
               height: 130,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: 5, // Number of items in the horizontal list
+              child: PageView.builder(
+                controller: _pageController,
+                itemCount: 5,
+                onPageChanged: (index) {
+                  setState(() {
+                    _currentPage = index;
+                  });
+                },
                 itemBuilder: (context, index) {
-                  return Container(
-                    width: 280, // Width of each item
-                    margin: const EdgeInsets.only(right: 10),
-                    decoration: BoxDecoration(
-                      color: Colors.grey, // Background color for each item
-                      borderRadius: BorderRadius.circular(10),
+                  // Determine the image based on the index
+                  String imagePath;
+                  if (index == 0 || index == 2 || index == 4) {
+                    imagePath = 'assets/images/Promo Free Pemasangan.png';
+                  } else {
+                    imagePath = 'assets/images/Promoalat.png';
+                  }
+
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => DetailPromoScreen(
+                            imagePath: imagePath, // Pass imagePath to DetailPromoScreen
+                          ),
+                        ),
+                      );
+                    },
+                    child: Container(
+                      width: 280, // Lebar kontainer
+                    margin: EdgeInsets.symmetric(horizontal: 5),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(10),
+                        child: Image.asset(
+                          imagePath, // Display the appropriate image based on the index
+                          fit: BoxFit.cover,
+                        ),
+                      ),
                     ),
                   );
                 },
@@ -101,7 +170,7 @@ class _UpgradeScreenState extends State<UpgradeScreen> {
     return GestureDetector(
       onTap: () {
         setState(() {
-          activeOption = option; // Set the active option on tap
+          activeOption = option; 
         });
       },
       child: Column(
@@ -130,7 +199,8 @@ class _UpgradeScreenState extends State<UpgradeScreen> {
     );
   }
 
-  Widget buildCard(String title, String subtitle, BuildContext context) {
+  // Widget to build product cards with animated scaling effect on tap
+ Widget buildCard(String title, String subtitle, BuildContext context) {
     return InkWell(
       onTap: () {
         // Navigasi ke layar detail produk saat card di klik

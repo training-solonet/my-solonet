@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
 class DetailPromoScreen extends StatefulWidget {
-  const DetailPromoScreen({Key? key}) : super(key: key);
+  final String imagePath; // Accept the image path as a parameter
+
+  const DetailPromoScreen({Key? key, required this.imagePath}) : super(key: key);
 
   @override
   _DetailPromoScreenState createState() => _DetailPromoScreenState();
@@ -28,7 +30,7 @@ class _DetailPromoScreenState extends State<DetailPromoScreen> {
             color: Colors.white,
           ),
           onPressed: () {
-            Navigator.pop(context); 
+            Navigator.pop(context);
           },
         ),
         backgroundColor: Colors.blueAccent,
@@ -40,8 +42,8 @@ class _DetailPromoScreenState extends State<DetailPromoScreen> {
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(10),
-              child: Image.network(
-                'https://via.placeholder.com/150',
+              child: Image.asset(
+                widget.imagePath, // Use the imagePath passed from HomePageContent
                 height: 150,
                 width: double.infinity,
                 fit: BoxFit.cover,
@@ -99,7 +101,9 @@ class _DetailPromoScreenState extends State<DetailPromoScreen> {
                         fontWeight: FontWeight.w500,
                       ),
                     ),
-                    Icon(_isExpanded ? Icons.arrow_drop_up : Icons.arrow_drop_down),
+                    Icon(_isExpanded
+                        ? Icons.arrow_drop_up
+                        : Icons.arrow_drop_down),
                   ],
                 ),
               ),
