@@ -36,69 +36,69 @@ class _SignUpScreenState extends State<SignUpScreen> {
     super.dispose();
   }
 
-  // Future<void> _createUser(BuildContext context) async {
-  //   setState(() {
-  //     isLoading = true;
-  //   });
+  Future<void> _createUser(BuildContext context) async {
+    setState(() {
+      isLoading = true;
+    });
 
-  //   // final url = Uri.parse(baseUrl + "register");
-  //   final headers = {
-  //     "Access-Control-Allow-Origin": "*",
-  //     'Content-Type': 'application/json',
-  //     'Accept': '*/*',
-  //   };
-  //   final body = json.encode({
-  //     "name": _fullnameController.text,
-  //     "phone_number": "62" + _whatsappController.text,
-  //     "email": _emailController.text,
-  //     "alamat": _addressController.text,
-  //     "password": _passwordController.text,
-  //     "confirm_password": _confirmpasswordController.text
-  //   });
+    final url = Uri.parse(baseUrl + "register");
+    final headers = {
+      "Access-Control-Allow-Origin": "*",
+      'Content-Type': 'application/json',
+      'Accept': '*/*',
+    };
+    final body = json.encode({
+      "name": _fullnameController.text,
+      "phone_number": "62" + _whatsappController.text,
+      "email": _emailController.text,
+      "alamat": _addressController.text,
+      "password": _passwordController.text,
+      "confirm_password": _confirmpasswordController.text
+    });
 
-  //   try {
-  //     // final response = await http.post(url, headers: headers, body: body);
+    try {
+      final response = await http.post(url, headers: headers, body: body);
 
-  //     if (response.statusCode == 201) {
-  //       final responseData = json.decode(response.body);
-  //       print(responseData['message']);
+      if (response.statusCode == 201) {
+        final responseData = json.decode(response.body);
+        print(responseData['message']);
 
-  //       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-  //         content: Text(responseData['message']),
-  //       ));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(responseData['message']),
+        ));
 
-  //       // Navigator.pushReplacement(
-  //       //   context,
-  //       //   MaterialPageRoute(
-  //       //       builder: (context) => OtpScreen( phone: _whatsappController.text )),
-  //       // );
-  //       print("Navigating to OTP Screen with phone: ${_whatsappController.text}");
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+              builder: (context) => OtpScreen( phone: _whatsappController.text )),
+        );
+        print("Navigating to OTP Screen with phone: ${_whatsappController.text}");
 
-  //       setState(() {
-  //         isLoading = false;
-  //       });
-  //     } else {
-  //       final responseData = json.decode(response.body);
+        setState(() {
+          isLoading = false;
+        });
+      } else {
+        final responseData = json.decode(response.body);
 
-  //       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-  //         content: Text(responseData['message']),
-  //       ));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(responseData['message']),
+        ));
 
-  //       print(responseData['message']);
-  //       setState(() {
-  //         isLoading = false;
-  //       });
-  //     }
-  //   } catch (e) {
-  //     setState(() {
-  //       isLoading = false;
-  //     });
+        print(responseData['message']);
+        setState(() {
+          isLoading = false;
+        });
+      }
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+      });
 
-  //     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-  //       content: Text('Error: $e'),
-  //     ));
-  //   }
-  // }
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('Error: $e'),
+      ));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -344,7 +344,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       onPressed: () {
         if (_formKey.currentState!.validate()) {
           _formKey.currentState!.save();
-          // _createUser(context);
+          _createUser(context);
         }
       },
       style: ElevatedButton.styleFrom(
