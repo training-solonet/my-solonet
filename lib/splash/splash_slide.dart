@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:mysolonet/home/login.dart';
+import 'package:mysolonet/auth/login.dart';
 import 'slide_page.dart';
 
 class SplashSlide extends StatefulWidget {

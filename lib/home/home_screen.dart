@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mysolonet/constants.dart';
-import 'package:mysolonet/home/login.dart';
+import 'package:mysolonet/auth/login.dart';
 import 'package:mysolonet/help/help_screen.dart';
 import 'package:mysolonet/profile/profile_screen.dart';
 import 'package:mysolonet/home/home_content.dart';
@@ -55,6 +55,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: _selectedIndex == 0
           ? AppBar(
+              automaticallyImplyLeading: false,
               title: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
