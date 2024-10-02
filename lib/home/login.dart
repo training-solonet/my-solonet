@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mysolonet/home/register.dart';
 import 'package:mysolonet/home/home_screen.dart';
+import 'package:mysolonet/forgot_pass/forgot_password.dart';
 
 class SignInScreen extends StatelessWidget {
   final _formKey = GlobalKey<FormState>();
@@ -108,7 +109,13 @@ class SignInScreen extends StatelessWidget {
                         Align(
                           alignment: Alignment.centerRight,
                           child: TextButton(
-                            onPressed: () {},
+                            onPressed: () {
+                               Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => ForgotPasswordScreen()),
+                              );
+                            },
                             child: const Text('Forgot Password?',
                                 style: TextStyle(
                                   fontSize: 10.5,
