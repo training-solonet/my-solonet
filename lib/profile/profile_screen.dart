@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mysolonet/home/login.dart';
+import 'package:mysolonet/auth/login.dart';
 import 'change_profile.dart';
 
 class ProfileScreen extends StatelessWidget {
@@ -9,6 +9,7 @@ class ProfileScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: const Text(
           'Profile',
           style: TextStyle(
