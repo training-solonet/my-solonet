@@ -55,6 +55,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: _selectedIndex == 0
           ? AppBar(
+              automaticallyImplyLeading: false,
               title: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [

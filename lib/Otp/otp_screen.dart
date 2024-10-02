@@ -1,8 +1,15 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:mysolonet/auth/login.dart';
+import 'package:mysolonet/constants.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class OtpScreen extends StatefulWidget {
-  const OtpScreen({super.key});
+  final String phone;
+
+  const OtpScreen({super.key, required this.phone});
 
   @override
   _OtpScreenState createState() => _OtpScreenState();
@@ -13,8 +20,35 @@ class _OtpScreenState extends State<OtpScreen> {
       List.generate(6, (index) => TextEditingController());
   final List<FocusNode> _focusNodes = List.generate(6, (index) => FocusNode());
 
+  bool isLoading = false;
+  bool isResendOtp = false;
+  int _start = 30;
+  Timer? _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    _startTimer();
+  }
+
+  void _startTimer() {
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (_start == 0) {
+        setState(() {
+          isResendOtp = true;
+        });
+        timer.cancel();
+      } else {
+        setState(() {
+          _start--;
+        });
+      }
+    });
+  }
+
   @override
   void dispose() {
+    _timer?.cancel();
     for (var controller in _controllers) {
       controller.dispose();
     }
@@ -29,19 +63,86 @@ class _OtpScreenState extends State<OtpScreen> {
       for (int i = 0; i < 6; i++) {
         _controllers[i].text = pastedText[i];
       }
-      _focusNodes.last.requestFocus(); // Pindah ke field terakhir
+      _focusNodes.last.requestFocus();
     }
   }
+
+  Future<void> _submitOtp(BuildContext context) async {
+    setState(() {
+      isLoading = true;
+    });
+    print(widget.phone);
+
+    String otp = _controllers.map((controller) => controller.text).join();
+
+    final url = Uri.parse(baseUrl + "verify-otp");
+    final headers = {
+      "Access-Control-Allow-Origin": "*",
+      'Content-Type': 'application/json',
+      'Accept': '*/*',
+    };
+    final body = json.encode({
+      "phone_number": "62" + widget.phone,
+      "otp": otp,
+    });
+
+    try {
+      final response = await http.post(url, headers: headers, body: body);
+
+      if (response.statusCode == 200) {
+        final responseData = json.decode(response.body);
+        print(responseData['message']);
+
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(responseData['message']),
+        ));
+
+        setState(() {
+          isLoading = false;
+        });
+
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => SignInScreen()),
+        );
+      } else {
+        final responseData = json.decode(response.body);
+        print(responseData['message']);
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(responseData['message']),
+        ));
+
+        setState(() {
+          isLoading = false;
+        });
+      }
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('Error: $e'),
+      ));
+    }
+  }
+
+  // void _handleResendOtp() {
+  //   _startTimer();
+  //   setState(() {
+  //     isResendOtp = false;
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9FA),
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(56.0), // tinggi AppBar
+        preferredSize: Size.fromHeight(56.0),
         child: Container(
-          height: 56.0, // sama dengan tinggi AppBar
-          color: Colors.transparent, // menjadikan AppBar tidak terlihat
+          height: 56.0,
+          color: Colors.transparent,
         ),
       ),
       body: Center(
@@ -74,7 +175,7 @@ class _OtpScreenState extends State<OtpScreen> {
                 "Silakan masukkan kode 6 digit OTP yang telah dikirimkan melalui nomor Whatsapp anda",
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  fontFamily: 'Poppins', // Apply Poppins font
+                  fontFamily: 'Poppins',
                   fontSize: 12,
                   fontWeight: FontWeight.bold,
                   color: Color(0xFF666666),
@@ -88,12 +189,15 @@ class _OtpScreenState extends State<OtpScreen> {
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {
-                  String otp = _controllers.map((controller) => controller.text).join();
+                  String otp =
+                      _controllers.map((controller) => controller.text).join();
+                  _submitOtp(context);
                   print("OTP entered: $otp");
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF00BCD4),
-                  padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(5),
                   ),
@@ -116,14 +220,38 @@ class _OtpScreenState extends State<OtpScreen> {
                   color: Color(0xFF666666),
                 ),
               ),
-              const Text(
-                "Minta kode baru dalam 00:30 detik",
+              const SizedBox(height: 5),
+              Text(
+                isResendOtp
+                    ? 'Minta kode baru sekarang'
+                    : 'Minta kode baru dalam 00:${_start.toString().padLeft(2, '0')} detik',
                 style: TextStyle(
                   fontFamily: 'Poppins',
                   fontSize: 14,
-                  color: Color(0xFF333333),
+                  color: isResendOtp ? Colors.blue : Color(0xFF333333),
                 ),
               ),
+              const SizedBox(height: 10),
+              if (isResendOtp)
+                ElevatedButton(
+                  onPressed: () => {},
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF00BCD4),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 30, vertical: 10),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(5),
+                    ),
+                  ),
+                  child: const Text(
+                    "Resend OTP",
+                    style: TextStyle(
+                      fontFamily: 'Poppins',
+                      fontSize: 16,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
             ],
           ),
         ),
