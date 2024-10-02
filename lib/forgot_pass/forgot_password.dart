@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mysolonet/forgot_pass/new_password.dart';
-import 'package:mysolonet/home/register.dart';
+import 'package:mysolonet/auth/register.dart';
 
 class ForgotPasswordScreen extends StatelessWidget {
   const ForgotPasswordScreen({super.key});

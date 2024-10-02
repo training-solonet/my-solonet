@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mysolonet/home/login.dart';
+import 'package:mysolonet/auth/login.dart';
 
 class NewPasswordScreen extends StatelessWidget {
   final _formKey = GlobalKey<FormState>();

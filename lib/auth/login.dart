@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:mysolonet/home/register.dart';
+import 'package:mysolonet/auth/register.dart';
 import 'package:mysolonet/home/home_screen.dart';
-import 'package:mysolonet/forgot_pass/forgot_password.dart';
 
 class SignInScreen extends StatelessWidget {
   final _formKey = GlobalKey<FormState>();
@@ -44,7 +43,7 @@ class SignInScreen extends StatelessWidget {
                           child: Align(
                             alignment: Alignment.centerLeft,
                             child: Text(
-                              'Email / Whatsapp Number',
+                              'Email',
                               style: TextStyle(
                                 color: Colors.black87,
                                 fontSize: 14.5,
@@ -57,7 +56,8 @@ class SignInScreen extends StatelessWidget {
                         const SizedBox(height: 6.0),
                         TextFormField(
                           decoration: const InputDecoration(
-                            hintText: 'Enter Email / Whatsapp Number',
+                            hintText: 'Enter Email',
+                            hintStyle: TextStyle(color: Colors.grey, fontFamily: 'Poppins', fontSize: 13.5),
                             filled: true,
                             fillColor: Color(0xFFF5FCF9),
                             contentPadding: EdgeInsets.symmetric(
@@ -68,7 +68,7 @@ class SignInScreen extends StatelessWidget {
                                   BorderRadius.all(Radius.circular(50)),
                             ),
                           ),
-                          keyboardType: TextInputType.url,
+                          keyboardType: TextInputType.emailAddress,
                           onSaved: (email) {},
                         ),
                         const SizedBox(height: 16.0),
@@ -92,6 +92,7 @@ class SignInScreen extends StatelessWidget {
                           obscureText: true,
                           decoration: const InputDecoration(
                             hintText: 'Enter Password',
+                            hintStyle: TextStyle(color: Colors.grey, fontFamily: 'Poppins', fontSize: 13.5),
                             filled: true,
                             fillColor: Color(0xFFF5FCF9),
                             contentPadding: EdgeInsets.symmetric(
@@ -109,13 +110,7 @@ class SignInScreen extends StatelessWidget {
                         Align(
                           alignment: Alignment.centerRight,
                           child: TextButton(
-                            onPressed: () {
-                               Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => ForgotPasswordScreen()),
-                              );
-                            },
+                            onPressed: () {},
                             child: const Text('Forgot Password?',
                                 style: TextStyle(
                                   fontSize: 10.5,
