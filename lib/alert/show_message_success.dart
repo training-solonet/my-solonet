@@ -27,7 +27,9 @@ void showSuccessMessage(BuildContext context, String message) {
     backgroundColor: Colors.green,
     behavior: SnackBarBehavior.floating, // Membuat SnackBar mengambang
     margin: const EdgeInsets.only(
-      bottom: 40.0, // Atur jarak dari bawah
+      bottom: 40.0,
+      left: 20.0,
+      right: 20.0, // Atur jarak dari bawah
     ),
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(30), // Memberikan border radius

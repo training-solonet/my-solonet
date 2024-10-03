@@ -170,7 +170,6 @@ class SignInScreen extends StatelessWidget {
                               //   MaterialPageRoute(
                               //       builder: (context) => HomeScreen()),
                               // );
-                              showFailedMessage(context, "Login berhasil");
                             }
                           },
                           style: ElevatedButton.styleFrom(
