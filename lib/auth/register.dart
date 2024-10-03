@@ -23,7 +23,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController _confirmpasswordController =
       TextEditingController();
 
-  bool isLoading = false;
+  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -38,7 +38,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   Future<void> _createUser(BuildContext context) async {
     setState(() {
-      isLoading = true;
+      _isLoading = true;
     });
 
     final url = Uri.parse(baseUrl + "register");
@@ -75,7 +75,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         print("Navigating to OTP Screen with phone: ${_whatsappController.text}");
 
         setState(() {
-          isLoading = false;
+          _isLoading = false;
         });
       } else {
         final responseData = json.decode(response.body);
@@ -86,12 +86,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
         print(responseData['message']);
         setState(() {
-          isLoading = false;
+          _isLoading = false;
         });
       }
     } catch (e) {
       setState(() {
-        isLoading = false;
+        _isLoading = false;
       });
 
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -355,7 +355,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         shape: const StadiumBorder(),
       ),
       child: Text(
-        isLoading ? "Loading..." : "Register",
+        _isLoading ? "Loading..." : "Register",
         style: TextStyle(
           fontFamily: 'Poppins',
           fontWeight: FontWeight.bold,

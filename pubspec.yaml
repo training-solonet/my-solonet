@@ -65,7 +65,6 @@ dev_dependencies:
 flutter:
   assets:
   - assets/images/
-  - assets/Animation - 1727243852673.json
 
 
   # Suggested code may be subject to a license. Learn more: ~LicenseLog:3082195603.
