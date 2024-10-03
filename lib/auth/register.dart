@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mysolonet/alert/show_message_failed.dart';
-import 'package:mysolonet/alert/show_message_success.dart';
 import 'package:mysolonet/auth/login.dart';
 import 'package:mysolonet/Otp/otp_screen.dart';
 import 'package:mysolonet/constants.dart';
@@ -61,12 +60,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
     try {
       final response = await http.post(url, headers: headers, body: body);
 
-      if (response.statusCode == 201) {
+      if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
         print(responseData['message']);
-
-       showSuccessMessage(context, responseData['message']);
-
 
         Navigator.pushReplacement(
           context,
@@ -83,7 +79,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
         showFailedMessage(context, responseData['message']);
 
-
         print(responseData['message']);
         setState(() {
           _isLoading = false;
@@ -95,7 +90,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
       });
 
       showFailedMessage(context, '$e');
-
     }
   }
 

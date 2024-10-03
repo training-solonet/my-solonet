@@ -22,9 +22,10 @@ class _OtpScreenState extends State<OtpScreen> {
       List.generate(6, (index) => TextEditingController());
   final List<FocusNode> _focusNodes = List.generate(6, (index) => FocusNode());
 
-  bool isLoading = false;
-  bool isResendOtp = false;
-  int _start = 30;
+  bool _isLoading = false;
+  bool _isResendOtp = false;
+  bool _isLoadingResend = false;
+  int _start = 60;
   Timer? _timer;
 
   @override
@@ -37,7 +38,7 @@ class _OtpScreenState extends State<OtpScreen> {
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (_start == 0) {
         setState(() {
-          isResendOtp = true;
+          _isResendOtp = true;
         });
         timer.cancel();
       } else {
@@ -71,7 +72,7 @@ class _OtpScreenState extends State<OtpScreen> {
 
   Future<void> _submitOtp(BuildContext context) async {
     setState(() {
-      isLoading = true;
+      _isLoading = true;
     });
     print(widget.phone);
 
@@ -97,7 +98,7 @@ class _OtpScreenState extends State<OtpScreen> {
         showSuccessMessage(context, responseData['message']);
 
         setState(() {
-          isLoading = false;
+          _isLoading = false;
         });
 
         Navigator.pushReplacement(
@@ -110,24 +111,64 @@ class _OtpScreenState extends State<OtpScreen> {
         showFailedMessage(context, responseData['message']);
 
         setState(() {
-          isLoading = false;
+          _isLoading = false;
         });
       }
     } catch (e) {
       setState(() {
-        isLoading = false;
+        _isLoading = false;
       });
 
       showFailedMessage(context, "An error occurred while sending the OTP");
     }
   }
 
-  // void _handleResendOtp() {
-  //   _startTimer();
-  //   setState(() {
-  //     isResendOtp = false;
-  //   });
-  // }
+  void _handleResendOtp() async {
+    setState(() {
+      _start = 60;
+      _isResendOtp = false;
+      _isLoadingResend = true;
+    });
+    _startTimer();
+
+    final url = Uri.parse(baseUrl + "send-otp");
+    final headers = {
+      "Access-Control-Allow-Origin": "*",
+      'Content-Type': 'application/json',
+      'Accept': '*/*',
+    };
+    final body = json.encode({
+      "phone_number": "62" + widget.phone,
+    });
+
+    try {
+      final response = await http.post(url, headers: headers, body: body);
+
+      if (response.statusCode == 200) {
+        final responseData = json.decode(response.body);
+        print(responseData['message']);
+        showSuccessMessage(context, responseData['message']);
+
+        setState(() {
+          _isLoading = false;
+        });
+      } else {
+        final responseData = json.decode(response.body);
+        print(responseData['message']);
+        showFailedMessage(context, responseData['message']);
+
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+
+      showFailedMessage(context, "An error occurred while sending the OTP");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -197,8 +238,8 @@ class _OtpScreenState extends State<OtpScreen> {
                     borderRadius: BorderRadius.circular(5),
                   ),
                 ),
-                child: const Text(
-                  "Verifikasi",
+                child: Text(
+                  _isLoading ? 'Loading...' : 'Submit',
                   style: TextStyle(
                     fontFamily: 'Poppins',
                     fontSize: 16,
@@ -217,19 +258,21 @@ class _OtpScreenState extends State<OtpScreen> {
               ),
               const SizedBox(height: 5),
               Text(
-                isResendOtp
+                _isResendOtp
                     ? 'Minta kode baru sekarang'
                     : 'Minta kode baru dalam 00:${_start.toString().padLeft(2, '0')} detik',
                 style: TextStyle(
                   fontFamily: 'Poppins',
                   fontSize: 14,
-                  color: isResendOtp ? Colors.blue : Color(0xFF333333),
+                  color: _isResendOtp ? Colors.blue : Color(0xFF333333),
                 ),
               ),
               const SizedBox(height: 10),
-              if (isResendOtp)
+              if (_isResendOtp)
                 ElevatedButton(
-                  onPressed: () => {},
+                  onPressed: () => {
+                    _handleResendOtp(),
+                  },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF00BCD4),
                     padding: const EdgeInsets.symmetric(
@@ -238,8 +281,8 @@ class _OtpScreenState extends State<OtpScreen> {
                       borderRadius: BorderRadius.circular(5),
                     ),
                   ),
-                  child: const Text(
-                    "Resend OTP",
+                  child: Text(
+                    _isLoadingResend ? "Loading..." : "Resend OTP",
                     style: TextStyle(
                       fontFamily: 'Poppins',
                       fontSize: 16,

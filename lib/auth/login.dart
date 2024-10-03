@@ -1,15 +1,70 @@
 import 'package:flutter/material.dart';
 import 'package:mysolonet/alert/show_message_failed.dart';
 import 'package:mysolonet/alert/show_message_success.dart';
-
 import 'package:mysolonet/auth/register.dart';
+import 'package:mysolonet/constants.dart';
 import 'package:mysolonet/home/home_screen.dart';
 import 'package:mysolonet/forgot_pass/forgot_password.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
-class SignInScreen extends StatelessWidget {
+class SignInScreen extends StatefulWidget {
+  const SignInScreen({super.key});
+
+  @override
+  _SignInScreenState createState() => _SignInScreenState();
+}
+
+class _SignInScreenState extends State<SignInScreen> {
   final _formKey = GlobalKey<FormState>();
 
-  SignInScreen({super.key});
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+
+  bool _isLoading = false;
+
+  Future<void> _loginUser(BuildContext context) async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    final url = Uri.parse(baseUrl + "login");
+    final headers = {
+      "Access-Control-Allow-Origin": "*",
+      'Content-Type': 'application/json',
+      'Accept': '*/*',
+    };
+    final body = json.encode({
+      "email": _emailController.text,
+      "password": _passwordController.text,
+    });
+
+    try {
+      final response = await http.post(
+        url,
+        headers: headers,
+        body: body,
+      );
+
+      if (response.statusCode == 200) {
+        final responseData = json.decode(response.body);
+        showSuccessMessage(context, responseData['message']);
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const HomeScreen()),
+        );
+      } else {
+        final responseData = json.decode(response.body)['message'];
+        showFailedMessage(context, responseData);
+      }
+    } catch (e) {
+      showFailedMessage(context, 'An error occurred: $e');
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -59,9 +114,13 @@ class SignInScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: 6.0),
                         TextFormField(
+                          controller: _emailController,
                           decoration: const InputDecoration(
                             hintText: 'Enter Email',
-                            hintStyle: TextStyle(color: Colors.grey, fontFamily: 'Poppins', fontSize: 13.5),
+                            hintStyle: TextStyle(
+                                color: Colors.grey,
+                                fontFamily: 'Poppins',
+                                fontSize: 13.5),
                             filled: true,
                             fillColor: Color(0xFFF5FCF9),
                             contentPadding: EdgeInsets.symmetric(
@@ -73,7 +132,12 @@ class SignInScreen extends StatelessWidget {
                             ),
                           ),
                           keyboardType: TextInputType.emailAddress,
-                          onSaved: (email) {},
+                          validator: (email) {
+                            if (email!.isEmpty) {
+                              return 'Please enter email';
+                            }
+                            return null;
+                          },
                         ),
                         const SizedBox(height: 16.0),
                         const Padding(
@@ -93,10 +157,14 @@ class SignInScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: 6.0),
                         TextFormField(
+                          controller: _passwordController,
                           obscureText: true,
                           decoration: const InputDecoration(
                             hintText: 'Enter Password',
-                            hintStyle: TextStyle(color: Colors.grey, fontFamily: 'Poppins', fontSize: 13.5),
+                            hintStyle: TextStyle(
+                                color: Colors.grey,
+                                fontFamily: 'Poppins',
+                                fontSize: 13.5),
                             filled: true,
                             fillColor: Color(0xFFF5FCF9),
                             contentPadding: EdgeInsets.symmetric(
@@ -107,8 +175,11 @@ class SignInScreen extends StatelessWidget {
                                   BorderRadius.all(Radius.circular(50)),
                             ),
                           ),
-                          onSaved: (password) {
-                            // Simpan data password
+                          validator: (password) {
+                            if (password!.isEmpty) {
+                              return 'Please enter password';
+                            }
+                            return null;
                           },
                         ),
                         Align(
@@ -118,7 +189,8 @@ class SignInScreen extends StatelessWidget {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => ForgotPasswordScreen()),
+                                    builder: (context) =>
+                                        ForgotPasswordScreen()),
                               );
                             },
                             child: const Text('Forgot Password?',
@@ -137,7 +209,7 @@ class SignInScreen extends StatelessWidget {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => SignUpScreen()),
+                                    builder: (context) => const SignUpScreen()),
                               );
                             },
                             child: const Text.rich(
@@ -164,12 +236,7 @@ class SignInScreen extends StatelessWidget {
                         ElevatedButton(
                           onPressed: () {
                             if (_formKey.currentState!.validate()) {
-                              _formKey.currentState!.save();
-                              // Navigator.pushReplacement(
-                              //   context,
-                              //   MaterialPageRoute(
-                              //       builder: (context) => HomeScreen()),
-                              // );
+                              _loginUser(context);
                             }
                           },
                           style: ElevatedButton.styleFrom(
@@ -179,8 +246,8 @@ class SignInScreen extends StatelessWidget {
                             minimumSize: const Size(double.infinity, 48),
                             shape: const StadiumBorder(),
                           ),
-                          child: const Text(
-                            "Login",
+                          child: Text(
+                            _isLoading ? "Loading..." : "Login",
                             style: TextStyle(
                               fontFamily: 'Poppins',
                               fontWeight: FontWeight.bold,
@@ -212,8 +279,6 @@ class SignInScreen extends StatelessWidget {
                           ),
                           icon: Image.asset(
                             "assets/images/google.png",
-                            bundle: null,
-                            scale: 1.0,
                             height: 24,
                           ),
                           label: const Text(
@@ -223,7 +288,6 @@ class SignInScreen extends StatelessWidget {
                               fontWeight: FontWeight.w600,
                             ),
                           ),
-                          
                         ),
                       ],
                     ),
