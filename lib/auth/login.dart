@@ -165,11 +165,12 @@ class SignInScreen extends StatelessWidget {
                           onPressed: () {
                             if (_formKey.currentState!.validate()) {
                               _formKey.currentState!.save();
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => HomeScreen()),
-                              );
+                              // Navigator.pushReplacement(
+                              //   context,
+                              //   MaterialPageRoute(
+                              //       builder: (context) => HomeScreen()),
+                              // );
+                              showFailedMessage(context, "Login berhasil");
                             }
                           },
                           style: ElevatedButton.styleFrom(

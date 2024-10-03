@@ -3,16 +3,17 @@ import 'package:flutter/material.dart';
 void showSuccessMessage(BuildContext context, String message) {
   final snackBar = SnackBar(
     content: Row(
+      mainAxisSize: MainAxisSize.min, // Sesuaikan panjang row dengan konten
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Icon(
-          Icons.check_circle, // Menggunakan ikon checklist
-          color: Colors.white, // Warna putih untuk ikon
-          size: 20, // Ukuran ikon
+          Icons.check_circle,  // Menggunakan ikon checklist
+          color: Colors.white,  // Warna putih untuk ikon
+          size: 20,  // Ukuran ikon
         ),
         const SizedBox(width: 10), // Jarak antara ikon dan teks
         Text(
-          message,
+          message, // Respon dari API
           style: TextStyle(
             fontFamily: 'Poppins',
             fontSize: 13,
@@ -27,13 +28,11 @@ void showSuccessMessage(BuildContext context, String message) {
     behavior: SnackBarBehavior.floating, // Membuat SnackBar mengambang
     margin: const EdgeInsets.only(
       bottom: 40.0, // Atur jarak dari bawah
-      left: 90.0, //atur sebelah kiri
-      right: 90.0, //atur sebelah kanan
     ),
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(30), // Memberikan border radius
     ),
-    padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 30.0),
+    padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 20.0),
     duration: const Duration(seconds: 3), // Durasi tampil SnackBar
   );
 
