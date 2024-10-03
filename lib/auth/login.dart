@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:mysolonet/alert/show_message_failed.dart';
+import 'package:mysolonet/alert/show_message_success.dart';
+
 import 'package:mysolonet/auth/register.dart';
 import 'package:mysolonet/home/home_screen.dart';
 import 'package:mysolonet/forgot_pass/forgot_password.dart';

@@ -1,8 +1,10 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:mysolonet/alert/show_message_failed.dart';
 import 'package:mysolonet/auth/login.dart';
 import 'package:mysolonet/constants.dart';
+import 'package:mysolonet/alert/show_message_success.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -92,10 +94,7 @@ class _OtpScreenState extends State<OtpScreen> {
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
         print(responseData['message']);
-
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(responseData['message']),
-        ));
+        showSuccessMessage(context, responseData['message']);
 
         setState(() {
           isLoading = false;
@@ -108,9 +107,7 @@ class _OtpScreenState extends State<OtpScreen> {
       } else {
         final responseData = json.decode(response.body);
         print(responseData['message']);
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(responseData['message']),
-        ));
+        showFailedMessage(context, responseData['message']);
 
         setState(() {
           isLoading = false;
@@ -121,9 +118,7 @@ class _OtpScreenState extends State<OtpScreen> {
         isLoading = false;
       });
 
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('Error: $e'),
-      ));
+      showFailedMessage(context, "An error occurred while sending the OTP");
     }
   }
 

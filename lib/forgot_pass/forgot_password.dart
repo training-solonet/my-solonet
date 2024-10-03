@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mysolonet/alert/show_message_failed.dart';
 import 'package:mysolonet/forgot_pass/new_password.dart';
 import 'package:mysolonet/auth/register.dart';
 import 'package:mysolonet/constants.dart';
@@ -65,14 +66,10 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
         print(responseData['message']);
 
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(responseData['message']),
-        ));
+        showFailedMessage(context, responseData['message']);
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('Error: $e'),
-      ));
+      showFailedMessage(context, '$e');
     } finally {
       setState(() {
         _isLoading = false;

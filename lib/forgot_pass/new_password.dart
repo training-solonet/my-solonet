@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:mysolonet/alert/show_message_failed.dart';
+import 'package:mysolonet/alert/show_message_success.dart';
 import 'package:mysolonet/auth/login.dart';
 import 'package:mysolonet/constants.dart';
 import 'package:http/http.dart' as http;
@@ -55,9 +57,7 @@ class _NewPasswordState extends State<NewPasswordScreen> {
         final responseData = json.decode(response.body);
         print(responseData['message']);
 
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(responseData['message']),
-        ));
+       showSuccessMessage(context, responseData['message']);
 
         Navigator.pushReplacement(
           context,
@@ -72,9 +72,7 @@ class _NewPasswordState extends State<NewPasswordScreen> {
       } else {
         final responseData = json.decode(response.body);
 
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(responseData['message']),
-        ));
+       showFailedMessage(context, responseData['message']);
 
         print(responseData['message']);
         setState(() {
@@ -86,9 +84,7 @@ class _NewPasswordState extends State<NewPasswordScreen> {
         _isLoading = false;
       });
 
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('Error: $e'),
-      ));
+    showFailedMessage(context, "Failed to change password");
     }
   }
 

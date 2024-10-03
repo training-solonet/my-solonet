@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:mysolonet/alert/show_message_failed.dart';
+import 'package:mysolonet/alert/show_message_success.dart';
 import 'package:mysolonet/auth/login.dart';
 import 'package:mysolonet/Otp/otp_screen.dart';
 import 'package:mysolonet/constants.dart';
@@ -63,9 +65,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
         final responseData = json.decode(response.body);
         print(responseData['message']);
 
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(responseData['message']),
-        ));
+       showSuccessMessage(context, responseData['message']);
+
 
         Navigator.pushReplacement(
           context,
@@ -80,9 +81,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
       } else {
         final responseData = json.decode(response.body);
 
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(responseData['message']),
-        ));
+        showFailedMessage(context, responseData['message']);
+
 
         print(responseData['message']);
         setState(() {
@@ -94,9 +94,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
         _isLoading = false;
       });
 
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('Error: $e'),
-      ));
+      showFailedMessage(context, '$e');
+
     }
   }
 
