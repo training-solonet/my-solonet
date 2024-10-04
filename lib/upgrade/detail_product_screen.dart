@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:mysolonet/alert/required_login_popup.dart';
+import 'package:mysolonet/alert/show_message_success.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 
 class DetailProductScreen extends StatelessWidget {
@@ -6,7 +9,19 @@ class DetailProductScreen extends StatelessWidget {
 
   DetailProductScreen({required this.productTitle});
 
+  Future<void> _actionBuyNow(BuildContext context) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final String? token = prefs.getString('token');
+
+    if (token != null) {
+      showSuccessMessage(context, 'Pembelian Berhasil');
+    } else {
+      requiredLoginPopup(context, 'Please login to continue payment');
+    }
+  }
+
   @override
+
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
@@ -160,7 +175,7 @@ class DetailProductScreen extends StatelessWidget {
                           ),
                         ),
                         onPressed: () {
-                          // Aksi untuk tombol Beli Sekarang
+                          _actionBuyNow(context);
                         },
                         child: const Text(
                           'Beli Sekarang',

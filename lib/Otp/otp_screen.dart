@@ -129,7 +129,7 @@ class _OtpScreenState extends State<OtpScreen> {
       _isResendOtp = false;
       _isLoadingResend = true;
     });
-    _startTimer();
+    _startTimer(); 
 
     final url = Uri.parse(baseUrl + "send-otp");
     final headers = {

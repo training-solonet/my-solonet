@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:mysolonet/home/home_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:mysolonet/splash/splash_slide.dart';
-import 'package:mysolonet/auth/login.dart';
 
 class SplashScreen extends StatefulWidget {
   @override
@@ -35,7 +35,7 @@ class SplashScreenState extends State<SplashScreen> {
       // Jika bukan peluncuran pertama, navigasi ke halaman utama
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => SignInScreen()), // Ganti dengan layar utama Anda
+        MaterialPageRoute(builder: (context) => HomeScreen()), // Ganti dengan layar utama Anda
       );
     }
   }
