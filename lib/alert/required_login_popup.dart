@@ -70,7 +70,7 @@ void requiredLoginPopup(BuildContext context, String desc) {
                     onPressed: () {
                       Navigator.of(context).pushReplacement(
                         MaterialPageRoute(
-                          builder: (context) => const SignInScreen(),
+                          builder: (context) => SignInScreen(),
                         ),
                       );
                     },
