@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mysolonet/alert/show_message_failed.dart';
-import 'package:mysolonet/alert/show_message_success.dart';
 import 'package:mysolonet/auth/login.dart';
 import 'package:mysolonet/Otp/otp_screen.dart';
 import 'package:mysolonet/constants.dart';
