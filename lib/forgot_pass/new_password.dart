@@ -57,12 +57,11 @@ class _NewPasswordState extends State<NewPasswordScreen> {
         final responseData = json.decode(response.body);
         print(responseData['message']);
 
-       showSuccessMessage(context, responseData['message']);
+        showSuccessMessage(context, responseData['message']);
 
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(
-              builder: (context) => SignInScreen()),
+          MaterialPageRoute(builder: (context) => SignInScreen()),
         );
         print("password changed");
 
@@ -72,7 +71,7 @@ class _NewPasswordState extends State<NewPasswordScreen> {
       } else {
         final responseData = json.decode(response.body);
 
-       showFailedMessage(context, responseData['message']);
+        showFailedMessage(context, responseData['message']);
 
         print(responseData['message']);
         setState(() {
@@ -84,161 +83,166 @@ class _NewPasswordState extends State<NewPasswordScreen> {
         _isLoading = false;
       });
 
-    showFailedMessage(context, "Failed to change password");
+      showFailedMessage(context, "Failed to change password");
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      body: LogoWithTitle(
-        title: "Change Password",
-        children: [
-          Form(
-            key: _formKey,
-            child: Column(
-              children: [
-                TextFormField(
-                  obscureText: true,
-                  controller: _passwordController,
-                  decoration: const InputDecoration(
-                    hintText: 'Password',
-                    filled: true,
-                    fillColor: Color(0xFFF5FCF9),
-                    contentPadding: EdgeInsets.symmetric(
-                        horizontal: 16.0 * 1.5, vertical: 16.0),
-                    border: OutlineInputBorder(
-                      borderSide: BorderSide.none,
-                      borderRadius: BorderRadius.all(Radius.circular(50)),
+        backgroundColor: Colors.white,
+        body: GestureDetector(
+          onTap: () {
+            // Close the keyboard when tapping outside of the form fields
+            FocusScope.of(context).unfocus();
+          },
+          child: LogoWithTitle(
+            title: "Change Password",
+            children: [
+              Form(
+                key: _formKey,
+                child: Column(
+                  children: [
+                    TextFormField(
+                      obscureText: true,
+                      controller: _passwordController,
+                      decoration: const InputDecoration(
+                        hintText: 'Password',
+                        filled: true,
+                        fillColor: Color(0xFFF5FCF9),
+                        contentPadding: EdgeInsets.symmetric(
+                            horizontal: 16.0 * 1.5, vertical: 16.0),
+                        border: OutlineInputBorder(
+                          borderSide: BorderSide.none,
+                          borderRadius: BorderRadius.all(Radius.circular(50)),
+                        ),
+                      ),
+                      style: TextStyle(fontFamily: 'Poppins', fontSize: 14),
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return 'Please enter password';
+                        }
+                        return null;
+                      },
                     ),
-                  ),
-                  style: TextStyle(fontFamily: 'Poppins', fontSize: 14),
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return 'Please enter password';
-                    }
-                    return null;
-                  },
-                ),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(0, 10.0, 0, 0),
-                  child: TextFormField(
-                    controller: _confirmPasswordController,
-                    obscureText: true,
-                    decoration: const InputDecoration(
-                      hintText: 'Confirm Password',
-                      filled: true,
-                      fillColor: Color(0xFFF5FCF9),
-                      contentPadding: EdgeInsets.symmetric(
-                          horizontal: 16.0 * 1.5, vertical: 16.0),
-                      border: OutlineInputBorder(
-                        borderSide: BorderSide.none,
-                        borderRadius: BorderRadius.all(Radius.circular(50)),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(0, 10.0, 0, 0),
+                      child: TextFormField(
+                        controller: _confirmPasswordController,
+                        obscureText: true,
+                        decoration: const InputDecoration(
+                          hintText: 'Confirm Password',
+                          filled: true,
+                          fillColor: Color(0xFFF5FCF9),
+                          contentPadding: EdgeInsets.symmetric(
+                              horizontal: 16.0 * 1.5, vertical: 16.0),
+                          border: OutlineInputBorder(
+                            borderSide: BorderSide.none,
+                            borderRadius: BorderRadius.all(Radius.circular(50)),
+                          ),
+                        ),
+                        style: TextStyle(fontFamily: 'Poppins', fontSize: 14),
+                        validator: (value) {
+                          if (value != _passwordController.text) {
+                            return 'Passwords do not match';
+                          } else if (value!.isEmpty) {
+                            return 'Please enter password';
+                          }
+                          return null;
+                        },
                       ),
                     ),
-                    style: TextStyle(fontFamily: 'Poppins', fontSize: 14),
-                    validator: (value) {
-                      if (value != _passwordController.text) {
-                        return 'Passwords do not match';
-                      } else if (value!.isEmpty) {
-                        return 'Please enter password';
-                      }
-                      return null;
-                    },
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 10.0),
-                  child: TextFormField(
-                    controller: _otpController,
-                    inputFormatters: [
-                      LengthLimitingTextInputFormatter(6),
-                    ],
-                    decoration: const InputDecoration(
-                      hintText: 'OTP',
-                      filled: true,
-                      fillColor: Color(0xFFF5FCF9),
-                      contentPadding: EdgeInsets.symmetric(
-                          horizontal: 16.0 * 1.5, vertical: 16.0),
-                      border: OutlineInputBorder(
-                        borderSide: BorderSide.none,
-                        borderRadius: BorderRadius.all(Radius.circular(50)),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 10.0),
+                      child: TextFormField(
+                        controller: _otpController,
+                        inputFormatters: [
+                          LengthLimitingTextInputFormatter(6),
+                        ],
+                        decoration: const InputDecoration(
+                          hintText: 'OTP',
+                          filled: true,
+                          fillColor: Color(0xFFF5FCF9),
+                          contentPadding: EdgeInsets.symmetric(
+                              horizontal: 16.0 * 1.5, vertical: 16.0),
+                          border: OutlineInputBorder(
+                            borderSide: BorderSide.none,
+                            borderRadius: BorderRadius.all(Radius.circular(50)),
+                          ),
+                        ),
+                        style: TextStyle(fontFamily: 'Poppins', fontSize: 14),
+                        keyboardType: TextInputType.number,
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return 'Please enter OTP';
+                          }
+                          return null;
+                        },
                       ),
                     ),
-                    style: TextStyle(fontFamily: 'Poppins', fontSize: 14),
-                    keyboardType: TextInputType.number,
-                    validator: (value) {
-                      if (value!.isEmpty) {
-                        return 'Please enter OTP';
-                      }
-                      return null;
-                    },
-                  ),
+                  ],
                 ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 20),
-          ElevatedButton(
-            onPressed: () {
-              if (_formKey.currentState!.validate()) {
-                _formKey.currentState!.save();
-                _updatePassword(context);
-              }
-            },
-            style: ElevatedButton.styleFrom(
-              elevation: 0,
-              backgroundColor: Colors.blueAccent,
-              foregroundColor: Colors.white,
-              minimumSize: const Size(double.infinity, 48),
-              shape: const StadiumBorder(),
-            ),
-            child: Text(
-              _isLoading ? "Loading..." : "Change Password",
-              style: TextStyle(
-                fontFamily: 'Poppins',
-                fontWeight: FontWeight.w600,
-                fontSize: 16,
               ),
-            ),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => SignInScreen()),
-              );
-            },
-            child: Text.rich(
-              TextSpan(
-                text: "Already have an account? ",
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Colors.grey,
-                  fontFamily: 'Poppins',
-                  fontWeight: FontWeight.w500,
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () {
+                  if (_formKey.currentState!.validate()) {
+                    _formKey.currentState!.save();
+                    _updatePassword(context);
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                  elevation: 0,
+                  backgroundColor: Colors.blueAccent,
+                  foregroundColor: Colors.white,
+                  minimumSize: const Size(double.infinity, 48),
+                  shape: const StadiumBorder(),
                 ),
-                children: [
-                  TextSpan(
-                    text: "Sign in",
-                    style: TextStyle(color: Theme.of(context).primaryColor),
-                  ),
-                ],
-              ),
-              style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                    color: Theme.of(context)
-                        .textTheme
-                        .bodyLarge!
-                        .color!
-                        .withOpacity(0.64),
+                child: Text(
+                  _isLoading ? "Loading..." : "Change Password",
+                  style: TextStyle(
                     fontFamily: 'Poppins',
+                    fontWeight: FontWeight.w600,
+                    fontSize: 16,
                   ),
-            ),
+                ),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => SignInScreen()),
+                  );
+                },
+                child: Text.rich(
+                  TextSpan(
+                    text: "Already have an account? ",
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.grey,
+                      fontFamily: 'Poppins',
+                      fontWeight: FontWeight.w500,
+                    ),
+                    children: [
+                      TextSpan(
+                        text: "Sign in",
+                        style: TextStyle(color: Theme.of(context).primaryColor),
+                      ),
+                    ],
+                  ),
+                  style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                        color: Theme.of(context)
+                            .textTheme
+                            .bodyLarge!
+                            .color!
+                            .withOpacity(0.64),
+                        fontFamily: 'Poppins',
+                      ),
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
-    );
+        ));
   }
 }
 
