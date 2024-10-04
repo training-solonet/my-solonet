@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:mysolonet/home/home_screen.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:mysolonet/auth/login.dart';
 import 'slide_page.dart';
 
 class SplashSlide extends StatefulWidget {
@@ -84,7 +84,7 @@ class SplashSlideState extends State<SplashSlide> {
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => SignInScreen(),
+                          builder: (context) => HomeScreen(),
                         ),
                       );
                     },

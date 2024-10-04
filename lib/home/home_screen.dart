@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:mysolonet/constants.dart';
-import 'package:mysolonet/auth/login.dart';
+import 'package:mysolonet/alert/required_login_popup.dart';
 import 'package:mysolonet/help/help_screen.dart';
 import 'package:mysolonet/profile/profile_screen.dart';
 import 'package:mysolonet/home/home_content.dart';
 import 'package:mysolonet/upgrade/upgrade_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -16,10 +16,23 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
 
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
+  void _onItemTapped(int index) async {
+    if (index == 3) {
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      final String? token = prefs.getString('token');
+
+      if (token == null) {
+        requiredLoginPopup(context, 'Please login to continue');
+      } else {
+        setState(() {
+          _selectedIndex = index;
+        });
+      }
+    } else {
+      setState(() {
+        _selectedIndex = index;
+      });
+    }
   }
 
   final List<Map<String, dynamic>> recommendedProducts = [
@@ -44,10 +57,10 @@ class _HomeScreenState extends State<HomeScreen> {
   ];
 
   final List<Widget> _screens = [
-    const HomePageContent(),  // Add HomePageContent for the home screen
-    const UpgradeScreen(),    // Create an UpgradeScreen widget for the upgrade section
-    const HelpScreen(),       // HelpScreen remains the same
-    const ProfileScreen(),    // Create a ProfileScreen widget for the profile section
+    const HomePageContent(), // Add HomePageContent for the home screen
+    const UpgradeScreen(), // Create an UpgradeScreen widget for the upgrade section
+    const HelpScreen(), // HelpScreen remains the same
+    const ProfileScreen(), // Create a ProfileScreen widget for the profile section
   ];
 
   @override
@@ -92,8 +105,9 @@ class _HomeScreenState extends State<HomeScreen> {
             )
           : null, // Hide AppBar when not on the Home screen
       body: IndexedStack(
-        index: _selectedIndex,  // Switches between screens based on _selectedIndex
-        children: _screens,     // The list of screens
+        index:
+            _selectedIndex, // Switches between screens based on _selectedIndex
+        children: _screens, // The list of screens
       ),
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
@@ -117,13 +131,14 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
         currentIndex: _selectedIndex,
         selectedItemColor: Colors.blue,
-        onTap: _onItemTapped,  // Change screen on tap without navigation
+        onTap: _onItemTapped, // Change screen on tap without navigation
         selectedFontSize: 10,
         unselectedFontSize: 10,
-        selectedLabelStyle: const TextStyle(fontFamily: 'Poppins', fontWeight: FontWeight.w500),
-        unselectedLabelStyle: const TextStyle(fontFamily: 'Poppins', fontWeight: FontWeight.w500),
+        selectedLabelStyle:
+            const TextStyle(fontFamily: 'Poppins', fontWeight: FontWeight.w500),
+        unselectedLabelStyle:
+            const TextStyle(fontFamily: 'Poppins', fontWeight: FontWeight.w500),
       ),
     );
   }
 }
-
