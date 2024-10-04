@@ -210,6 +210,8 @@ class _SignInScreenState extends State<SignInScreen> {
                               ),
                             ),
                           ),
+                          // Sign In Link moved above Login button
+                          _buildSignUpLink(context),
                           ElevatedButton(
                             onPressed: () {
                               if (_formKey.currentState!.validate()) {
@@ -224,8 +226,12 @@ class _SignInScreenState extends State<SignInScreen> {
                               shape: const StadiumBorder(),
                             ),
                             child: _isLoading
-                                ? const CircularProgressIndicator(
-                                    color: Colors.white,
+                                ? const SizedBox(
+                                    width: 20, 
+                                    height: 20, 
+                                    child: CircularProgressIndicator(
+                                      color: Colors.white,
+                                    ),
                                   )
                                 : const Text(
                                     "Login",
@@ -235,7 +241,6 @@ class _SignInScreenState extends State<SignInScreen> {
                                     ),
                                   ),
                           ),
-                          _buildSignUpLink(context),
                           const SizedBox(height: 16.0),
                           const Text(
                             "or",
@@ -264,7 +269,7 @@ class _SignInScreenState extends State<SignInScreen> {
 
 Align _buildSignUpLink(BuildContext context) {
   return Align(
-    alignment: Alignment.center,
+    alignment: Alignment.centerLeft,
     child: TextButton(
       onPressed: () {
         Navigator.push(
