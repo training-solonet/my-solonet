@@ -19,7 +19,15 @@ class MyApp extends StatelessWidget {
         textTheme: Theme.of(context).textTheme.apply(bodyColor: kTextColor),
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: SplashScreen(), // Pastikan ini adalah SplashScreen yang diperbarui
+      home: SplashScreen(),
+      builder: (context, child) {
+        return GestureDetector(
+          onTap: () {
+            FocusScope.of(context).unfocus(); // Menutup keyboard di seluruh aplikasi
+          },
+          child: child,
+        );
+      },
     );
   }
 }

@@ -61,19 +61,19 @@ class _SignUpScreenState extends State<SignUpScreen> {
     try {
       final response = await http.post(url, headers: headers, body: body);
 
-      if (response.statusCode == 201) {
+      if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
         print(responseData['message']);
 
-       showSuccessMessage(context, responseData['message']);
-
+        // showSuccessMessage(context, responseData['message']);
 
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-              builder: (context) => OtpScreen( phone: _whatsappController.text )),
+              builder: (context) => OtpScreen(phone: _whatsappController.text)),
         );
-        print("Navigating to OTP Screen with phone: ${_whatsappController.text}");
+        print(
+            "Navigating to OTP Screen with phone: ${_whatsappController.text}");
 
         setState(() {
           _isLoading = false;
@@ -82,7 +82,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
         final responseData = json.decode(response.body);
 
         showFailedMessage(context, responseData['message']);
-
 
         print(responseData['message']);
         setState(() {
@@ -95,127 +94,135 @@ class _SignUpScreenState extends State<SignUpScreen> {
       });
 
       showFailedMessage(context, '$e');
-
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      body: SafeArea(
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            return SingleChildScrollView(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 24.0),
-              child: Column(
-                children: [
-                  Image.asset(
-                    "assets/images/solonet.png",
-                    height: 100,
-                    width: 180,
-                  ),
-                  SizedBox(height: constraints.maxHeight * 0.025),
-                  const Text(
-                    "Register",
-                    style: TextStyle(
-                      fontSize: 32.0,
-                      fontFamily: 'Poppins',
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  SizedBox(height: constraints.maxHeight * 0.05),
-                  Form(
-                    key: _formKey,
-                    child: Column(
-                      children: [
-                        _buildLabel('Full Name'),
-                        _buildTextField(
-                            _fullnameController,
-                            'Enter Your Full Name',
-                            TextInputType.text, (value) {
-                          if (value!.isEmpty) {
-                            return "Full Name cannot be empty";
-                          }
-                          return null;
-                        }),
-                        const SizedBox(height: 16.0),
-                        _buildLabel('Whatsapp Number'),
-                        _buildWhatsappTextField(),
-                        const SizedBox(height: 16.0),
-                        _buildLabel('Email'),
-                        _buildTextField(_emailController, 'Enter Your Email',
-                            TextInputType.emailAddress, (value) {
-                          if (value!.isEmpty) {
-                            return "Email cannot be empty";
-                          }
-                          if (!RegExp(
-                                  r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
-                              .hasMatch(value)) {
-                            return "Enter a valid email";
-                          }
-                          return null;
-                        }),
-                        const SizedBox(height: 16.0),
-                        _buildLabel('Address'),
-                        _buildTextField(_addressController,
-                            'Enter Your Address', TextInputType.text, (value) {
-                          if (value!.isEmpty) {
-                            return "Address cannot be empty";
-                          }
-                          return null;
-                        }),
-                        const SizedBox(height: 16.0),
-                        _buildLabel('Password'),
-                        _buildPasswordField(
-                            _passwordController, 'Enter Your Password',
-                            (value) {
-                          if (value!.isEmpty) {
-                            return "Password cannot be empty";
-                          }
-                          if (value.length < 6) {
-                            return "Password must be at least 6 characters";
-                          }
-                          return null;
-                        }),
-                        const SizedBox(height: 16.0),
-                        _buildLabel('Confirm Password'),
-                        _buildPasswordField(_confirmpasswordController,
-                            'Enter Your Confirm Password', (value) {
-                          if (value!.isEmpty) {
-                            return "Confirm password cannot be empty";
-                          }
-                          if (value != _passwordController.text) {
-                            return "Passwords do not match";
-                          }
-                          return null;
-                        }),
-                        const SizedBox(height: 16.0),
-                        _buildRegisterButton(context),
-                        _buildSignInLink(context),
-                        const SizedBox(height: 16.0),
-                        const Text(
-                          "or",
-                          style: TextStyle(
-                            color: Colors.black87,
-                            fontSize: 14.5,
-                            fontFamily: 'Poppins',
-                            fontWeight: FontWeight.w600,
-                          ),
+        backgroundColor: Colors.white,
+        body: SafeArea(
+          child: GestureDetector(
+            onTap: () {
+              FocusScope.of(context)
+                  .unfocus(); // Menutup keyboard saat klik di luar TextField
+            },
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                return SingleChildScrollView(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 16.0, vertical: 24.0),
+                  child: Column(
+                    children: [
+                      Image.asset(
+                        "assets/images/solonet.png",
+                        height: 100,
+                        width: 180,
+                      ),
+                      SizedBox(height: constraints.maxHeight * 0.025),
+                      const Text(
+                        "Register",
+                        style: TextStyle(
+                          fontSize: 32.0,
+                          fontFamily: 'Poppins',
+                          fontWeight: FontWeight.bold,
                         ),
-                        const SizedBox(height: 16.0),
-                        _buildGoogleSignUpButton(),
-                      ],
-                    ),
+                      ),
+                      SizedBox(height: constraints.maxHeight * 0.05),
+                      Form(
+                        key: _formKey,
+                        child: Column(
+                          children: [
+                            _buildLabel('Full Name'),
+                            _buildTextField(
+                                _fullnameController,
+                                'Enter Your Full Name',
+                                TextInputType.text, (value) {
+                              if (value!.isEmpty) {
+                                return "Full Name cannot be empty";
+                              }
+                              return null;
+                            }),
+                            const SizedBox(height: 16.0),
+                            _buildLabel('Whatsapp Number'),
+                            _buildWhatsappTextField(),
+                            const SizedBox(height: 16.0),
+                            _buildLabel('Email'),
+                            _buildTextField(
+                                _emailController,
+                                'Enter Your Email',
+                                TextInputType.emailAddress, (value) {
+                              if (value!.isEmpty) {
+                                return "Email cannot be empty";
+                              }
+                              if (!RegExp(
+                                      r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+                                  .hasMatch(value)) {
+                                return "Enter a valid email";
+                              }
+                              return null;
+                            }),
+                            const SizedBox(height: 16.0),
+                            _buildLabel('Address'),
+                            _buildTextField(
+                                _addressController,
+                                'Enter Your Address',
+                                TextInputType.text, (value) {
+                              if (value!.isEmpty) {
+                                return "Address cannot be empty";
+                              }
+                              return null;
+                            }),
+                            const SizedBox(height: 16.0),
+                            _buildLabel('Password'),
+                            _buildPasswordField(
+                                _passwordController, 'Enter Your Password',
+                                (value) {
+                              if (value!.isEmpty) {
+                                return "Password cannot be empty";
+                              }
+                              if (value.length < 6) {
+                                return "Password must be at least 6 characters";
+                              }
+                              return null;
+                            }),
+                            const SizedBox(height: 16.0),
+                            _buildLabel('Confirm Password'),
+                            _buildPasswordField(_confirmpasswordController,
+                                'Enter Your Confirm Password', (value) {
+                              if (value!.isEmpty) {
+                                return "Confirm password cannot be empty";
+                              }
+                              if (value != _passwordController.text) {
+                                return "Passwords do not match";
+                              }
+                              return null;
+                            }),
+                            const SizedBox(height: 16.0),
+                            _buildRegisterButton(context),
+                            _buildSignInLink(context),
+                            const SizedBox(height: 16.0),
+                            const Text(
+                              "or",
+                              style: TextStyle(
+                                color: Colors.black87,
+                                fontSize: 14.5,
+                                fontFamily: 'Poppins',
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            const SizedBox(height: 16.0),
+                            _buildGoogleSignUpButton(),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-            );
-          },
-        ),
-      ),
-    );
+                );
+              },
+            ),
+          ),
+        ));
   }
 
   Padding _buildLabel(String text) {
