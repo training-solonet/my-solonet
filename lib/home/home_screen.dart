@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mysolonet/alert/confirm_popup.dart';
 import 'package:mysolonet/auth/login.dart';
+import 'package:mysolonet/auth/service/service.dart';
 import 'package:mysolonet/help/help_screen.dart';
 import 'package:mysolonet/profile/profile_screen.dart';
 import 'package:mysolonet/home/home_content.dart';
@@ -17,6 +18,20 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
 
+  int userId = 0;
+  String nama = '';
+  String email = '';
+
+  Future<void> _loadUserData() async {
+    final authService = AuthService();
+    final userData = await authService.getUserData();
+    setState(() {
+      userId = userData['id'] ?? 0;
+      nama = userData['nama'] ?? '';
+      email = userData['email'] ?? '';
+    });
+  }
+
   void _onItemTapped(int index) async {
     if (index == 3) {
       final SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -24,15 +39,14 @@ class _HomeScreenState extends State<HomeScreen> {
 
       if (token == null) {
         confirmPopup(
-          context, 
-          'Login Required', 
-          'Please login to continue', 
-          'Login',
-          () => Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => const SignInScreen()),
-          )
-        );
+            'Login Required',
+            'Please login to continue',
+            'Login',
+            () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const SignInScreen()),
+                ));
       } else {
         setState(() {
           _selectedIndex = index;
@@ -66,12 +80,22 @@ class _HomeScreenState extends State<HomeScreen> {
     },
   ];
 
-  final List<Widget> _screens = [
-    const HomePageContent(), // Add HomePageContent for the home screen
-    const UpgradeScreen(), // Create an UpgradeScreen widget for the upgrade section
-    const HelpScreen(), // HelpScreen remains the same
-    const ProfileScreen(), // Create a ProfileScreen widget for the profile section
-  ];
+  List<Widget> _screens = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserData().then((_) {
+      setState(() {
+        _screens = [
+          const HomePageContent(),
+          const UpgradeScreen(),
+          const HelpScreen(),
+          const ProfileScreen(),
+        ];
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -82,7 +106,7 @@ class _HomeScreenState extends State<HomeScreen> {
               title: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Column(
+                  Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
@@ -95,7 +119,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                       Text(
-                        'Kevin Andra Nugroho',
+                        nama,
                         style: TextStyle(
                           fontFamily: 'Poppins',
                           fontSize: 14,

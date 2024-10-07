@@ -1,9 +1,45 @@
 import 'package:flutter/material.dart';
 import 'package:mysolonet/auth/login.dart';
+import 'package:mysolonet/auth/service/service.dart';
 import 'change_profile.dart';
 
-class ProfileScreen extends StatelessWidget {
-  const ProfileScreen({Key? key}) : super(key: key);
+class ProfileScreen extends StatefulWidget {
+  const ProfileScreen({super.key});
+
+  @override
+  _ProfileScreenState createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  int userId = 0;
+  String nama = '';
+  String email = '';
+
+  Future<void> _loadUserData() async {
+    final authService = AuthService();
+    final userData = await authService.getUserData();
+    setState(() {
+      userId = userData['id'] ?? 0;
+      nama = userData['nama'] ?? '';
+      email = userData['email'] ?? '';
+    });
+  }
+
+  String _profileText(String nama) {
+    List<String> words = nama.split(' ');
+
+    if(words.length == 1) {
+      return words[0][0].toUpperCase();
+    } else {
+      return words[0][0].toUpperCase() + words[1][0].toUpperCase();
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserData();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,41 +62,34 @@ class ProfileScreen extends StatelessWidget {
           children: [
             Row(
               children: [
-                const CircleAvatar(
+                CircleAvatar(
                   radius: 30,
                   backgroundColor: Colors.green,
                   child: Text(
-                    'KA',
+                    _profileText(nama),
                     style: TextStyle(
                       fontSize: 24,
                       color: Colors.white,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 ),
                 const SizedBox(width: 15),
-                const Expanded(
+                Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Kevin Andra',
-                        style: TextStyle(
+                        nama,  
+                        style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
                           fontFamily: 'Poppins',
                         ),
                       ),
                       Text(
-                        'kutubsangatdingin@gmail.com',
-                        style: TextStyle(
-                          fontSize: 9.5,
-                          fontWeight: FontWeight.w600,
-                          fontFamily: 'Poppins',
-                        ),
-                      ),
-                      Text(
-                        '+6212345678910',
-                        style: TextStyle(
+                        email,
+                        style: const TextStyle(
                           fontSize: 9.5,
                           fontWeight: FontWeight.w600,
                           fontFamily: 'Poppins',
@@ -74,7 +103,7 @@ class ProfileScreen extends StatelessWidget {
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => ChangeProfileScreen()),
+                      MaterialPageRoute(builder: (context) => ChangeProfileScreen(userId: userId)),
                     );
                   },
                 ),

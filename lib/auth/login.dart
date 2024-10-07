@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mysolonet/auth/service/service.dart';
 import 'package:mysolonet/constants.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -48,6 +49,11 @@ class _SignInScreenState extends State<SignInScreen> {
       );
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
+
+        final authService = AuthService();
+        await authService.saveToken(responseData['token']);
+        print(responseData['token']);
+
         showSuccessMessage(context, responseData['message']);
         Navigator.pushReplacement(
           context,

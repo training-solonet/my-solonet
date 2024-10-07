@@ -1,21 +1,92 @@
 import 'package:flutter/material.dart';
+import 'package:mysolonet/auth/service/service.dart';
+import 'package:mysolonet/constants.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
-class ChangeProfileScreen extends StatelessWidget {
+class ChangeProfileScreen extends StatefulWidget {
+  final int userId;
+  const ChangeProfileScreen({super.key, required this.userId});
+
+  @override
+  _ChangeProfileState createState() => _ChangeProfileState();
+}
+
+class _ChangeProfileState extends State<ChangeProfileScreen> {
+  Map<String, dynamic>? _userData;
+  late TextEditingController _nameController;
+  late TextEditingController _phoneController;
+  late TextEditingController _emailController;
+  bool _isLoading = true;
+
+  Future<void> _fetchUserData() async {
+    final authservice = AuthService();
+    final token = await authservice.getToken();
+    print(token);
+
+    final url = Uri.parse('${baseUrl}users/${widget.userId}');
+
+    try {
+      final response = await http.get(
+        url,
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        print(data);
+        setState(() {
+          _userData = data;
+          _nameController.text = _userData?['name'] ?? '';
+          _phoneController.text = _userData?['phone_number'] ?? '';
+          _emailController.text = _userData?['email'] ?? '';
+        });
+      } else {
+        print('Error: ${response.body}');
+      }
+    } catch (e) {
+      print('Error fetching user data: $e');
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _nameController = TextEditingController();
+    _phoneController = TextEditingController();
+    _emailController = TextEditingController();
+    _fetchUserData();
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _phoneController.dispose();
+    _emailController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Ubah Profil',
+        title: Text(
+          'Change Profile',
           style: TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.bold,
-            fontFamily: 'Poppins', // Font Poppins
+            fontFamily: 'Poppins',
           ),
         ),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back,
-          color: Colors.white,),
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () {
             Navigator.of(context).pop();
           },
@@ -23,13 +94,13 @@ class ChangeProfileScreen extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () {
-              // Simpan perubahan
+              // _updateProfile();
             },
             child: const Text(
-              'SIMPAN',
+              'Save Changes',
               style: TextStyle(
                 color: Colors.white,
-                fontFamily: 'Poppins', // Font Poppins
+                fontFamily: 'Poppins',
               ),
             ),
           ),
@@ -37,75 +108,78 @@ class ChangeProfileScreen extends StatelessWidget {
         backgroundColor: Colors.blueAccent,
         elevation: 0,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Profile Picture Section
-            Row(
-              children: [
-                Container(
-                  width: 60,
-                  height: 60,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF007bff),
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-                  child: const Center(
-                    child: Text(
-                      'KA',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: 'Poppins', // Font Poppins
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 20),
-                const Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+      body: _isLoading 
+          ? Center(child: CircularProgressIndicator())
+          : Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Profile Picture Section
+                  Row(
                     children: [
-                      Text(
-                        'Anda belum mengatur foto profile. Abaikan jika tidak ingin mengubahnya.',
-                        style: TextStyle(
-                          color: Color(0xFF666666),
-                          fontSize: 11,
-                          fontFamily: 'Poppins', // Font Poppins
+                      Container(
+                        width: 60,
+                        height: 60,
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF007bff),
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                        child: const Center(
+                          child: Text(
+                            'KA',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                              fontFamily: 'Poppins',
+                            ),
+                          ),
                         ),
                       ),
-                      SizedBox(height: 5),
-                      Text(
-                        'Ubah foto',
-                        style: TextStyle(
-                          color: Colors.blue,
-                          fontWeight: FontWeight.w500,
-                          fontFamily: 'Poppins', // Font Poppins
+                      const SizedBox(width: 20),
+                      const Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Anda belum mengatur foto profile. Abaikan jika tidak ingin mengubahnya.',
+                              style: TextStyle(
+                                color: Color(0xFF666666),
+                                fontSize: 11,
+                                fontFamily: 'Poppins',
+                              ),
+                            ),
+                            SizedBox(height: 5),
+                            Text(
+                              'Ubah foto',
+                              style: TextStyle(
+                                color: Colors.blue,
+                                fontWeight: FontWeight.w500,
+                                fontFamily: 'Poppins',
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ],
                   ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 20),
+                  const SizedBox(height: 20),
 
-            // Form Input Section
-            _buildFormGroup('Nama', 'Kevin Andra.', true),
-            const SizedBox(height: 20),
-            _buildPhoneInputGroup('Nomor HP', '+62 83825757229', true),
-            const SizedBox(height: 20),
-            _buildFormGroup('Email', 'kevinandranugroho448@gmail.com', true),
-          ],
-        ),
-      ),
+                  // Form Input Section
+                  _buildFormGroup('Nama', _nameController, true),
+                  const SizedBox(height: 20),
+                  _buildPhoneInputGroup('Nomor HP', _phoneController, true),
+                  const SizedBox(height: 20),
+                  _buildFormGroup('Email', _emailController, true),
+                ],
+              ),
+            ),
     );
   }
 
-  Widget _buildFormGroup(String label, String value, bool required) {
+  Widget _buildFormGroup(
+      String label, TextEditingController controller, bool required) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -115,25 +189,26 @@ class ChangeProfileScreen extends StatelessWidget {
             fontSize: 14,
             color: Color(0xFF333333),
             fontWeight: FontWeight.w500,
-            fontFamily: 'Poppins', // Font Poppins
+            fontFamily: 'Poppins',
           ),
         ),
         const SizedBox(height: 6.5),
         TextField(
-          controller: TextEditingController(text: value),
+          controller: controller,
           decoration: InputDecoration(
             border: OutlineInputBorder(),
             contentPadding: const EdgeInsets.all(10),
           ),
           style: const TextStyle(
-            fontFamily: 'Poppins', // Font Poppins
+            fontFamily: 'Poppins',
           ),
         ),
       ],
     );
   }
 
-  Widget _buildPhoneInputGroup(String label, String value, bool required) {
+  Widget _buildPhoneInputGroup(
+      String label, TextEditingController controller, bool required) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -143,7 +218,7 @@ class ChangeProfileScreen extends StatelessWidget {
             fontSize: 14,
             color: Color(0xFF333333),
             fontWeight: FontWeight.w500,
-            fontFamily: 'Poppins', // Font Poppins
+            fontFamily: 'Poppins',
           ),
         ),
         const SizedBox(height: 6.5),
@@ -151,13 +226,13 @@ class ChangeProfileScreen extends StatelessWidget {
           children: [
             Expanded(
               child: TextField(
-                controller: TextEditingController(text: value),
+                controller: controller,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(),
                   contentPadding: const EdgeInsets.all(10),
                 ),
                 style: const TextStyle(
-                  fontFamily: 'Poppins', // Font Poppins
+                  fontFamily: 'Poppins',
                 ),
               ),
             ),
