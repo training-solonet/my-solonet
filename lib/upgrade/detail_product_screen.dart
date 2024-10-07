@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:mysolonet/alert/required_login_popup.dart';
+import 'package:mysolonet/alert/confirm_popup.dart';
 import 'package:mysolonet/alert/show_message_success.dart';
+import 'package:mysolonet/auth/login.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 
 class DetailProductScreen extends StatelessWidget {
   final String productTitle;
@@ -16,12 +16,19 @@ class DetailProductScreen extends StatelessWidget {
     if (token != null) {
       showSuccessMessage(context, 'Pembelian Berhasil');
     } else {
-      requiredLoginPopup(context, 'Please login to continue payment');
+      confirmPopup(
+          context,
+          'Login Required',
+          'Please login to continue payment',
+          'Login',
+          () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const SignInScreen()),
+              ));
     }
   }
 
   @override
-
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
@@ -148,8 +155,10 @@ class DetailProductScreen extends StatelessWidget {
                   children: [
                     const Text(
                       'Harga Total',
-                      style: TextStyle(fontSize: 16,
-                      fontFamily: 'Poppins',),
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontFamily: 'Poppins',
+                      ),
                     ),
                     const Text(
                       'Rp1.500', // Harga produk
