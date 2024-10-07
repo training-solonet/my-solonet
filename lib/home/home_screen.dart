@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:mysolonet/alert/required_login_popup.dart';
+import 'package:mysolonet/alert/confirm_popup.dart';
+import 'package:mysolonet/auth/login.dart';
 import 'package:mysolonet/help/help_screen.dart';
 import 'package:mysolonet/profile/profile_screen.dart';
 import 'package:mysolonet/home/home_content.dart';
@@ -22,7 +23,16 @@ class _HomeScreenState extends State<HomeScreen> {
       final String? token = prefs.getString('token');
 
       if (token == null) {
-        requiredLoginPopup(context, 'Please login to continue');
+        confirmPopup(
+          context, 
+          'Login Required', 
+          'Please login to continue', 
+          'Login',
+          () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const SignInScreen()),
+          )
+        );
       } else {
         setState(() {
           _selectedIndex = index;

@@ -19,7 +19,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController _whatsappController = TextEditingController();
   final TextEditingController _fullnameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _addressController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmpasswordController =
       TextEditingController();
@@ -31,7 +30,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
     _whatsappController.dispose();
     _fullnameController.dispose();
     _emailController.dispose();
-    _addressController.dispose();
     _passwordController.dispose();
     _confirmpasswordController.dispose();
     super.dispose();
@@ -52,7 +50,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
       "name": _fullnameController.text,
       "phone_number": "62" + _whatsappController.text,
       "email": _emailController.text,
-      "alamat": _addressController.text,
       "password": _passwordController.text,
       "confirm_password": _confirmpasswordController.text
     });
@@ -158,17 +155,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                       r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
                                   .hasMatch(value)) {
                                 return "Enter a valid email";
-                              }
-                              return null;
-                            }),
-                            const SizedBox(height: 16.0),
-                            _buildLabel('Address'),
-                            _buildTextField(
-                                _addressController,
-                                'Enter Your Address',
-                                TextInputType.text, (value) {
-                              if (value!.isEmpty) {
-                                return "Address cannot be empty";
                               }
                               return null;
                             }),
