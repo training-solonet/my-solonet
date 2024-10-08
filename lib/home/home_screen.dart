@@ -2,11 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:mysolonet/alert/confirm_popup.dart';
 import 'package:mysolonet/auth/login.dart';
 import 'package:mysolonet/auth/service/service.dart';
+import 'package:mysolonet/constants.dart';
 import 'package:mysolonet/help/help_screen.dart';
 import 'package:mysolonet/profile/profile_screen.dart';
 import 'package:mysolonet/home/home_content.dart';
 import 'package:mysolonet/upgrade/upgrade_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -24,12 +27,29 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> _loadUserData() async {
     final authService = AuthService();
-    final userData = await authService.getUserData();
-    setState(() {
-      userId = userData['id'] ?? 0;
-      nama = userData['nama'] ?? '';
-      email = userData['email'] ?? '';
-    });
+    final token = await authService.getToken();
+
+    final url = Uri.parse(baseUrl + 'users');
+
+    try {
+      final response = await http.get(url, headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      });
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        setState(() {
+          userId = data['id'];
+          nama = data['name'];
+          email = data['email'];
+        });
+      } else {
+        print('Error: ${response.body}');
+      }
+    } catch (e) {
+      print('Error fetching user data: $e');
+    }
   }
 
   void _onItemTapped(int index) async {
@@ -109,24 +129,26 @@ class _HomeScreenState extends State<HomeScreen> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        'Welcome',
-                        style: TextStyle(
-                          fontWeight: FontWeight.w500,
-                          fontFamily: 'Poppins',
-                          fontSize: 12,
-                          color: Colors.white,
+                      if (nama.isNotEmpty) ...[
+                        Text(
+                          'Welcome',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w500,
+                            fontFamily: 'Poppins',
+                            fontSize: 12,
+                            color: Colors.white,
+                          ),
                         ),
-                      ),
-                      Text(
-                        nama,
-                        style: TextStyle(
-                          fontFamily: 'Poppins',
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.white,
+                        Text(
+                          nama,
+                          style: TextStyle(
+                            fontFamily: 'Poppins',
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
+                          ),
                         ),
-                      ),
+                      ]
                     ],
                   ),
                   Image.asset(

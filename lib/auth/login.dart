@@ -230,9 +230,14 @@ class _SignInScreenState extends State<SignInScreen> {
                               shape: const StadiumBorder(),
                             ),
                             child: _isLoading
-                                ? const CircularProgressIndicator(
+                                ? const SizedBox(
+                                  height: 20,
+                                  width: 20,
+                                  child: CircularProgressIndicator(
                                     color: Colors.white,
-                                  )
+                                    strokeWidth: 2,
+                                  ),
+                                )
                                 : const Text(
                                     "Login",
                                     style: TextStyle(
