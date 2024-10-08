@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:mysolonet/alert/confirm_popup.dart';
 import 'package:mysolonet/auth/login.dart';
 import 'package:mysolonet/auth/service/service.dart';
+import 'package:mysolonet/profile/address/address_screen.dart';
 import 'change_profile.dart';
+import 'package:mysolonet/alert/show_message_failed.dart';
+import 'package:mysolonet/alert/show_message_success.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -32,6 +36,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
       return words[0][0].toUpperCase();
     } else {
       return words[0][0].toUpperCase() + words[1][0].toUpperCase();
+    }
+  }
+
+  Future<void> _logout() async {
+    try {
+      final authService = AuthService();
+      await authService.removeToken();
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const SignInScreen()),
+      );
+
+      showSuccessMessage(context, 'Logout successful');
+    } catch (e) {
+      showFailedMessage(context, 'Failed to logout');
     }
   }
 
@@ -114,6 +133,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
               child: ListView(
                 children: [
                   _MenuItem(
+                    icon: Icons.home,
+                    title: 'My Address',
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const AddressScreen()),
+                      );
+                    },
+                  ),
+                  _MenuItem(
                     icon: Icons.task,
                     title: 'My Activity',
                     onTap: () {
@@ -138,10 +167,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     icon: Icons.logout,
                     title: 'Logout',
                     onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => SignInScreen()),
-                      );
+                      confirmPopup(context, 'Logout Confirmation', 'Are you sure you want to logout?', 'Logout', _logout);
                     },
                   ),
                 ],
