@@ -54,7 +54,7 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
         final data = json.decode(response.body);
         setState(() {
           _provinces = List<Map<String, dynamic>>.from(data);
-          _provinceNames = _provinces.map((e) => e['name'] as String).toList();
+          _provinceNames = _provinces.map((e) => e['name'] as String).toSet().toList();
         });
       } else {
         print('Error: ${response.body}');
@@ -79,7 +79,7 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
         final data = json.decode(response.body);
         setState(() {
           _cities = List<Map<String, dynamic>>.from(data);
-          _citiesNames = _cities.map((e) => e['name'] as String).toList();
+          _citiesNames = _cities.map((e) => e['name'] as String).toSet().toList();
         });
       } else {
         print('Error: ${response.body}');
@@ -104,7 +104,7 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
         final data = json.decode(response.body);
         setState(() {
           _districts = List<Map<String, dynamic>>.from(data);
-          _districtsNames = _districts.map((e) => e['name'] as String).toList();
+          _districtsNames = _districts.map((e) => e['name'] as String).toSet().toList();
         });
       } else {
         print('Error: ${response.body}');
@@ -129,7 +129,7 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
         final data = json.decode(response.body);
         setState(() {
           _subdistricts = List<Map<String, dynamic>>.from(data);
-          _subdistrictsNames = _subdistricts.map((e) => e['name'] as String).toList();
+          _subdistrictsNames = _subdistricts.map((e) => e['name'] as String).toSet().toList();
         });
       } else {
         print('Error: ${response.body}');
@@ -230,7 +230,11 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
                             'id': null
                           },
                         )['id'] as int?;
-                        print(_selectedProvinceId);
+                        
+                        _selectedCityId = null;
+                        _selectedDistrictId = null;
+                        _selectedSubdistrictId = null;  
+
                         _getCity();
                       });
                     },
@@ -255,7 +259,10 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
                             'id': null
                           },
                         )['id'] as int?;
-                        print(_selectedCityId);
+                        
+                        _selectedDistrictId = null;
+                        _selectedSubdistrictId = null; 
+
                         _getDistrict();
                       });
                     },
@@ -279,7 +286,9 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
                             'id': null
                           },
                         )['id'] as int?;
-                        print(_selectedDistrictId);
+                        
+                        _selectedSubdistrictId = null;
+
                         _getSubDistrict();
                       });
                     },
@@ -397,7 +406,7 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
             return null;
           },
         ),
-        const SizedBox(height: 16.0), // Add space after the dropdown
+        const SizedBox(height: 16.0), 
       ],
     );
   }
