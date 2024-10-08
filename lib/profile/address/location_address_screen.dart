@@ -1,3 +1,4 @@
+import 'dart:async'; // Import Timer
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
@@ -10,13 +11,15 @@ class LocationAddressScreen extends StatefulWidget {
 }
 
 class _LocationAddressScreenState extends State<LocationAddressScreen> {
-  LatLng _markerLocation = LatLng(0, 0); 
-  double _zoom = 13.0; 
-  final MapController _mapController = MapController(); 
+  LatLng _markerLocation = LatLng(0, 0);
+  double _zoom = 13.0;
+  final MapController _mapController = MapController();
 
   final TextEditingController _addressController = TextEditingController();
   final TextEditingController _detailsController = TextEditingController();
   String _currentAddress = ''; // To store current address details
+
+  Timer? _debounce; // Variable for debounce timer
 
   @override
   void initState() {
@@ -69,16 +72,17 @@ class _LocationAddressScreenState extends State<LocationAddressScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Set Your Location', style: TextStyle(fontFamily: 'Poppins')),
+        title: const Text('Set Your Location', style: TextStyle(fontFamily: 'Poppins', fontWeight: FontWeight.bold, color: Colors.white)),
+        backgroundColor: Colors.blueAccent,
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: Column(
         children: [
-          const SizedBox(height: 16.0),
           Expanded(
             child: Stack(
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 60.0),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(12.0), // Set the border radius here
                     border: Border.all(color: Colors.transparent, width: 1),
@@ -90,11 +94,19 @@ class _LocationAddressScreenState extends State<LocationAddressScreen> {
                       options: MapOptions(
                         center: _markerLocation,
                         zoom: _zoom,
+                        rotation: 0, // Matikan rotasi peta
                         onPositionChanged: (position, hasGesture) {
                           setState(() {
                             if (position.center != null) {
                               _markerLocation = position.center!;
-                              _updateAddress(_markerLocation); // Update address when map moves
+
+                              // Cancel previous timer if exists
+                              if (_debounce?.isActive ?? false) _debounce!.cancel();
+
+                              // Set a new timer for 300 ms
+                              _debounce = Timer(const Duration(milliseconds: 300), () {
+                                _updateAddress(_markerLocation); // Update address after 300 ms
+                              });
                             }
                           });
                         },
@@ -110,7 +122,7 @@ class _LocationAddressScreenState extends State<LocationAddressScreen> {
                               width: 80.0,
                               height: 80.0,
                               point: _markerLocation,
-                              builder: (ctx) => const Icon(Icons.location_pin, color: Colors.red, size: 40),
+                              builder: (ctx) => const Icon(Icons.location_pin, color: Colors.red, size: 50),
                             ),
                           ],
                         ),
@@ -127,13 +139,15 @@ class _LocationAddressScreenState extends State<LocationAddressScreen> {
                       FloatingActionButton(
                         heroTag: null,
                         mini: true,
+                        backgroundColor: Colors.blue, // Background biru
                         onPressed: _goToCurrentLocation,
-                        child: const Icon(Icons.my_location),
+                        child: const Icon(Icons.my_location, color: Colors.white), // Ikon berwarna putih
                       ),
-                      const SizedBox(height: 18),
+                      const SizedBox(height: 8),
                       FloatingActionButton(
                         heroTag: null,
                         mini: true,
+                        backgroundColor: Colors.blue, // Background biru
                         onPressed: () {
                           setState(() {
                             if (_zoom < 18.0) {
@@ -142,12 +156,13 @@ class _LocationAddressScreenState extends State<LocationAddressScreen> {
                             }
                           });
                         },
-                        child: const Icon(Icons.add),
+                        child: const Icon(Icons.add, color: Colors.white), // Ikon berwarna putih
                       ),
-                      const SizedBox(height: 18),
+                      const SizedBox(height: 8),
                       FloatingActionButton(
                         heroTag: null,
                         mini: true,
+                        backgroundColor: Colors.blue, // Background biru
                         onPressed: () {
                           setState(() {
                             if (_zoom > 1.0) {
@@ -156,7 +171,7 @@ class _LocationAddressScreenState extends State<LocationAddressScreen> {
                             }
                           });
                         },
-                        child: const Icon(Icons.remove),
+                        child: const Icon(Icons.remove, color: Colors.white), // Ikon berwarna putih
                       ),
                     ],
                   ),
@@ -164,6 +179,7 @@ class _LocationAddressScreenState extends State<LocationAddressScreen> {
               ],
             ),
           ),
+          
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
@@ -182,7 +198,10 @@ class _LocationAddressScreenState extends State<LocationAddressScreen> {
                   controller: _addressController,
                   decoration: InputDecoration(
                     labelText: 'Cari nama jalan, kelurahan, dsb',
-                    border: OutlineInputBorder(),
+                    border: OutlineInputBorder(
+                       borderRadius: BorderRadius.circular(12.0)
+                    ),
+                   
                   ),
                   style: TextStyle(fontFamily: 'Poppins'), // Set text field font
                   onSubmitted: (value) {
@@ -210,7 +229,9 @@ class _LocationAddressScreenState extends State<LocationAddressScreen> {
                   controller: _detailsController,
                   decoration: InputDecoration(
                     labelText: 'Location Now',
-                    border: OutlineInputBorder(),
+                    border: OutlineInputBorder(
+                       borderRadius: BorderRadius.circular(12.0)
+                    ),
                   ),
                   style: TextStyle(fontFamily: 'Poppins'), // Set text field font
                   maxLines: 2,
@@ -221,5 +242,11 @@ class _LocationAddressScreenState extends State<LocationAddressScreen> {
         ],
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _debounce?.cancel();
+    super.dispose();
   }
 }

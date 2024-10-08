@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mysolonet/auth/service/service.dart';
 import 'package:mysolonet/constants.dart';
-
+import 'location_address_screen.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -55,7 +55,8 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
         final data = json.decode(response.body);
         setState(() {
           _provinces = List<Map<String, dynamic>>.from(data);
-          _provinceNames = _provinces.map((e) => e['name'] as String).toSet().toList();
+          _provinceNames =
+              _provinces.map((e) => e['name'] as String).toSet().toList();
         });
       } else {
         print('Error: ${response.body}');
@@ -80,7 +81,8 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
         final data = json.decode(response.body);
         setState(() {
           _cities = List<Map<String, dynamic>>.from(data);
-          _citiesNames = _cities.map((e) => e['name'] as String).toSet().toList();
+          _citiesNames =
+              _cities.map((e) => e['name'] as String).toSet().toList();
         });
       } else {
         print('Error: ${response.body}');
@@ -105,7 +107,8 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
         final data = json.decode(response.body);
         setState(() {
           _districts = List<Map<String, dynamic>>.from(data);
-          _districtsNames = _districts.map((e) => e['name'] as String).toSet().toList();
+          _districtsNames =
+              _districts.map((e) => e['name'] as String).toSet().toList();
         });
       } else {
         print('Error: ${response.body}');
@@ -130,7 +133,8 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
         final data = json.decode(response.body);
         setState(() {
           _subdistricts = List<Map<String, dynamic>>.from(data);
-          _subdistrictsNames = _subdistricts.map((e) => e['name'] as String).toSet().toList();
+          _subdistrictsNames =
+              _subdistricts.map((e) => e['name'] as String).toSet().toList();
         });
       } else {
         print('Error: ${response.body}');
@@ -139,7 +143,6 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
       print('Error: $e');
     }
   }
-  
 
   Future<void> _saveAddress(BuildContext context) async {
     if (!_formKey.currentState!.validate()) return;
@@ -227,14 +230,12 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
 
                         _selectedProvinceId = _provinces.firstWhere(
                           (province) => province['name'] == _selectedProvince,
-                          orElse: () => {
-                            'id': null
-                          },
+                          orElse: () => {'id': null},
                         )['id'] as int?;
-                        
+
                         _selectedCityId = null;
                         _selectedDistrictId = null;
-                        _selectedSubdistrictId = null;  
+                        _selectedSubdistrictId = null;
 
                         _getCity();
                       });
@@ -244,9 +245,7 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
                   _buildLabel("Kabupaten/Kota"),
                   const SizedBox(height: 6.5),
                   _buildDropdown(
-                    _selectedProvince != null
-                        ? _citiesNames
-                        : [],
+                    _selectedProvince != null ? _citiesNames : [],
                     _selectedCity,
                     (value) {
                       setState(() {
@@ -256,13 +255,11 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
 
                         _selectedCityId = _cities.firstWhere(
                           (city) => city['name'] == _selectedCity,
-                          orElse: () => {
-                            'id': null
-                          },
+                          orElse: () => {'id': null},
                         )['id'] as int?;
-                        
+
                         _selectedDistrictId = null;
-                        _selectedSubdistrictId = null; 
+                        _selectedSubdistrictId = null;
 
                         _getDistrict();
                       });
@@ -272,9 +269,7 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
                   _buildLabel("Kecamatan"),
                   const SizedBox(height: 6.5),
                   _buildDropdown(
-                    _selectedCity != null
-                        ? _districtsNames
-                        : [],
+                    _selectedCity != null ? _districtsNames : [],
                     _selectedDistrict,
                     (value) {
                       setState(() {
@@ -283,11 +278,9 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
 
                         _selectedDistrictId = _districts.firstWhere(
                           (district) => district['name'] == _selectedDistrict,
-                          orElse: () => {
-                            'id': null
-                          },
+                          orElse: () => {'id': null},
                         )['id'] as int?;
-                        
+
                         _selectedSubdistrictId = null;
 
                         _getSubDistrict();
@@ -298,18 +291,15 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
                   _buildLabel("Kelurahan"),
                   const SizedBox(height: 6.5),
                   _buildDropdown(
-                    _selectedDistrict != null
-                        ? _subdistrictsNames
-                        : [],
+                    _selectedDistrict != null ? _subdistrictsNames : [],
                     _selectedSubdistrict,
                     (value) {
                       setState(() {
                         _selectedSubdistrict = value;
                         _selectedSubdistrictId = _subdistricts.firstWhere(
-                          (subdistrict) => subdistrict['name'] == _selectedSubdistrict,
-                          orElse: () => {
-                            'id': null
-                          },
+                          (subdistrict) =>
+                              subdistrict['name'] == _selectedSubdistrict,
+                          orElse: () => {'id': null},
                         )['id'] as int?;
                         print(_selectedSubdistrictId);
                       });
@@ -318,9 +308,11 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
                   const SizedBox(height: 15.0),
                   ElevatedButton(
                     onPressed: () {
-                      if (_formKey.currentState!.validate()) {
-                        _saveAddress(context);
-                      }
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => LocationAddressScreen()),
+                      );
                     },
                     style: ElevatedButton.styleFrom(
                       elevation: 0,
@@ -407,7 +399,7 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
             return null;
           },
         ),
-        const SizedBox(height: 16.0), 
+        const SizedBox(height: 16.0),
       ],
     );
   }
