@@ -22,6 +22,7 @@ class _SignInScreenState extends State<SignInScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _isLoading = false;
+  bool _isPasswordVisible = false;
 
   Future<void> _loginUser(BuildContext context) async {
     if (!_formKey.currentState!.validate()) return;
@@ -169,22 +170,35 @@ class _SignInScreenState extends State<SignInScreen> {
                           const SizedBox(height: 6.0),
                           TextFormField(
                             controller: _passwordController,
-                            obscureText: true,
-                            decoration: const InputDecoration(
+                            obscureText: !_isPasswordVisible, // Change here
+                            decoration: InputDecoration(
                               hintText: 'Enter Password',
-                              hintStyle: TextStyle(
+                              hintStyle: const TextStyle(
                                 color: Colors.grey,
                                 fontFamily: 'Poppins',
                                 fontSize: 13.5,
                               ),
                               filled: true,
-                              fillColor: Color(0xFFF5FCF9),
-                              contentPadding: EdgeInsets.symmetric(
+                              fillColor: const Color(0xFFF5FCF9),
+                              contentPadding: const EdgeInsets.symmetric(
                                   horizontal: 24.0, vertical: 10.0),
-                              border: OutlineInputBorder(
+                              border: const OutlineInputBorder(
                                 borderSide: BorderSide.none,
                                 borderRadius:
                                     BorderRadius.all(Radius.circular(50)),
+                              ),
+                              suffixIcon: IconButton(
+                                icon: Icon(
+                                  _isPasswordVisible
+                                      ? Icons.visibility
+                                      : Icons.visibility_off,
+                                  color: Colors.grey,
+                                ),
+                                onPressed: () {
+                                  setState(() {
+                                    _isPasswordVisible = !_isPasswordVisible; // Toggle visibility
+                                  });
+                                },
                               ),
                             ),
                             validator: (value) {
