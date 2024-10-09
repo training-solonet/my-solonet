@@ -8,6 +8,7 @@ import 'package:mysolonet/alert/show_message_failed.dart';
 import 'package:mysolonet/alert/show_message_success.dart';
 import 'package:mysolonet/home/home_screen.dart';
 import 'package:mysolonet/forgot_pass/forgot_password.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class SignInScreen extends StatefulWidget {
   const SignInScreen({super.key});
@@ -23,6 +24,8 @@ class _SignInScreenState extends State<SignInScreen> {
   final _passwordController = TextEditingController();
   bool _isLoading = false;
   bool _isPasswordVisible = false;
+
+  final GoogleSignIn _googleSignIn = GoogleSignIn();
 
   Future<void> _loginUser(BuildContext context) async {
     if (!_formKey.currentState!.validate()) return;
@@ -71,6 +74,46 @@ class _SignInScreenState extends State<SignInScreen> {
         _isLoading = false;
       });
     }
+  }
+
+  Future<void> _handleGoogleSignIn() async {
+    try {
+      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+
+      // final GoogleSignInAuthentication? googleAuth =
+      //     await googleUser?.authentication;
+      final response = await http.post(
+        Uri.parse(baseUrl + "auth/google"),
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: json.encode({
+          "email": googleUser?.email,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final responseData = json.decode(response.body);
+        final authService = AuthService();
+        await authService.saveToken(responseData['token']);
+        print(responseData['token']);
+
+        showSuccessMessage(context, responseData['message']);
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const HomeScreen()),
+        );
+      } else {
+        showFailedMessage(context, 'Failed to login');
+      }
+    } catch (e) {
+      showFailedMessage(context, '$e');
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
   }
 
   @override
@@ -196,7 +239,8 @@ class _SignInScreenState extends State<SignInScreen> {
                                 ),
                                 onPressed: () {
                                   setState(() {
-                                    _isPasswordVisible = !_isPasswordVisible; // Toggle visibility
+                                    _isPasswordVisible =
+                                        !_isPasswordVisible; // Toggle visibility
                                   });
                                 },
                               ),
@@ -230,7 +274,6 @@ class _SignInScreenState extends State<SignInScreen> {
                               ),
                             ),
                           ),
-                          // Sign In Link moved above Login button
                           _buildSignUpLink(context),
                           ElevatedButton(
                             onPressed: () {
@@ -246,34 +289,30 @@ class _SignInScreenState extends State<SignInScreen> {
                               shape: const StadiumBorder(),
                             ),
                             child: _isLoading
-                                ? const SizedBox(
-                                  height: 20,
-                                  width: 20,
-                                  child: CircularProgressIndicator(
-                                    color: Colors.white,
-                                    strokeWidth: 2,
-                                  ),
-                                )
+                                ? const CircularProgressIndicator(
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                        Colors.white),
+                                  )
                                 : const Text(
-                                    "Login",
+                                    'Login',
                                     style: TextStyle(
                                       fontFamily: 'Poppins',
-                                      fontWeight: FontWeight.bold,
+                                      fontSize: 18.0,
                                     ),
                                   ),
                           ),
                           const SizedBox(height: 16.0),
-                          const Text(
-                            "or",
+                          Text(
+                            'OR',
                             style: TextStyle(
-                              color: Colors.black87,
-                              fontSize: 14.5,
+                              fontSize: 14,
                               fontFamily: 'Poppins',
-                              fontWeight: FontWeight.w600,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.grey[600],
                             ),
                           ),
                           const SizedBox(height: 16.0),
-                          _buildGoogleSignUpButton(),
+                          _buildGoogleSignUpButton()
                         ],
                       ),
                     ),
@@ -286,56 +325,58 @@ class _SignInScreenState extends State<SignInScreen> {
       ),
     );
   }
-}
 
-Align _buildSignUpLink(BuildContext context) {
-  return Align(
-    alignment: Alignment.centerLeft,
-    child: TextButton(
-      onPressed: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => SignUpScreen()),
-        );
-      },
-      child: const Text.rich(
-        TextSpan(
-          text: "Already have an account? ",
+  Widget _buildSignUpLink(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        const Text(
+          "Don't have an account? ",
           style: TextStyle(
-            fontSize: 12,
-            color: Colors.grey,
+            fontSize: 12.0,
             fontFamily: 'Poppins',
             fontWeight: FontWeight.w500,
           ),
-          children: [
-            TextSpan(
-              text: "Sign Up",
-              style: TextStyle(
-                color: Colors.lightBlue,
-              ),
-            ),
-          ],
         ),
-      ),
-    ),
-  );
-}
+        TextButton(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const SignUpScreen()),
+            );
+          },
+          child: const Text(
+            'Sign Up',
+            style: TextStyle(
+              fontSize: 12.0,
+              fontFamily: 'Poppins',
+              fontWeight: FontWeight.w500,
+              color: Colors.lightBlue,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
 
-OutlinedButton _buildGoogleSignUpButton() {
-  return OutlinedButton.icon(
-    onPressed: () {},
-    icon: Image.asset(
-      "assets/images/google.png",
-      width: 18,
-      height: 18,
-    ),
-    style: OutlinedButton.styleFrom(
-      minimumSize: const Size(double.infinity, 48),
-      shape: const StadiumBorder(),
-    ),
-    label: const Text(
-      "Sign up with Google",
-      style: TextStyle(fontSize: 14.5, fontFamily: 'Poppins'),
-    ),
-  );
+  Widget _buildGoogleSignUpButton() {
+    return OutlinedButton.icon(
+      onPressed: () {
+        _handleGoogleSignIn();
+      },
+      icon: Image.asset(
+        "assets/images/google.png",
+        width: 18,
+        height: 18,
+      ),
+      style: OutlinedButton.styleFrom(
+        minimumSize: const Size(double.infinity, 48),
+        shape: const StadiumBorder(),
+      ),
+      label: const Text(
+        "Sign up with Google",
+        style: TextStyle(fontSize: 14.5, fontFamily: 'Poppins'),
+      ),
+    );
+  }
 }

@@ -4,6 +4,7 @@ import 'package:mysolonet/constants.dart';
 import 'location_address_screen.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:animated_custom_dropdown/custom_dropdown.dart';
 
 class AddAddressScreen extends StatefulWidget {
   const AddAddressScreen({super.key});
@@ -218,10 +219,20 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
                   const SizedBox(height: 16.0),
                   _buildLabel("Provinsi"),
                   const SizedBox(height: 6.5),
-                  _buildDropdown(
-                    _provinceNames,
-                    _selectedProvince,
-                    (value) {
+                  CustomDropdown.searchRequest(
+                    futureRequest: (query) async {
+                      return _provinceNames.where((e) {
+                        return e.toLowerCase().contains(query.toLowerCase());
+                      }).toList();
+                    },
+                    hintBuilder: (context, hint, enabled) {
+                      return Text(
+                        hint,
+                        style: const TextStyle(color: Colors.black),
+                      );
+                    },
+                    hintText: 'Search Province',
+                    onChanged: (value) {
                       setState(() {
                         _selectedProvince = value;
                         _selectedCity = null;
@@ -240,14 +251,27 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
                         _getCity();
                       });
                     },
+                    controller: SingleSelectController(''),
+                    searchHintText: 'Search Province',
+                    futureRequestDelay: const Duration(seconds: 1),
                   ),
                   const SizedBox(height: 16.0),
                   _buildLabel("Kabupaten/Kota"),
                   const SizedBox(height: 6.5),
-                  _buildDropdown(
-                    _selectedProvince != null ? _citiesNames : [],
-                    _selectedCity,
-                    (value) {
+                  CustomDropdown.searchRequest(
+                    futureRequest: (query) async {
+                      return _citiesNames.where((e) {
+                        return e.toLowerCase().contains(query.toLowerCase());
+                      }).toList();
+                    },
+                    hintBuilder: (context, hint, enabled) {
+                      return Text(
+                        hint,
+                        style: const TextStyle(color: Colors.black),
+                      );
+                    },
+                    hintText: 'Search City',
+                    onChanged: (value) {
                       setState(() {
                         _selectedCity = value;
                         _selectedDistrict = null;
@@ -264,14 +288,27 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
                         _getDistrict();
                       });
                     },
+                    controller: SingleSelectController(''),
+                    searchHintText: 'Search City',
+                    futureRequestDelay: const Duration(seconds: 1),
                   ),
                   const SizedBox(height: 16.0),
                   _buildLabel("Kecamatan"),
                   const SizedBox(height: 6.5),
-                  _buildDropdown(
-                    _selectedCity != null ? _districtsNames : [],
-                    _selectedDistrict,
-                    (value) {
+                  CustomDropdown.searchRequest(
+                    futureRequest: (query) async {
+                      return _districtsNames.where((e) {
+                        return e.toLowerCase().contains(query.toLowerCase());
+                      }).toList();
+                    },
+                    hintBuilder: (context, hint, enabled) {
+                      return Text(
+                        hint,
+                        style: const TextStyle(color: Colors.black),
+                      );
+                    },
+                    hintText: 'Search District',
+                    onChanged: (value) {
                       setState(() {
                         _selectedDistrict = value;
                         _selectedSubdistrict = null;
@@ -283,27 +320,45 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
 
                         _selectedSubdistrictId = null;
 
-                        _getSubDistrict();
+                        _getDistrict();
                       });
                     },
+                    controller: SingleSelectController(''),
+                    searchHintText: 'Search District',
+                    futureRequestDelay: const Duration(seconds: 1),
                   ),
                   const SizedBox(height: 16.0),
                   _buildLabel("Kelurahan"),
                   const SizedBox(height: 6.5),
-                  _buildDropdown(
-                    _selectedDistrict != null ? _subdistrictsNames : [],
-                    _selectedSubdistrict,
-                    (value) {
+                  CustomDropdown.searchRequest(
+                    futureRequest: (query) async {
+                      return _subdistrictsNames.where((e) {
+                        return e.toLowerCase().contains(query.toLowerCase());
+                      }).toList();
+                    },
+                    hintBuilder: (context, hint, enabled) {
+                      return Text(
+                        hint,
+                        style: const TextStyle(color: Colors.black),
+                      );
+                    },
+                    hintText: 'Search Subdistrict',
+                    onChanged: (value) {
                       setState(() {
                         _selectedSubdistrict = value;
+
                         _selectedSubdistrictId = _subdistricts.firstWhere(
                           (subdistrict) =>
                               subdistrict['name'] == _selectedSubdistrict,
                           orElse: () => {'id': null},
                         )['id'] as int?;
-                        print(_selectedSubdistrictId);
+
+                        _getSubDistrict();
                       });
                     },
+                    controller: SingleSelectController(''),
+                    searchHintText: 'Search District',
+                    futureRequestDelay: const Duration(seconds: 1),
                   ),
                   const SizedBox(height: 15.0),
                   ElevatedButton(
