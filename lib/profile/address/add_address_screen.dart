@@ -4,7 +4,7 @@ import 'package:mysolonet/constants.dart';
 import 'location_address_screen.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:animated_custom_dropdown/custom_dropdown.dart';
+import 'package:dropdown_button2/dropdown_button2.dart'; // Add this import
 
 class AddAddressScreen extends StatefulWidget {
   const AddAddressScreen({super.key});
@@ -66,7 +66,6 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
       print('Error: $e');
     }
   }
-
   Future<void> _getCity() async {
     final url = Uri.parse(baseUrl + 'kabupaten/${_selectedProvinceId}');
     final authService = AuthService();
@@ -118,8 +117,7 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
       print('Error: $e');
     }
   }
-
-  Future<void> _getSubDistrict() async {
+    Future<void> _getSubDistrict() async {
     final url = Uri.parse(baseUrl + 'kelurahan/${_selectedDistrictId}');
     final authService = AuthService();
     final token = await authService.getToken();
@@ -144,6 +142,7 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
       print('Error: $e');
     }
   }
+  
 
   Future<void> _saveAddress(BuildContext context) async {
     if (!_formKey.currentState!.validate()) return;
@@ -219,20 +218,11 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
                   const SizedBox(height: 16.0),
                   _buildLabel("Provinsi"),
                   const SizedBox(height: 6.5),
-                  CustomDropdown.searchRequest(
-                    futureRequest: (query) async {
-                      return _provinceNames.where((e) {
-                        return e.toLowerCase().contains(query.toLowerCase());
-                      }).toList();
-                    },
-                    hintBuilder: (context, hint, enabled) {
-                      return Text(
-                        hint,
-                        style: const TextStyle(color: Colors.black),
-                      );
-                    },
-                    hintText: 'Search Province',
-                    onChanged: (value) {
+                  _buildDropdown(
+                    _provinceNames,
+                    _selectedProvince,
+                    'Select your province',
+                    (value) {
                       setState(() {
                         _selectedProvince = value;
                         _selectedCity = null;
@@ -251,27 +241,15 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
                         _getCity();
                       });
                     },
-                    controller: SingleSelectController(''),
-                    searchHintText: 'Search Province',
-                    futureRequestDelay: const Duration(seconds: 1),
                   ),
                   const SizedBox(height: 16.0),
                   _buildLabel("Kabupaten/Kota"),
                   const SizedBox(height: 6.5),
-                  CustomDropdown.searchRequest(
-                    futureRequest: (query) async {
-                      return _citiesNames.where((e) {
-                        return e.toLowerCase().contains(query.toLowerCase());
-                      }).toList();
-                    },
-                    hintBuilder: (context, hint, enabled) {
-                      return Text(
-                        hint,
-                        style: const TextStyle(color: Colors.black),
-                      );
-                    },
-                    hintText: 'Search City',
-                    onChanged: (value) {
+                  _buildDropdown(
+                    _selectedProvince != null ? _citiesNames : [],
+                    _selectedCity,
+                    'Select your city',
+                    (value) {
                       setState(() {
                         _selectedCity = value;
                         _selectedDistrict = null;
@@ -288,27 +266,15 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
                         _getDistrict();
                       });
                     },
-                    controller: SingleSelectController(''),
-                    searchHintText: 'Search City',
-                    futureRequestDelay: const Duration(seconds: 1),
                   ),
                   const SizedBox(height: 16.0),
                   _buildLabel("Kecamatan"),
                   const SizedBox(height: 6.5),
-                  CustomDropdown.searchRequest(
-                    futureRequest: (query) async {
-                      return _districtsNames.where((e) {
-                        return e.toLowerCase().contains(query.toLowerCase());
-                      }).toList();
-                    },
-                    hintBuilder: (context, hint, enabled) {
-                      return Text(
-                        hint,
-                        style: const TextStyle(color: Colors.black),
-                      );
-                    },
-                    hintText: 'Search District',
-                    onChanged: (value) {
+                  _buildDropdown(
+                    _selectedCity != null ? _districtsNames : [],
+                    _selectedDistrict,
+                    'Select your district',
+                    (value) {
                       setState(() {
                         _selectedDistrict = value;
                         _selectedSubdistrict = null;
@@ -320,45 +286,28 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
 
                         _selectedSubdistrictId = null;
 
-                        _getDistrict();
+                        _getSubDistrict();
                       });
                     },
-                    controller: SingleSelectController(''),
-                    searchHintText: 'Search District',
-                    futureRequestDelay: const Duration(seconds: 1),
                   ),
                   const SizedBox(height: 16.0),
                   _buildLabel("Kelurahan"),
                   const SizedBox(height: 6.5),
-                  CustomDropdown.searchRequest(
-                    futureRequest: (query) async {
-                      return _subdistrictsNames.where((e) {
-                        return e.toLowerCase().contains(query.toLowerCase());
-                      }).toList();
-                    },
-                    hintBuilder: (context, hint, enabled) {
-                      return Text(
-                        hint,
-                        style: const TextStyle(color: Colors.black),
-                      );
-                    },
-                    hintText: 'Search Subdistrict',
-                    onChanged: (value) {
+                  _buildDropdown(
+                    _selectedDistrict != null ? _subdistrictsNames : [],
+                    _selectedSubdistrict,
+                    'Select your subdistrict',
+                    (value) {
                       setState(() {
                         _selectedSubdistrict = value;
-
                         _selectedSubdistrictId = _subdistricts.firstWhere(
                           (subdistrict) =>
                               subdistrict['name'] == _selectedSubdistrict,
                           orElse: () => {'id': null},
                         )['id'] as int?;
-
-                        _getSubDistrict();
+                        print(_selectedSubdistrictId);
                       });
                     },
-                    controller: SingleSelectController(''),
-                    searchHintText: 'Search District',
-                    futureRequestDelay: const Duration(seconds: 1),
                   ),
                   const SizedBox(height: 15.0),
                   ElevatedButton(
@@ -393,7 +342,7 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
                             ),
                           ),
                   ),
-                  SizedBox(height: 15.0),
+                  const SizedBox(height: 15.0),
                 ],
               ),
             ),
@@ -421,38 +370,58 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
   Column _buildDropdown(
     List<String> items,
     String? selectedValue,
+    String hintText,
     ValueChanged<String?>? onChanged,
   ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const SizedBox(height: 8.0),
-        DropdownButtonFormField<String>(
-          value: selectedValue,
-          items: items.map((item) {
-            return DropdownMenuItem(
-              value: item,
-              child: Text(item),
-            );
-          }).toList(),
-          onChanged: onChanged,
-          isExpanded: true,
-          decoration: InputDecoration(
-            filled: true,
-            fillColor: const Color.fromARGB(255, 240, 240, 240),
-            contentPadding:
-                const EdgeInsets.symmetric(horizontal: 24.0, vertical: 10.0),
-            border: const OutlineInputBorder(
-              borderSide: BorderSide.none,
-              borderRadius: BorderRadius.all(Radius.circular(50)),
+        DropdownButtonHideUnderline(
+          child: DropdownButton2(
+            isExpanded: true,
+            hint: Text(
+              hintText,
+              style: TextStyle(
+                fontSize: 14,
+                color: Theme.of(context).hintColor,
+              ),
+            ),
+            items: items
+                .map((item) => DropdownMenuItem<String>(
+                      value: item,
+                      child: Text(
+                        item,
+                        style: const TextStyle(
+                          fontSize: 14,
+                        ),
+                      ),
+                    ))
+                .toList(),
+            value: selectedValue,
+            onChanged: onChanged,
+            buttonStyleData: const ButtonStyleData(
+              height: 48,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.all(Radius.circular(50)),
+                border: Border(
+                  top: BorderSide(color: Colors.black26),
+                  left: BorderSide(color: Colors.black26),
+                  right: BorderSide(color: Colors.black26),
+                  bottom: BorderSide(color: Colors.black26),
+                ),
+              ),
+            ),
+            dropdownStyleData: DropdownStyleData(
+              maxHeight: 200,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(5),
+              ),
+            ),
+            menuItemStyleData: const MenuItemStyleData(
+              height: 48,
             ),
           ),
-          validator: (value) {
-            if (value == null || value.isEmpty) {
-              return 'This field cannot be empty';
-            }
-            return null;
-          },
         ),
         const SizedBox(height: 16.0),
       ],
