@@ -174,7 +174,7 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
       appBar: AppBar(
         iconTheme: const IconThemeData(color: Colors.white),
         title: const Text(
-          "Add Address",
+          "Add Addresss",
           style: TextStyle(
             fontFamily: 'Poppins',
             fontWeight: FontWeight.w600,
