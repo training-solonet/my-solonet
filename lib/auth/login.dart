@@ -331,7 +331,7 @@ class _SignInScreenState extends State<SignInScreen> {
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
         const Text(
-          "Don't have an account? ",
+          "Don't have an account?",
           style: TextStyle(
             fontSize: 12.0,
             fontFamily: 'Poppins',
