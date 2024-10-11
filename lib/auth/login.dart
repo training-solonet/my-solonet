@@ -25,7 +25,11 @@ class _SignInScreenState extends State<SignInScreen> {
   bool _isLoading = false;
   bool _isPasswordVisible = false;
 
-  final GoogleSignIn _googleSignIn = GoogleSignIn();
+  final GoogleSignIn _googleSignIn = GoogleSignIn(
+    clientId:
+        "216357245101-3704ig9b328jphh1pv7pqjc2m6r4h5q2.apps.googleusercontent.com",
+    scopes: ['email'],
+  );
 
   Future<void> _loginUser(BuildContext context) async {
     if (!_formKey.currentState!.validate()) return;
@@ -80,34 +84,35 @@ class _SignInScreenState extends State<SignInScreen> {
     try {
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
 
-      // final GoogleSignInAuthentication? googleAuth =
-      //     await googleUser?.authentication;
-      final response = await http.post(
-        Uri.parse(baseUrl + "auth/google"),
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: json.encode({
-          "email": googleUser?.email,
-        }),
-      );
+      if (googleUser != null) {
+        final String userEmail = googleUser.email;
+        print(userEmail);
 
-      if (response.statusCode == 200) {
-        final responseData = json.decode(response.body);
-        final authService = AuthService();
-        await authService.saveToken(responseData['token']);
-        print(responseData['token']);
-
-        showSuccessMessage(context, responseData['message']);
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const HomeScreen()),
+        final response = await http.get(
+          Uri.parse(baseUrl + "auth/google/callback?email=$userEmail"),
+          headers: {
+            "Content-Type": "application/json",
+          },
         );
-      } else {
-        showFailedMessage(context, 'Failed to login');
+
+        if (response.statusCode == 200) {
+          final responseData = json.decode(response.body);
+          final authService = AuthService();
+          await authService.saveToken(responseData['token']);
+          print(responseData['token']);
+
+          showSuccessMessage(context, responseData['message']);
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const HomeScreen()),
+          );
+        } else {
+          showFailedMessage(context, 'Failed to login');
+        }
       }
     } catch (e) {
-      showFailedMessage(context, '$e');
+      print(e);
+      // showFailedMessage(context, '$e');
     }
   }
 
