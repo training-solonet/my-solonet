@@ -26,10 +26,13 @@ class _SignInScreenState extends State<SignInScreen> {
   bool _isPasswordVisible = false;
 
   final GoogleSignIn _googleSignIn = GoogleSignIn(
-    clientId:
-        "216357245101-3704ig9b328jphh1pv7pqjc2m6r4h5q2.apps.googleusercontent.com",
-    scopes: ['email'],
-  );
+      clientId:
+          '216357245101-3704ig9b328jphh1pv7pqjc2m6r4h5q2.apps.googleusercontent.com',
+      scopes: [
+        'email',
+        'openid',
+        'profile',
+      ]);
 
   Future<void> _loginUser(BuildContext context) async {
     if (!_formKey.currentState!.validate()) return;
@@ -81,38 +84,20 @@ class _SignInScreenState extends State<SignInScreen> {
   }
 
   Future<void> _handleGoogleSignIn() async {
-    try {
-      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+    final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+    if (googleUser != null) {
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
+      print('ID Token: ${googleAuth.idToken}');
+      print('email: ${googleUser.email}');
+      print('displayName: ${googleUser.displayName}');
 
-      if (googleUser != null) {
-        final String userEmail = googleUser.email;
-        print(userEmail);
-
-        final response = await http.get(
-          Uri.parse(baseUrl + "auth/google/callback?email=$userEmail"),
-          headers: {
-            "Content-Type": "application/json",
-          },
-        );
-
-        if (response.statusCode == 200) {
-          final responseData = json.decode(response.body);
-          final authService = AuthService();
-          await authService.saveToken(responseData['token']);
-          print(responseData['token']);
-
-          showSuccessMessage(context, responseData['message']);
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const HomeScreen()),
-          );
-        } else {
-          showFailedMessage(context, 'Failed to login');
-        }
+      final String? idToken = googleAuth.idToken;
+      if (idToken != null) {
+        // await _sendTokenToServer(idToken);
+      } else {
+        print('ID Token is null');
       }
-    } catch (e) {
-      print(e);
-      // showFailedMessage(context, '$e');
     }
   }
 
