@@ -97,6 +97,7 @@ class _LocationAddressScreenState extends State<LocationAddressScreen> {
                         center: _markerLocation,
                         zoom: _zoom,
                         rotation: 0, // Disable rotation
+                        interactiveFlags: InteractiveFlag.all & ~InteractiveFlag.rotate, // Disable map rotation
                         onPositionChanged: (position, hasGesture) {
                           setState(() {
                             if (position.center != null) {
