@@ -93,7 +93,7 @@ class _LocationAddressScreenState extends State<LocationAddressScreen> {
                 Container(
                   padding: const EdgeInsets.symmetric(
                       horizontal: 15.0,
-                      vertical: 10.0), // Reduced vertical padding
+                      vertical: 10.0), 
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(
                         12.0), // Set the border radius here
