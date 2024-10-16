@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:mysolonet/promo/detail_promo.dart';
- // Import screen detail promo
+import 'package:mysolonet/upgrade/detail_product_screen.dart';
 
 class HomePageContent extends StatefulWidget {
   const HomePageContent({Key? key}) : super(key: key);
@@ -12,8 +12,8 @@ class HomePageContent extends StatefulWidget {
 
 class _HomePageContentState extends State<HomePageContent> {
   final PageController _pageController = PageController();
-  int _currentPage = 0; // Menyimpan halaman yang sedang ditampilkan
-  late Timer _timer; // Timer untuk menggeser halaman
+  int _currentPage = 0;
+  late Timer _timer;
 
   @override
   void initState() {
@@ -89,7 +89,8 @@ class _HomePageContentState extends State<HomePageContent> {
                         context,
                         MaterialPageRoute(
                           builder: (context) => DetailPromoScreen(
-                            imagePath: imagePath, // Pass imagePath to DetailPromoScreen
+                            imagePath:
+                                imagePath, // Pass imagePath to DetailPromoScreen
                           ),
                         ),
                       );
@@ -129,72 +130,84 @@ class _HomePageContentState extends State<HomePageContent> {
                 scrollDirection: Axis.horizontal,
                 itemCount: 8,
                 itemBuilder: (context, index) {
-                  return Container(
-                    width: 120,
-                    margin: const EdgeInsets.only(right: 3, bottom: 3),
-                    child: Card(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      clipBehavior: Clip.antiAliasWithSaveLayer,
-                      elevation: 5.0,
-                      shadowColor: Colors.black38,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Padding(
-                            padding:
-                                const EdgeInsets.fromLTRB(6.5, 6.5, 6.5, 0),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(8),
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => DetailProductScreen(
+                            productTitle: 'Product Title $index',
+                          ),
+                        ),
+                      );
+                    },
+                    child: Container(
+                      width: 120,
+                      margin: const EdgeInsets.only(right: 3, bottom: 3),
+                      child: Card(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        clipBehavior: Clip.antiAliasWithSaveLayer,
+                        elevation: 5.0,
+                        shadowColor: Colors.black38,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding:
+                                  const EdgeInsets.fromLTRB(6.5, 6.5, 6.5, 0),
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(8),
+                                child: Column(
+                                  children: [
+                                    Image.network(
+                                      'https://via.placeholder.com/150',
+                                      height: 80,
+                                      width: double.infinity,
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(7, 7, 7, 0),
                               child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Image.network(
-                                    'https://via.placeholder.com/150',
-                                    height: 80,
-                                    width: double.infinity,
-                                    fit: BoxFit.cover,
+                                  Text(
+                                    'Product Title',
+                                    style: TextStyle(
+                                      fontSize: 9.5,
+                                      fontFamily: 'Poppins',
+                                      color: Colors.grey[800],
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                  const Text(
+                                    'Category',
+                                    style: TextStyle(
+                                      fontSize: 6.5,
+                                      fontFamily: 'Poppins',
+                                      color: Colors.black54,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 5),
+                                  const Text(
+                                    'Rp 150000',
+                                    style: TextStyle(
+                                      fontSize: 9.5,
+                                      fontFamily: 'Poppins',
+                                      color: Color.fromARGB(255, 34, 50, 64),
+                                      fontWeight: FontWeight.w500,
+                                    ),
                                   ),
                                 ],
                               ),
                             ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.fromLTRB(7, 7, 7, 0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Product Title',
-                                  style: TextStyle(
-                                    fontSize: 9.5,
-                                    fontFamily: 'Poppins',
-                                    color: Colors.grey[800],
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                                const Text(
-                                  'Category',
-                                  style: TextStyle(
-                                    fontSize: 6.5,
-                                    fontFamily: 'Poppins',
-                                    color: Colors.black54,
-                                  ),
-                                ),
-                                const SizedBox(height: 5),
-                                const Text(
-                                  'Rp 150000',
-                                  style: TextStyle(
-                                    fontSize: 9.5,
-                                    fontFamily: 'Poppins',
-                                    color: Color.fromARGB(255, 34, 50, 64),
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   );
