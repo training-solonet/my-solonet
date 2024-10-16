@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mysolonet/alert/confirm_popup.dart';
-import 'package:mysolonet/alert/show_message_success.dart';
 import 'package:mysolonet/auth/login.dart';
+import 'package:mysolonet/profile/address/location_address_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class DetailProductScreen extends StatelessWidget {
@@ -14,7 +14,12 @@ class DetailProductScreen extends StatelessWidget {
     final String? token = prefs.getString('token');
 
     if (token != null) {
-      showSuccessMessage(context, 'Pembelian Berhasil');
+      confirmPopup(context, 'Payment', 'Are you sure want to buy this product', 'Buy', () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => LocationAddressScreen()),
+        );
+      });
     } else {
       confirmPopup(
           context,

@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:mysolonet/alert/confirm_popup.dart';
+import 'package:mysolonet/alert/notification_popup.dart';
 import 'package:mysolonet/auth/service/service.dart';
 import 'package:mysolonet/constants.dart';
-import 'package:mysolonet/home/home_screen.dart';
-import 'location_address_screen.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:dropdown_button2/dropdown_button2.dart'; // Add this import
+import 'package:dropdown_button2/dropdown_button2.dart';
+import 'package:mysolonet/home/home_screen.dart';
 
 class AddAddressScreen extends StatefulWidget {
   const AddAddressScreen({super.key});
@@ -67,6 +68,7 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
       print('Error: $e');
     }
   }
+
   Future<void> _getCity() async {
     final url = Uri.parse(baseUrl + 'kabupaten/${_selectedProvinceId}');
     final authService = AuthService();
@@ -118,7 +120,8 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
       print('Error: $e');
     }
   }
-    Future<void> _getSubDistrict() async {
+
+  Future<void> _getSubDistrict() async {
     final url = Uri.parse(baseUrl + 'kelurahan/${_selectedDistrictId}');
     final authService = AuthService();
     final token = await authService.getToken();
@@ -143,7 +146,6 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
       print('Error: $e');
     }
   }
-  
 
   Future<void> _saveAddress(BuildContext context) async {
     if (!_formKey.currentState!.validate()) return;
@@ -313,11 +315,18 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
                   const SizedBox(height: 15.0),
                   ElevatedButton(
                     onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => HomeScreen()),
-                      );
+                      confirmPopup(
+                          context,
+                          'Confirm Installation',
+                          'Are you sure want to install this product?',
+                          'Install Now', () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const HomeScreen()),
+                        );
+                        notificationPopup(context, 'Process', 'installation process is being scheduled', 'OK');
+                      });
                     },
                     style: ElevatedButton.styleFrom(
                       elevation: 0,
