@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:mysolonet/alert/confirm_popup.dart';
 import 'package:mysolonet/auth/login.dart';
 import 'package:mysolonet/auth/service/service.dart';
-import 'package:mysolonet/profile/address/address_screen.dart';
 import 'change_profile.dart';
 import 'package:mysolonet/alert/show_message_failed.dart';
 import 'package:mysolonet/alert/show_message_success.dart';
@@ -132,16 +131,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
             Expanded(
               child: ListView(
                 children: [
-                  _MenuItem(
-                    icon: Icons.home,
-                    title: 'My Address',
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => const AddressScreen()),
-                      );
-                    },
-                  ),
                   _MenuItem(
                     icon: Icons.task,
                     title: 'My Activity',

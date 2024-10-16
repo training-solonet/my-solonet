@@ -4,7 +4,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
-import 'package:mysolonet/profile/address/address_screen.dart';
+import 'package:mysolonet/profile/address/add_address_screen.dart';
 
 class LocationAddressScreen extends StatefulWidget {
   @override
@@ -247,7 +247,7 @@ class _LocationAddressScreenState extends State<LocationAddressScreen> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => AddressScreen()),
+                            builder: (context) => AddAddressScreen()),
                       );
                     },
                     style: ElevatedButton.styleFrom(
