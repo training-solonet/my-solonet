@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mysolonet/auth/service/service.dart';
 import 'package:mysolonet/constants.dart';
+import 'package:mysolonet/home/home_screen.dart';
 import 'location_address_screen.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -315,7 +316,7 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => LocationAddressScreen()),
+                            builder: (context) => HomeScreen()),
                       );
                     },
                     style: ElevatedButton.styleFrom(
