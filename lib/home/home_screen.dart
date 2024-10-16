@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mysolonet/alert/confirm_popup.dart';
+import 'package:mysolonet/auth/connecting_account.dart';
 import 'package:mysolonet/auth/login.dart';
 import 'package:mysolonet/auth/service/service.dart';
 import 'package:mysolonet/constants.dart';
@@ -120,46 +121,75 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: _selectedIndex == 0
-          ? AppBar(
-              automaticallyImplyLeading: false,
-              title: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      if (nama.isNotEmpty) ...[
-                        Text(
-                          'Welcome',
-                          style: TextStyle(
-                            fontWeight: FontWeight.w500,
-                            fontFamily: 'Poppins',
-                            fontSize: 12,
-                            color: Colors.white,
-                          ),
-                        ),
-                        Text(
-                          nama,
-                          style: TextStyle(
-                            fontFamily: 'Poppins',
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ]
-                    ],
+     appBar: _selectedIndex == 0
+    ? AppBar(
+        automaticallyImplyLeading: false,
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Welcome',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w500,
+                        fontFamily: 'Poppins',
+                        fontSize: 12,
+                        color: Colors.white,
+                      ),
+                    ),
+                    Text(
+                      nama,
+                      style: TextStyle(
+                        fontFamily: 'Poppins',
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(width: 10), // Jarak antara kolom nama dan tombol
+                TextButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => ConnectingAccountScreen()),
+                    );
+                  },
+                  style: TextButton.styleFrom(
+                    backgroundColor: Colors.blueAccent, // Background biru
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 12, vertical: 8),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(5),
+                    ),
                   ),
-                  Image.asset(
-                    'assets/images/solonet_logo.png',
-                    height: 25,
+                  child: Text(
+                    'Hubungkan Akun',
+                    style: TextStyle(
+                      fontFamily: 'Poppins',
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.white, // Warna teks putih
+                    ),
                   ),
-                ],
-              ),
-              backgroundColor: Colors.blueAccent,
-            )
-          : null, // Hide AppBar when not on the Home screen
+                ),
+              ],
+            ),
+            Image.asset(
+              'assets/images/solonet_logo.png',
+              height: 25,
+            ),
+          ],
+        ),
+        backgroundColor: Colors.blueAccent,
+      )
+    : null,
       body: IndexedStack(
         index:
             _selectedIndex, // Switches between screens based on _selectedIndex
