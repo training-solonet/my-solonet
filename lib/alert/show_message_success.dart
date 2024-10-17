@@ -25,14 +25,14 @@ void showSuccessMessage(BuildContext context, String message) {
       ],
     ),
     backgroundColor: Colors.green,
-    behavior: SnackBarBehavior.floating, // Membuat SnackBar mengambang
+    behavior: SnackBarBehavior.floating, 
     margin: const EdgeInsets.only(
       bottom: 40.0,
       left: 20.0,
       right: 20.0, // Atur jarak dari bawah
     ),
     shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(30), // Memberikan border radius
+      borderRadius: BorderRadius.circular(30),
     ),
     padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 20.0),
     duration: const Duration(seconds: 3), // Durasi tampil SnackBar
