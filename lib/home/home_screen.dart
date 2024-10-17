@@ -8,7 +8,6 @@ import 'package:mysolonet/help/help_screen.dart';
 import 'package:mysolonet/profile/profile_screen.dart';
 import 'package:mysolonet/home/home_content.dart';
 import 'package:mysolonet/upgrade/upgrade_screen.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -21,85 +20,58 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
-
   int userId = 0;
   String nama = '';
   String email = '';
+  String? token; 
 
   Future<void> _loadUserData() async {
     final authService = AuthService();
-    final token = await authService.getToken();
+    token = await authService.getToken();
 
-    final url = Uri.parse(baseUrl + 'users');
+    if (token != null) {
+      final url = Uri.parse(baseUrl + 'users');
 
-    try {
-      final response = await http.get(url, headers: {
-        'Authorization': 'Bearer $token',
-        'Content-Type': 'application/json',
-      });
-
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        setState(() {
-          userId = data['id'];
-          nama = data['name'];
-          email = data['email'];
+      try {
+        final response = await http.get(url, headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
         });
-      } else {
-        print('Error: ${response.body}');
+
+        if (response.statusCode == 200) {
+          final data = json.decode(response.body);
+          setState(() {
+            userId = data['id'];
+            nama = data['name'];
+            email = data['email'];
+          });
+        } else {
+          print('Error: ${response.body}');
+        }
+      } catch (e) {
+        print('Error fetching user data: $e');
       }
-    } catch (e) {
-      print('Error fetching user data: $e');
     }
   }
 
   void _onItemTapped(int index) async {
-    if (index == 3) {
-      final SharedPreferences prefs = await SharedPreferences.getInstance();
-      final String? token = prefs.getString('token');
-
-      if (token == null) {
-        confirmPopup(
-            context,
-            'Login Required',
-            'Please login to continue',
-            'Login',
-            () => Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const SignInScreen()),
-                ));
-      } else {
-        setState(() {
-          _selectedIndex = index;
-        });
-      }
+    if (index == 3 && token == null) {
+      confirmPopup(
+        context,
+        'Login Required',
+        'Please login to continue',
+        'Login',
+        () => Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const SignInScreen()),
+        ),
+      );
     } else {
       setState(() {
         _selectedIndex = index;
       });
     }
   }
-
-  final List<Map<String, dynamic>> recommendedProducts = [
-    {
-      'title': 'Product 1',
-      'price': 150000,
-      'category': 'Electronics',
-      'image': 'https://via.placeholder.com/150',
-    },
-    {
-      'title': 'Product 2',
-      'price': 200000,
-      'category': 'Clothing',
-      'image': 'https://via.placeholder.com/150',
-    },
-    {
-      'title': 'Product 3',
-      'price': 120000,
-      'category': 'Books',
-      'image': 'https://via.placeholder.com/150',
-    },
-  ];
 
   List<Widget> _screens = [];
 
@@ -121,79 +93,80 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-     appBar: _selectedIndex == 0
-    ? AppBar(
-        automaticallyImplyLeading: false,
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Row(
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Welcome',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w500,
-                        fontFamily: 'Poppins',
-                        fontSize: 12,
-                        color: Colors.white,
-                      ),
+      appBar: _selectedIndex == 0
+          ? AppBar(
+              automaticallyImplyLeading: false,
+              title: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  if (token != null && nama.isNotEmpty)
+                    Row(
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'Welcome',
+                              style: TextStyle(
+                                fontWeight: FontWeight.w500,
+                                fontFamily: 'Poppins',
+                                fontSize: 12,
+                                color: Colors.white,
+                              ),
+                            ),
+                            Text(
+                              nama,
+                              style: const TextStyle(
+                                fontFamily: 'Poppins',
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(width: 10),
+                        TextButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      ConnectingAccountScreen()),
+                            );
+                          },
+                          style: TextButton.styleFrom(
+                            backgroundColor: Colors.blueAccent,
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 12, vertical: 8),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(5),
+                            ),
+                          ),
+                          child: const Text(
+                            'Hubungkan Akun',
+                            style: TextStyle(
+                              fontFamily: 'Poppins',
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                    Text(
-                      nama,
-                      style: TextStyle(
-                        fontFamily: 'Poppins',
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(width: 10), // Jarak antara kolom nama dan tombol
-                TextButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => ConnectingAccountScreen()),
-                    );
-                  },
-                  style: TextButton.styleFrom(
-                    backgroundColor: Colors.blueAccent, // Background biru
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 12, vertical: 8),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(5),
-                    ),
+                  Image.asset(
+                    'assets/images/solonet_logo.png',
+                    height: 25,
                   ),
-                  child: Text(
-                    'Hubungkan Akun',
-                    style: TextStyle(
-                      fontFamily: 'Poppins',
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white, // Warna teks putih
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            Image.asset(
-              'assets/images/solonet_logo.png',
-              height: 25,
-            ),
-          ],
-        ),
-        backgroundColor: Colors.blueAccent,
-      )
-    : null,
+                ],
+              ),
+              backgroundColor: Colors.blueAccent,
+            )
+          : null,
       body: IndexedStack(
-        index:
-            _selectedIndex, // Switches between screens based on _selectedIndex
-        children: _screens, // The list of screens
+        index: _selectedIndex,
+        children: _screens,
       ),
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
@@ -217,13 +190,13 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
         currentIndex: _selectedIndex,
         selectedItemColor: Colors.blue,
-        onTap: _onItemTapped, // Change screen on tap without navigation
+        onTap: _onItemTapped,
         selectedFontSize: 10,
         unselectedFontSize: 10,
-        selectedLabelStyle:
-            const TextStyle(fontFamily: 'Poppins', fontWeight: FontWeight.w500),
-        unselectedLabelStyle:
-            const TextStyle(fontFamily: 'Poppins', fontWeight: FontWeight.w500),
+        selectedLabelStyle: const TextStyle(
+            fontFamily: 'Poppins', fontWeight: FontWeight.w500),
+        unselectedLabelStyle: const TextStyle(
+            fontFamily: 'Poppins', fontWeight: FontWeight.w500),
       ),
     );
   }

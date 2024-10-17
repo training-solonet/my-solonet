@@ -105,15 +105,15 @@ class _UpgradeScreenState extends State<UpgradeScreen> {
 
                   return GestureDetector(
                     onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => DetailPromoScreen(
-                            imagePath:
-                                imagePath, // Pass imagePath to DetailPromoScreen
-                          ),
-                        ),
-                      );
+                      // Navigator.push(
+                      //   context,
+                      //   MaterialPageRoute(
+                      //     builder: (context) => DetailPromoScreen(
+                      //       imagePath:
+                      //           imagePath, 
+                      //     ),
+                      //   ),
+                      // );
                     },
                     child: Container(
                       width: 280, // Lebar kontainer
