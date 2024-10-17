@@ -55,10 +55,10 @@ class _HomePageContentState extends State<HomePageContent> {
         final data = json.decode(response.body);
 
         setState(() {
-          _products = data;
+          _products = data['products']; // Parse products from API response
         });
       } else {
-        throw Exception('Failed to fetch banners');
+        throw Exception('Failed to fetch products');
       }
     } catch (e) {
       print('Error: $e');
@@ -69,6 +69,7 @@ class _HomePageContentState extends State<HomePageContent> {
   void initState() {
     super.initState();
     _fetchBanners();
+    _fetchProducts();
     _timer = Timer.periodic(const Duration(seconds: 3), (timer) {
       if (_currentPage < 4) {
         _currentPage++;
@@ -128,8 +129,7 @@ class _HomePageContentState extends State<HomePageContent> {
                       },
                       itemBuilder: (context, index) {
                         final banner = _banners[index];
-                        final imagePath =
-                            banner['gambar']; 
+                        final imagePath = banner['gambar'];
 
                         return GestureDetector(
                           onTap: () {
@@ -137,8 +137,7 @@ class _HomePageContentState extends State<HomePageContent> {
                               context,
                               MaterialPageRoute(
                                 builder: (context) => DetailPromoScreen(
-                                  imagePath:
-                                      imagePath,
+                                  imagePath: imagePath,
                                   title: banner['judul'],
                                   description: banner['deskripsi'],
                                 ),
@@ -162,9 +161,7 @@ class _HomePageContentState extends State<HomePageContent> {
                         );
                       },
                     )
-                  : const Center(
-                      child:
-                          CircularProgressIndicator()), 
+                  : const Center(child: CircularProgressIndicator()),
             ),
             const SizedBox(height: 20),
             const Text(
@@ -181,15 +178,21 @@ class _HomePageContentState extends State<HomePageContent> {
               height: 160,
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
-                itemCount: 8,
+                itemCount: _products.length, // Use the length of products
                 itemBuilder: (context, index) {
+                  final product = _products[index]; // Access each product
+                  final imageUrl = product['gambar'];
+                  final productName = product['nama'];
+                  final productPrice =
+                      product['harga'].toString(); // Convert price to string
+
                   return GestureDetector(
                     onTap: () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (context) => DetailProductScreen(
-                            productTitle: 'Product Title $index',
+                            productData: product,
                           ),
                         ),
                       );
@@ -212,15 +215,13 @@ class _HomePageContentState extends State<HomePageContent> {
                                   const EdgeInsets.fromLTRB(6.5, 6.5, 6.5, 0),
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(8),
-                                child: Column(
-                                  children: [
-                                    Image.network(
-                                      'https://via.placeholder.com/150',
-                                      height: 80,
-                                      width: double.infinity,
-                                      fit: BoxFit.cover,
-                                    ),
-                                  ],
+                                child: Image.network(
+                                  imageUrl != 'undefined'
+                                      ? imageUrl
+                                      : 'https://via.placeholder.com/150', // Handle undefined image
+                                  height: 80,
+                                  width: double.infinity,
+                                  fit: BoxFit.cover,
                                 ),
                               ),
                             ),
@@ -230,7 +231,7 @@ class _HomePageContentState extends State<HomePageContent> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    'Product Title',
+                                    productName,
                                     style: TextStyle(
                                       fontSize: 9.5,
                                       fontFamily: 'Poppins',
@@ -238,18 +239,10 @@ class _HomePageContentState extends State<HomePageContent> {
                                       fontWeight: FontWeight.w600,
                                     ),
                                   ),
-                                  const Text(
-                                    'Category',
-                                    style: TextStyle(
-                                      fontSize: 6.5,
-                                      fontFamily: 'Poppins',
-                                      color: Colors.black54,
-                                    ),
-                                  ),
                                   const SizedBox(height: 5),
-                                  const Text(
-                                    'Rp 150000',
-                                    style: TextStyle(
+                                  Text(
+                                    'Rp $productPrice',
+                                    style: const TextStyle(
                                       fontSize: 9.5,
                                       fontFamily: 'Poppins',
                                       color: Color.fromARGB(255, 34, 50, 64),
@@ -266,7 +259,7 @@ class _HomePageContentState extends State<HomePageContent> {
                   );
                 },
               ),
-            ),
+            )
           ],
         ),
       ),
