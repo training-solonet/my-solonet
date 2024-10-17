@@ -56,7 +56,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _onItemTapped(int index) async {
     if (index == 3) {
-      // jika index ketiga (Profile) yang di klik
       if (token == null) {
         confirmPopup(
           context,

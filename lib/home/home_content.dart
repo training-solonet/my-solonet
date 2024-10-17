@@ -246,7 +246,7 @@ class _HomePageContentState extends State<HomePageContent> {
                  
 
                   final productName = product['nama'];
-                  final productPrice = product['harga'].toString(); // Convert price to string
+                  final productPrice = formatRupiah(product['harga']); // Convert price to string
 
                   return GestureDetector(
                     onTap: () {
@@ -300,7 +300,7 @@ class _HomePageContentState extends State<HomePageContent> {
                                   ),
                                   const SizedBox(height: 5),
                                   Text(
-                                    'Rp $productPrice',
+                                    productPrice,
                                     style: const TextStyle(
                                       fontSize: 9.5,
                                       fontFamily: 'Poppins',
