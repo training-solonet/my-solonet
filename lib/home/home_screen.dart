@@ -55,26 +55,51 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _onItemTapped(int index) async {
-    if (index == 3 && token == null) {
-      confirmPopup(
-        context,
-        'Login Required',
-        'Please login to continue',
-        'Login',
-        () => Navigator.push(
+    if (index == 3) {
+      // jika index ketiga (Profile) yang di klik
+      if (token == null) {
+        confirmPopup(
           context,
-          MaterialPageRoute(builder: (context) => const SignInScreen()),
-        ),
-      );
-    } else {
-      if (_screens.isNotEmpty) {
-        print('Navigating to screen at index: $index');
-        setState(() {
-          _selectedIndex = index;
-        });
+          'Login Required',
+          'Please login to continue',
+          'Login',
+          () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const SignInScreen()),
+          ),
+        );
       } else {
-        print('Screens list is empty, cannot navigate.');
+        final url = Uri.parse(baseUrl + 'users');
+        try {
+          final response = await http.get(url, headers: {
+            'Authorization': 'Bearer $token',
+            'Content-Type': 'application/json',
+          });
+
+          if (response.statusCode == 401) {
+            confirmPopup(
+              context,
+              'Token Invalid',
+              'Your session has expired. Please login again.',
+              'Login',
+              () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const SignInScreen()),
+              ),
+            );
+          } else {
+            setState(() {
+              _selectedIndex = index; 
+            });
+          }
+        } catch (e) {
+          print('Error checking token: $e');
+        }
       }
+    } else {
+      setState(() {
+        _selectedIndex = index;
+      });
     }
   }
 
