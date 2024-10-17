@@ -152,22 +152,22 @@ class _UpgradeScreenState extends State<UpgradeScreen> {
             const SizedBox(height: 20),
 
             // Content Cards
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: ListView.builder(
-                  itemCount:
-                      products.length, // Use the length of the product list
-                  itemBuilder: (context, index) {
-                    return buildCard(
-                      products[index]['title']!,
-                      products[index]['price']!,
-                      context,
-                    );
-                  },
-                ),
-              ),
-            ),
+            // Expanded(
+            //   child: Padding(
+            //     padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            //     child: ListView.builder(
+            //       itemCount:
+            //           products.length, // Use the length of the product list
+            //       itemBuilder: (context, index) {
+            //         return buildCard(
+            //           products[index]['title']!,
+            //           products[index]['price']!,
+            //           context,
+            //         );
+            //       },
+            //     ),
+            //   ),
+            // ),
           ],
         ),
       ),
@@ -215,62 +215,62 @@ class _UpgradeScreenState extends State<UpgradeScreen> {
   }
 
   // Widget to build product cards with animated scaling effect on tap
-  Widget buildCard(String title, String subtitle, BuildContext context) {
-    return InkWell(
-      onTap: () {
-        // Navigasi ke layar detail produk saat card di klik
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => DetailProductScreen(
-              productTitle: title, // Mengirim judul produk ke layar detail
-            ),
-          ),
-        );
-      },
-      child: Card(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        elevation: 2,
-        margin: const EdgeInsets.only(bottom: 20),
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                children: [
-                  Icon(Icons.wifi, size: 36, color: Colors.blue),
-                  const SizedBox(width: 10),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        title,
-                        style: const TextStyle(
-                          fontFamily: 'Poppins',
-                          fontSize: 18,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      const SizedBox(height: 5),
-                      Text(
-                        subtitle,
-                        style: const TextStyle(
-                          fontFamily: 'Poppins',
-                          fontSize: 13,
-                          fontWeight: FontWeight.w500,
-                          color: Colors.grey,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              const Icon(Icons.chevron_right, size: 24, color: Colors.blue),
-            ],
-          ),
-        ),
-      ),
-    );
+  // Widget buildCard(String title, String subtitle, BuildContext context) {
+    // return InkWell(
+    //   onTap: () {
+    //     // Navigasi ke layar detail produk saat card di klik
+    //     Navigator.push(
+    //       context,
+    //       MaterialPageRoute(
+    //         builder: (context) => DetailProductScreen(
+    //           productTitle: title, // Mengirim judul produk ke layar detail
+    //         ),
+    //       ),
+    //     );
+    //   },
+    //   child: Card(
+    //     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+    //     elevation: 2,
+    //     margin: const EdgeInsets.only(bottom: 20),
+    //     child: Padding(
+    //       padding: const EdgeInsets.all(20),
+    //       child: Row(
+    //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    //         children: [
+    //           Row(
+    //             children: [
+    //               Icon(Icons.wifi, size: 36, color: Colors.blue),
+    //               const SizedBox(width: 10),
+    //               Column(
+    //                 crossAxisAlignment: CrossAxisAlignment.start,
+    //                 children: [
+    //                   Text(
+    //                     title,
+    //                     style: const TextStyle(
+    //                       fontFamily: 'Poppins',
+    //                       fontSize: 18,
+    //                       fontWeight: FontWeight.w500,
+    //                     ),
+    //                   ),
+    //                   const SizedBox(height: 5),
+    //                   Text(
+    //                     subtitle,
+    //                     style: const TextStyle(
+    //                       fontFamily: 'Poppins',
+    //                       fontSize: 13,
+    //                       fontWeight: FontWeight.w500,
+    //                       color: Colors.grey,
+    //                     ),
+    //                   ),
+    //                 ],
+    //               ),
+    //             ],
+    //           ),
+    //           const Icon(Icons.chevron_right, size: 24, color: Colors.blue),
+    //         ],
+    //       ),
+    //     ),
+    //   ),
+    // );
   }
-}
+// }
