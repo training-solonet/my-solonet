@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:mysolonet/constants.dart';
 import 'dart:async';
 import 'package:mysolonet/promo/detail_promo.dart';
 import 'package:mysolonet/upgrade/detail_product_screen.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class HomePageContent extends StatefulWidget {
   const HomePageContent({Key? key}) : super(key: key);
@@ -15,9 +18,57 @@ class _HomePageContentState extends State<HomePageContent> {
   int _currentPage = 0;
   late Timer _timer;
 
+  List<dynamic> _banners = [];
+  List<dynamic> _products = [];
+
+  Future<void> _fetchBanners() async {
+    final url = Uri.parse(baseUrl + 'banner');
+
+    try {
+      final response = await http.get(url, headers: {
+        'Content-Type': 'application/json',
+      });
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+
+        setState(() {
+          _banners = data;
+        });
+      } else {
+        throw Exception('Failed to fetch banners');
+      }
+    } catch (e) {
+      print('Error: $e');
+    }
+  }
+
+  Future<void> _fetchProducts() async {
+    final url = Uri.parse(baseUrl + 'paket');
+
+    try {
+      final response = await http.get(url, headers: {
+        'Content-Type': 'application/json',
+      });
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+
+        setState(() {
+          _products = data;
+        });
+      } else {
+        throw Exception('Failed to fetch banners');
+      }
+    } catch (e) {
+      print('Error: $e');
+    }
+  }
+
   @override
   void initState() {
     super.initState();
+    _fetchBanners();
     _timer = Timer.periodic(const Duration(seconds: 3), (timer) {
       if (_currentPage < 4) {
         _currentPage++;
@@ -66,52 +117,54 @@ class _HomePageContentState extends State<HomePageContent> {
             const SizedBox(height: 10),
             SizedBox(
               height: 157.5,
-              child: PageView.builder(
-                controller: _pageController,
-                itemCount: 5,
-                onPageChanged: (index) {
-                  setState(() {
-                    _currentPage = index;
-                  });
-                },
-                itemBuilder: (context, index) {
-                  // Determine the image based on the index
-                  String imagePath;
-                  if (index == 0 || index == 2 || index == 4) {
-                    imagePath = 'assets/images/Promo Free Pemasangan.png';
-                  } else {
-                    imagePath = 'assets/images/Promoalat.png';
-                  }
+              child: _banners.isNotEmpty
+                  ? PageView.builder(
+                      controller: _pageController,
+                      itemCount: _banners.length,
+                      onPageChanged: (index) {
+                        setState(() {
+                          _currentPage = index;
+                        });
+                      },
+                      itemBuilder: (context, index) {
+                        final banner = _banners[index];
+                        final imagePath =
+                            banner['gambar']; 
 
-                  return GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => DetailPromoScreen(
-                            imagePath:
-                                imagePath, // Pass imagePath to DetailPromoScreen
+                        return GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => DetailPromoScreen(
+                                  imagePath:
+                                      imagePath,
+                                  title: banner['judul'],
+                                  description: banner['deskripsi'],
+                                ),
+                              ),
+                            );
+                          },
+                          child: Container(
+                            width: 280,
+                            margin: const EdgeInsets.symmetric(horizontal: 5),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(10),
+                              child: Image.network(
+                                imagePath,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
                           ),
-                        ),
-                      );
-                    },
-                    child: Container(
-                      width: 280, // Lebar kontainer
-                      margin: const EdgeInsets.symmetric(horizontal: 5),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(10),
-                        child: Image.asset(
-                          imagePath, // Display the appropriate image based on the index
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                    ),
-                  );
-                },
-              ),
+                        );
+                      },
+                    )
+                  : const Center(
+                      child:
+                          CircularProgressIndicator()), 
             ),
             const SizedBox(height: 20),
             const Text(

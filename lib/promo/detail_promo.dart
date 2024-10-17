@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
 
 class DetailPromoScreen extends StatefulWidget {
-  final String imagePath; // Accept the image path as a parameter
+  final String imagePath; 
+  final String title;
+  final String description;
 
-  const DetailPromoScreen({Key? key, required this.imagePath}) : super(key: key);
+  const DetailPromoScreen({Key? key, required this.imagePath, required this.title, required this.description}) : super(key: key);
 
   @override
   _DetailPromoScreenState createState() => _DetailPromoScreenState();
 }
 
 class _DetailPromoScreenState extends State<DetailPromoScreen> {
-  bool _isExpanded = false; // State untuk dropdown syarat dan ketentuan
+  bool _isExpanded = false; 
 
   @override
   Widget build(BuildContext context) {
@@ -42,18 +44,18 @@ class _DetailPromoScreenState extends State<DetailPromoScreen> {
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(10),
-              child: Image.asset(
-                widget.imagePath, // Use the imagePath passed from HomePageContent
+              child: Image.network(
+                widget.imagePath, 
                 height: 150,
                 width: double.infinity,
                 fit: BoxFit.cover,
               ),
             ),
             const SizedBox(height: 10),
-            const Padding(
+            Padding(
               padding: EdgeInsets.fromLTRB(0, 5, 0, 0),
               child: Text(
-                'Promo Spesial: Paket Internet Unlimited',
+                widget.title,
                 style: TextStyle(
                   fontFamily: 'Poppins',
                   fontSize: 18,
@@ -61,10 +63,10 @@ class _DetailPromoScreenState extends State<DetailPromoScreen> {
                 ),
               ),
             ),
-            const Padding(
+            Padding(
               padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
               child: Text(
-                'Nikmati kecepatan internet tanpa batas dengan paket ini!',
+                widget.description,
                 style: TextStyle(
                   fontFamily: 'Poppins',
                   fontSize: 11,
