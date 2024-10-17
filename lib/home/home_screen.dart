@@ -23,7 +23,7 @@ class _HomeScreenState extends State<HomeScreen> {
   int userId = 0;
   String nama = '';
   String email = '';
-  String? token; 
+  String? token;
 
   Future<void> _loadUserData() async {
     final authService = AuthService();
@@ -67,9 +67,14 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       );
     } else {
-      setState(() {
-        _selectedIndex = index;
-      });
+      if (_screens.isNotEmpty) {
+        print('Navigating to screen at index: $index');
+        setState(() {
+          _selectedIndex = index;
+        });
+      } else {
+        print('Screens list is empty, cannot navigate.');
+      }
     }
   }
 
@@ -193,10 +198,10 @@ class _HomeScreenState extends State<HomeScreen> {
         onTap: _onItemTapped,
         selectedFontSize: 10,
         unselectedFontSize: 10,
-        selectedLabelStyle: const TextStyle(
-            fontFamily: 'Poppins', fontWeight: FontWeight.w500),
-        unselectedLabelStyle: const TextStyle(
-            fontFamily: 'Poppins', fontWeight: FontWeight.w500),
+        selectedLabelStyle:
+            const TextStyle(fontFamily: 'Poppins', fontWeight: FontWeight.w500),
+        unselectedLabelStyle:
+            const TextStyle(fontFamily: 'Poppins', fontWeight: FontWeight.w500),
       ),
     );
   }

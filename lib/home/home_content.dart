@@ -182,9 +182,12 @@ class _HomePageContentState extends State<HomePageContent> {
                 itemBuilder: (context, index) {
                   final product = _products[index]; // Access each product
                   final imageUrl = product['gambar'];
+
+                  // Check if the image URL contains "undefined" and replace it
+                 
+
                   final productName = product['nama'];
-                  final productPrice =
-                      product['harga'].toString(); // Convert price to string
+                  final productPrice = product['harga'].toString(); // Convert price to string
 
                   return GestureDetector(
                     onTap: () {
@@ -211,14 +214,11 @@ class _HomePageContentState extends State<HomePageContent> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Padding(
-                              padding:
-                                  const EdgeInsets.fromLTRB(6.5, 6.5, 6.5, 0),
+                              padding: const EdgeInsets.fromLTRB(6.5, 6.5, 6.5, 0),
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(8),
                                 child: Image.network(
-                                  imageUrl != 'undefined'
-                                      ? imageUrl
-                                      : 'https://via.placeholder.com/150', // Handle undefined image
+                                  imageUrl, // Use the valid image URL
                                   height: 80,
                                   width: double.infinity,
                                   fit: BoxFit.cover,
@@ -259,7 +259,7 @@ class _HomePageContentState extends State<HomePageContent> {
                   );
                 },
               ),
-            )
+            ),
           ],
         ),
       ),

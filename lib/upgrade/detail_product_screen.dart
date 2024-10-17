@@ -40,6 +40,9 @@ class DetailProductScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Image URL handling logic
+    final imageUrl = productData['gambar'];
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -70,19 +73,8 @@ class DetailProductScreen extends StatelessWidget {
               Center(
                 child: Column(
                   children: [
-                         
-                    Text(
-                      productData['nama'],
-                      style: const TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: 'Poppins',
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 10),
-                     Image.network(
-                      productData['gambar'],
+                    Image.network(
+                      imageUrl,
                       height: 200,
                       width: 200,
                       fit: BoxFit.cover,
