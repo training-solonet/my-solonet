@@ -98,7 +98,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 children: [
                   const SizedBox(height: 16),
                   const Text(
-                    "Forgot Password",
+                    "Lupa Password",
                     style: TextStyle(
                       fontFamily: 'Poppins',
                       color: Colors.black,
@@ -108,7 +108,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   ),
                   const SizedBox(height: 8),
                   const Text(
-                    "Please enter your number WhatsApp and we will \nsend you a link to return to your account",
+                    "Masukkan nomor yang terdaftar pada akun Anda. Kami akan mengirimkan kode verifikasi ke nomor tersebut.",
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontFamily: 'Poppins',
@@ -162,8 +162,8 @@ class _ForgotPasswordForm extends StatelessWidget {
                   controller: controller,
                   keyboardType: TextInputType.phone,
                   decoration: InputDecoration(
-                    hintText: "Enter your number",
-                    labelText: "Phone Number",
+                    hintText: "Masukkan Nomor Handphone",
+                    labelText: "No. WhatsApp",
                     floatingLabelBehavior: FloatingLabelBehavior.always,
                     hintStyle: const TextStyle(
                       color: Color(0xFF757575),
@@ -206,7 +206,7 @@ class _ForgotPasswordForm extends StatelessWidget {
                   ),
                   validator: (value) {
                     if (value!.isEmpty) {
-                      return 'Please enter your phone number';
+                      return 'No. WhatsApp harus diisi';
                     }
                     return null;
                   },
@@ -227,7 +227,7 @@ class _ForgotPasswordForm extends StatelessWidget {
               ),
             ),
             child: Text(
-              isLoading ? "Loading..." : "Submit",
+              isLoading ? "Loading..." : "Kirim",
               style: const TextStyle(fontFamily: 'Poppins'),
             ),
           ),
@@ -251,7 +251,7 @@ class _NoAccountText extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         const Text(
-          "Don’t have an account? ",
+          "Tidak punya akun? ",
           style: TextStyle(
             color: Color(0xFF757575),
             fontFamily: 'Poppins',
@@ -265,7 +265,7 @@ class _NoAccountText extends StatelessWidget {
             );
           },
           child: const Text(
-            "Sign Up",
+            "Daftar Sekarang",
             style: TextStyle(
               color: Colors.blueAccent,
               fontFamily: 'Poppins',

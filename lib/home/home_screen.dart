@@ -59,8 +59,8 @@ class _HomeScreenState extends State<HomeScreen> {
       if (token == null) {
         confirmPopup(
           context,
-          'Login Required',
-          'Please login to continue',
+          'Anda Belum Login',
+          'Silahkan login terlebih dahulu, untuk mengakses halaman ini',
           'Login',
           () => Navigator.push(
             context,
@@ -78,8 +78,8 @@ class _HomeScreenState extends State<HomeScreen> {
           if (response.statusCode == 401) {
             confirmPopup(
               context,
-              'Token Invalid',
-              'Your session has expired. Please login again.',
+              'Anda Belum Login',
+              'Silahkan login terlebih dahulu, untuk mengakses halaman ini',
               'Login',
               () => Navigator.push(
                 context,
@@ -135,7 +135,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             const Text(
-                              'Welcome',
+                              'Selamat Datang',
                               style: TextStyle(
                                 fontWeight: FontWeight.w500,
                                 fontFamily: 'Poppins',

@@ -166,7 +166,7 @@ class _HomePageContentState extends State<HomePageContent> {
           ),
 
             const Text(
-              'Latest Promo',
+              'Promo',
               style: TextStyle(
                 fontFamily: 'Poppins',
                 fontSize: 16,
@@ -224,7 +224,7 @@ class _HomePageContentState extends State<HomePageContent> {
             ),
             const SizedBox(height: 20),
             const Text(
-              'Recommended Products',
+              'Rekomendasi Produk',
               style: TextStyle(
                 fontFamily: 'Poppins',
                 fontSize: 16,

@@ -97,7 +97,7 @@ class _NewPasswordState extends State<NewPasswordScreen> {
             FocusScope.of(context).unfocus();
           },
           child: LogoWithTitle(
-            title: "Change Password",
+            title: "Ubah Kata Sandi",
             children: [
               Form(
                 key: _formKey,
@@ -107,7 +107,7 @@ class _NewPasswordState extends State<NewPasswordScreen> {
                       obscureText: true,
                       controller: _passwordController,
                       decoration: const InputDecoration(
-                        hintText: 'Password',
+                        hintText: 'kata sandi',
                         filled: true,
                         fillColor: Color(0xFFF5FCF9),
                         contentPadding: EdgeInsets.symmetric(
@@ -120,7 +120,7 @@ class _NewPasswordState extends State<NewPasswordScreen> {
                       style: TextStyle(fontFamily: 'Poppins', fontSize: 14),
                       validator: (value) {
                         if (value!.isEmpty) {
-                          return 'Please enter password';
+                          return 'Masukkan kata sandi';
                         }
                         return null;
                       },
@@ -131,7 +131,7 @@ class _NewPasswordState extends State<NewPasswordScreen> {
                         controller: _confirmPasswordController,
                         obscureText: true,
                         decoration: const InputDecoration(
-                          hintText: 'Confirm Password',
+                          hintText: 'Konfirmasi kata sandi',
                           filled: true,
                           fillColor: Color(0xFFF5FCF9),
                           contentPadding: EdgeInsets.symmetric(
@@ -144,9 +144,9 @@ class _NewPasswordState extends State<NewPasswordScreen> {
                         style: TextStyle(fontFamily: 'Poppins', fontSize: 14),
                         validator: (value) {
                           if (value != _passwordController.text) {
-                            return 'Passwords do not match';
+                            return 'Kata sandi tidak cocok';
                           } else if (value!.isEmpty) {
-                            return 'Please enter password';
+                            return 'Kata sandi tidak boleh kosong';
                           }
                           return null;
                         },
@@ -174,7 +174,7 @@ class _NewPasswordState extends State<NewPasswordScreen> {
                         keyboardType: TextInputType.number,
                         validator: (value) {
                           if (value!.isEmpty) {
-                            return 'Please enter OTP';
+                            return 'OTP tidak boleh kosong';
                           }
                           return null;
                         },
@@ -199,7 +199,7 @@ class _NewPasswordState extends State<NewPasswordScreen> {
                   shape: const StadiumBorder(),
                 ),
                 child: Text(
-                  _isLoading ? "Loading..." : "Change Password",
+                  _isLoading ? "Loading..." : "Ubah Kata Sandi",
                   style: TextStyle(
                     fontFamily: 'Poppins',
                     fontWeight: FontWeight.w600,
@@ -216,7 +216,7 @@ class _NewPasswordState extends State<NewPasswordScreen> {
                 },
                 child: Text.rich(
                   TextSpan(
-                    text: "Already have an account? ",
+                    text: "Sudah punya akun? ",
                     style: TextStyle(
                       fontSize: 12,
                       color: Colors.grey,

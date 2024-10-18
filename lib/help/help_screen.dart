@@ -9,7 +9,7 @@ class HelpScreen extends StatelessWidget {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         title: const Text(
-          'Help',
+          'Bantuan',
           style: TextStyle(
             color: Colors.white,
             fontFamily: 'Poppins',
