@@ -129,57 +129,57 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         key: _formKey,
                         child: Column(
                           children: [
-                            _buildLabel('Full Name'),
+                            _buildLabel('Nama Lengkap'),
                             _buildTextField(
                                 _fullnameController,
-                                'Enter Your Full Name',
+                                'Masukkan Nama Lengkap',
                                 TextInputType.text, (value) {
                               if (value!.isEmpty) {
-                                return "Full Name cannot be empty";
+                                return "Nama lengkap tidak boleh kosong";
                               }
                               return null;
                             }),
                             const SizedBox(height: 16.0),
-                            _buildLabel('Whatsapp Number'),
+                            _buildLabel('Nomor Whatsapp'),
                             _buildWhatsappTextField(),
                             const SizedBox(height: 16.0),
                             _buildLabel('Email'),
                             _buildTextField(
                                 _emailController,
-                                'Enter Your Email',
+                                'Masukkan Email',
                                 TextInputType.emailAddress, (value) {
                               if (value!.isEmpty) {
-                                return "Email cannot be empty";
+                                return "Email tidak boleh kosong";
                               }
                               if (!RegExp(
                                       r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
                                   .hasMatch(value)) {
-                                return "Enter a valid email";
+                                return "Email tidak valid";
                               }
                               return null;
                             }),
                             const SizedBox(height: 16.0),
-                            _buildLabel('Password'),
+                            _buildLabel('Kata Sandi'),
                             _buildPasswordField(
-                                _passwordController, 'Enter Your Password',
+                                _passwordController, 'Masukkan Kata Sandi',
                                 (value) {
                               if (value!.isEmpty) {
-                                return "Password cannot be empty";
+                                return "Kata sandi tidak boleh kosong";
                               }
                               if (value.length < 6) {
-                                return "Password must be at least 6 characters";
+                                return "Kata sandi minimal 6 karakter";
                               }
                               return null;
                             }),
                             const SizedBox(height: 16.0),
-                            _buildLabel('Confirm Password'),
+                            _buildLabel('Konfirmasi Kata Sandi'),
                             _buildPasswordField(_confirmpasswordController,
-                                'Enter Your Confirm Password', (value) {
+                                'Masukkan Konfirmasi Kata Sandi', (value) {
                               if (value!.isEmpty) {
-                                return "Confirm password cannot be empty";
+                                return "Konfirmasi kata sandi tidak boleh kosong";
                               }
                               if (value != _passwordController.text) {
-                                return "Passwords do not match";
+                                return "Konfirmasi kata sandi tidak sama dengan kata sandi";
                               }
                               return null;
                             }),
@@ -188,7 +188,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             _buildSignInLink(context),
                             const SizedBox(height: 16.0),
                             const Text(
-                              "or",
+                              "atau",
                               style: TextStyle(
                                 color: Colors.black87,
                                 fontSize: 14.5,
@@ -292,7 +292,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       keyboardType: TextInputType.phone,
       validator: (value) {
         if (value!.isEmpty) {
-          return "Whatsapp number cannot be empty";
+          return "Nomor Whatsapp tidak boleh kosong";
         }
         return null;
       },
@@ -362,12 +362,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => SignInScreen()),
+            MaterialPageRoute(builder: (context) => const SignInScreen()),
           );
         },
         child: const Text.rich(
           TextSpan(
-            text: "Already have an account? ",
+            text: "Sudah punya akun? ",
             style: TextStyle(
               fontSize: 12,
               color: Colors.grey,
@@ -376,7 +376,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             ),
             children: [
               TextSpan(
-                text: "Sign In",
+                text: "Login",
                 style: TextStyle(
                   color: Colors.lightBlue,
                 ),
@@ -401,7 +401,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         shape: const StadiumBorder(),
       ),
       label: const Text(
-        "Sign up with Google",
+        "Daftar dengan Google",
         style: TextStyle(fontSize: 14.5, fontFamily: 'Poppins'),
       ),
     );

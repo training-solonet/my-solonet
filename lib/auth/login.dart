@@ -160,7 +160,7 @@ class _SignInScreenState extends State<SignInScreen> {
                           TextFormField(
                             controller: _emailController,
                             decoration: const InputDecoration(
-                              hintText: 'Enter Email',
+                              hintText: 'Masukkan Email',
                               hintStyle: TextStyle(
                                 color: Colors.grey,
                                 fontFamily: 'Poppins',
@@ -179,7 +179,7 @@ class _SignInScreenState extends State<SignInScreen> {
                             keyboardType: TextInputType.emailAddress,
                             validator: (value) {
                               if (value == null || value.isEmpty) {
-                                return 'Please enter your email';
+                                return 'Email tidak boleh kosong';
                               }
                               return null;
                             },
@@ -190,7 +190,7 @@ class _SignInScreenState extends State<SignInScreen> {
                             child: Align(
                               alignment: Alignment.centerLeft,
                               child: Text(
-                                'Password',
+                                'Kata Sandi',
                                 style: TextStyle(
                                   color: Colors.black87,
                                   fontSize: 14.5,
@@ -205,7 +205,7 @@ class _SignInScreenState extends State<SignInScreen> {
                             controller: _passwordController,
                             obscureText: !_isPasswordVisible, // Change here
                             decoration: InputDecoration(
-                              hintText: 'Enter Password',
+                              hintText: 'Masukkan Kata Sandi',
                               hintStyle: const TextStyle(
                                 color: Colors.grey,
                                 fontFamily: 'Poppins',
@@ -237,7 +237,7 @@ class _SignInScreenState extends State<SignInScreen> {
                             ),
                             validator: (value) {
                               if (value == null || value.isEmpty) {
-                                return 'Please enter your password';
+                                return 'Password tidak boleh kosong';
                               }
                               return null;
                             },
@@ -254,7 +254,7 @@ class _SignInScreenState extends State<SignInScreen> {
                                 );
                               },
                               child: const Text(
-                                'Forgot Password?',
+                                'Lupa Kata Sandi?',
                                 style: TextStyle(
                                   fontSize: 10.5,
                                   fontFamily: 'Poppins',
@@ -293,7 +293,7 @@ class _SignInScreenState extends State<SignInScreen> {
                           ),
                           const SizedBox(height: 16.0),
                           Text(
-                            'OR',
+                            'Atau',
                             style: TextStyle(
                               fontSize: 14,
                               fontFamily: 'Poppins',
@@ -321,7 +321,7 @@ class _SignInScreenState extends State<SignInScreen> {
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
         const Text(
-          "Don't have an account?",
+          "Belum punya akun? ",
           style: TextStyle(
             fontSize: 12.0,
             fontFamily: 'Poppins',
@@ -336,7 +336,7 @@ class _SignInScreenState extends State<SignInScreen> {
             );
           },
           child: const Text(
-            'Sign Up',
+            'Daftar Sekarang',
             style: TextStyle(
               fontSize: 12.0,
               fontFamily: 'Poppins',
@@ -364,7 +364,7 @@ class _SignInScreenState extends State<SignInScreen> {
         shape: const StadiumBorder(),
       ),
       label: const Text(
-        "Sign up with Google",
+        "Login dengan Google",
         style: TextStyle(fontSize: 14.5, fontFamily: 'Poppins'),
       ),
     );

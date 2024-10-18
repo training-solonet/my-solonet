@@ -239,7 +239,7 @@ class _OtpScreenState extends State<OtpScreen> {
                   ),
                 ),
                 child: Text(
-                  _isLoading ? 'Loading...' : 'Submit',
+                  _isLoading ? 'Loading...' : 'Kirim Kode',
                   style: TextStyle(
                     fontFamily: 'Poppins',
                     fontSize: 16,

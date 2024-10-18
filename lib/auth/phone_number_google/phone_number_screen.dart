@@ -135,7 +135,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       keyboardType: TextInputType.phone,
       validator: (value) {
         if (value!.isEmpty) {
-          return "Whatsapp number cannot be empty";
+          return "No. Whatsapp harus diisi";
         }
         return null;
       },
