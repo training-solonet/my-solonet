@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:mysolonet/constants.dart';
 import 'dart:async';
-import 'package:mysolonet/promo/detail_promo.dart';
-import 'package:mysolonet/upgrade/detail_product_screen.dart';
+import 'package:mysolonet/detail/promo/detail_promo.dart';
+import 'package:mysolonet/detail/product/detail_product_screen.dart';
 import 'package:mysolonet/auth/connecting_account.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';

@@ -7,7 +7,7 @@ import 'package:mysolonet/constants.dart';
 import 'package:mysolonet/help/help_screen.dart';
 import 'package:mysolonet/profile/profile_screen.dart';
 import 'package:mysolonet/home/home_content.dart';
-import 'package:mysolonet/upgrade/upgrade_screen.dart';
+import 'package:mysolonet/history/history_screen.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -111,7 +111,7 @@ class _HomeScreenState extends State<HomeScreen> {
       setState(() {
         _screens = [
           const HomePageContent(),
-          const UpgradeScreen(),
+          const HistoryScreen(),
           const HelpScreen(),
           const ProfileScreen(),
         ];
@@ -178,16 +178,16 @@ class _HomeScreenState extends State<HomeScreen> {
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.shopping_cart),
-            label: 'Upgrade',
+            icon: Icon(Icons.history),
+            label: 'Riwayat',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.help),
-            label: 'Help',
+            label: 'Bantuan',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),
-            label: 'Profile',
+            label: 'Profil',
           ),
         ],
         currentIndex: _selectedIndex,
