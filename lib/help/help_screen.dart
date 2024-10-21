@@ -46,7 +46,7 @@ class HelpScreen extends StatelessWidget {
   }
 
   Future<void> _launchWhatsApp(String phoneNumber) async {
-    final url = 'whatsapp://send?phone=$phoneNumber'; // Corrected URL
+    final url = 'whatsapp://send?phone=$phoneNumber';
     try {
         launch(url);
       } catch (e) {
