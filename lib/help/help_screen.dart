@@ -28,7 +28,6 @@ class HelpScreen extends StatelessWidget {
               _buildHelpCard('assets/images/2.png'),
               _buildHelpCard('assets/images/3.png'),
               _buildHelpCard('assets/images/4.png'),
-              _buildHelpCard('assets/images/5.jpg'),
             ],
           ),
         ),
