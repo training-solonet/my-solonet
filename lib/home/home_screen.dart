@@ -88,7 +88,7 @@ class _HomeScreenState extends State<HomeScreen> {
             );
           } else {
             setState(() {
-              _selectedIndex = index; 
+              _selectedIndex = index;
             });
           }
         } catch (e) {
@@ -110,7 +110,11 @@ class _HomeScreenState extends State<HomeScreen> {
     _loadUserData().then((_) {
       setState(() {
         _screens = [
-          const HomePageContent(),
+          HomePageContent(
+            userId: userId,
+            nama: nama,
+            email: email,
+          ),
           const HistoryScreen(),
           const HelpScreen(),
           const ProfileScreen(),

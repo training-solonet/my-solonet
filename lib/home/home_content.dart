@@ -8,7 +8,16 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class HomePageContent extends StatefulWidget {
-  const HomePageContent({Key? key}) : super(key: key);
+  final int userId;
+  final String nama;
+  final String email;
+
+  HomePageContent({
+    Key? key,
+    required this.userId,
+    required this.nama,
+    required this.email,
+  });
 
   @override
   _HomePageContentState createState() => _HomePageContentState();
@@ -107,64 +116,67 @@ class _HomePageContentState extends State<HomePageContent> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-             Container(
-            padding: const EdgeInsets.all(16.0),
-            margin: const EdgeInsets.only(bottom: 20),
-            decoration: BoxDecoration(
-              color: Colors.blueAccent,
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Hubungkan Sekarang!',
-                  style: TextStyle(
-                    fontFamily: 'Poppins',
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
+            if (widget.userId > 0 &&
+                widget.email.isNotEmpty &&
+                widget.nama.isNotEmpty)
+              Container(
+                padding: const EdgeInsets.all(16.0),
+                margin: const EdgeInsets.only(bottom: 20),
+                decoration: BoxDecoration(
+                  color: Colors.blueAccent,
+                  borderRadius: BorderRadius.circular(10),
                 ),
-                const Text(
-                  'Hubungkan akun Anda untuk mendapatkan pengalaman terbaik dan tawaran eksklusif.',
-                  style: TextStyle(
-                    fontFamily: 'Poppins',
-                    fontSize: 12,
-                    color: Colors.white,
-                  ),
-                ),
-                const SizedBox(height: 10),
-                TextButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ConnectingAccountScreen(),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Hubungkan Sekarang!',
+                      style: TextStyle(
+                        fontFamily: 'Poppins',
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
                       ),
-                    );
-                  },
-                  style: TextButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(5),
                     ),
-                  ),
-                  child: const Text(
-                    'Hubungkan Akun',
-                    style: TextStyle(
-                      fontFamily: 'Poppins',
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.blueAccent,
+                    const Text(
+                      'Hubungkan akun Anda untuk mendapatkan pengalaman terbaik dan tawaran eksklusif.',
+                      style: TextStyle(
+                        fontFamily: 'Poppins',
+                        fontSize: 12,
+                        color: Colors.white,
+                      ),
                     ),
-                  ),
+                    const SizedBox(height: 10),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ConnectingAccountScreen(),
+                          ),
+                        );
+                      },
+                      style: TextButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 5),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(5),
+                        ),
+                      ),
+                      child: const Text(
+                        'Hubungkan Akun',
+                        style: TextStyle(
+                          fontFamily: 'Poppins',
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.blueAccent,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-          ),
-
+              ),
             const Text(
               'Promo',
               style: TextStyle(
@@ -243,10 +255,10 @@ class _HomePageContentState extends State<HomePageContent> {
                   final imageUrl = product['gambar'];
 
                   // Check if the image URL contains "undefined" and replace it
-                 
 
                   final productName = product['nama'];
-                  final productPrice = formatRupiah(product['harga']); // Convert price to string
+                  final productPrice =
+                      formatRupiah(product['harga']); // Convert price to string
 
                   return GestureDetector(
                     onTap: () {
@@ -273,7 +285,8 @@ class _HomePageContentState extends State<HomePageContent> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Padding(
-                              padding: const EdgeInsets.fromLTRB(6.5, 6.5, 6.5, 0),
+                              padding:
+                                  const EdgeInsets.fromLTRB(6.5, 6.5, 6.5, 0),
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(8),
                                 child: Image.network(
