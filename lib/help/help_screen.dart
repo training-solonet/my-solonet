@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+
+import 'package:mysolonet/help/faq/faq_sreen.dart'; 
 import 'package:url_launcher/url_launcher.dart';
 import 'package:mysolonet/detail/help/nearest_service_screen.dart';
+
 
 class HelpScreen extends StatelessWidget {
   const HelpScreen({Key? key}) : super(key: key);
@@ -27,15 +30,15 @@ class HelpScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              _buildHelpCard(
-                  'assets/images/1.png', 'Setel Ulang Modem', 0, () {}),
-              _buildHelpCard(
-                  'assets/images/2.png', 'Lihat Pertanyaan', 1, () {}),
-              _buildHelpCard('assets/images/3.png', 'Pengaduan Layanan', 2, () {
-                _launchWhatsApp('+6281542017888');
+              _buildHelpCard('assets/images/1.png', 'Setel Ulang Modem', 0, () {}),
+              _buildHelpCard('assets/images/2.png', 'Lihat Pertanyaan', 1, () {
+                // Navigate to FaqScreen when this button is pressed
+                Navigator.push(context, MaterialPageRoute(builder: (context) => const FaqScreen()));
               }),
-              _buildHelpCard('assets/images/4.png', 'Cari SoloNet Terdekat', 3,
-                  () {
+              _buildHelpCard('assets/images/3.png', 'Pengaduan Layanan', 2, () {
+              _launchWhatsApp('+6281542017888');
+              }),
+              _buildHelpCard('assets/images/4.png', 'Cari SoloNet Terdekat', 3,  () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -48,7 +51,7 @@ class HelpScreen extends StatelessWidget {
       ),
     );
   }
-
+  
   Future<void> _launchWhatsApp(String phoneNumber) async {
     final url = 'https://wa.me/$phoneNumber'; // Format WhatsApp API link
     if (await canLaunch(url)) {
