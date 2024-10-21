@@ -7,6 +7,7 @@ class HelpScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: const Text(
           'Bantuan',
           style: TextStyle(
@@ -24,10 +25,10 @@ class HelpScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              _buildHelpCard('assets/images/1.png'),
-              _buildHelpCard('assets/images/2.png'),
-              _buildHelpCard('assets/images/3.png'),
-              _buildHelpCard('assets/images/4.png'),
+              _buildHelpCard('assets/images/1.png', 'Setel Ulang Modem', 0, () {}),
+              _buildHelpCard('assets/images/2.png', 'Lihat Pertanyaan', 1, () {}),
+              _buildHelpCard('assets/images/3.png', 'Pengaduan Layanan', 2, () {}),
+              _buildHelpCard('assets/images/4.png', 'Cari SoloNet Terdekat', 3, () {}),
             ],
           ),
         ),
@@ -35,22 +36,55 @@ class HelpScreen extends StatelessWidget {
     );
   }
 
-  // Widget untuk card bantuan
-  Widget _buildHelpCard(String imagePath) {
+  Widget _buildHelpCard(String imagePath, String buttonText, int index, onPress) {
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10),
       ),
       elevation: 3,
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(10), // Membuat gambar mengikuti bentuk card
-        child: Image.asset(
-          imagePath,
-          height: 190, // Ukuran gambar lebih kecil
-          width: double.infinity,
-          fit: BoxFit.cover, // Gambar akan menyesuaikan card secara proporsional
-        ),
+      child: Stack(
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(
+                10),
+            child: Image.asset(
+              imagePath,
+              height: 190,
+              width: double.infinity,
+              fit: BoxFit
+                  .cover,
+            ),
+          ),
+          Positioned(
+            bottom: 10,
+            left:
+                index % 2 == 0 ? 20 : null,
+            right:
+                index % 2 != 0 ? 20 : null, 
+            child: ElevatedButton(
+              onPressed: () {
+                onPress;
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.white,
+                foregroundColor: Colors.black,
+                padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 5),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: Text(
+                buttonText,
+                style: const TextStyle(
+                  fontFamily: 'Poppins',
+                  fontWeight: FontWeight.w600,
+                  fontSize: 12, 
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
