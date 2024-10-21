@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:mysolonet/help/faq/faq_sreen.dart';  // Import the FaqScreen here
+
+import 'package:mysolonet/help/faq/faq_sreen.dart'; 
+import 'package:url_launcher/url_launcher.dart';
+import 'package:mysolonet/detail/help/nearest_service_screen.dart';
+
 
 class HelpScreen extends StatelessWidget {
   const HelpScreen({Key? key}) : super(key: key);
@@ -31,16 +35,34 @@ class HelpScreen extends StatelessWidget {
                 // Navigate to FaqScreen when this button is pressed
                 Navigator.push(context, MaterialPageRoute(builder: (context) => const FaqScreen()));
               }),
-              _buildHelpCard('assets/images/3.png', 'Pengaduan Layanan', 2, () {}),
-              _buildHelpCard('assets/images/4.png', 'Cari SoloNet Terdekat', 3, () {}),
+              _buildHelpCard('assets/images/3.png', 'Pengaduan Layanan', 2, () {
+              _launchWhatsApp('+6281542017888');
+              }),
+              _buildHelpCard('assets/images/4.png', 'Cari SoloNet Terdekat', 3,  () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => NearestServiceScreen()),
+                );
+              }),
             ],
           ),
         ),
       ),
     );
   }
+  
+  Future<void> _launchWhatsApp(String phoneNumber) async {
+    final url = 'https://wa.me/$phoneNumber'; // Format WhatsApp API link
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
 
-  Widget _buildHelpCard(String imagePath, String buttonText, int index, VoidCallback onPress) {
+  Widget _buildHelpCard(
+      String imagePath, String buttonText, int index, VoidCallback onPress) {
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
       shape: RoundedRectangleBorder(
@@ -67,7 +89,8 @@ class HelpScreen extends StatelessWidget {
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.white,
                 foregroundColor: Colors.black,
-                padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 5),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 30, vertical: 5),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
