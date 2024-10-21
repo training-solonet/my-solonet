@@ -7,6 +7,7 @@
     <application
         android:label="My Solonet"
         android:name="${applicationName}"
+        android:enableOnBackInvokedCallback="true"
         android:icon="@mipmap/solonet">
         <activity
             android:name=".MainActivity"
