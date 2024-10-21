@@ -14,6 +14,13 @@ class _NearestServiceScreenState extends State<NearestServiceScreen> {
   final MapController _mapController = MapController();
   Timer? _debounce;
   bool _isMapView = true; // State to manage view type
+  int _currentCardIndex = 0; // Index for active card
+
+  final List<String> _locations = [
+    'Jl. Thamrin No. 1, Jakarta',
+    'Jl. Sudirman No. 20, Jakarta',
+    'Jl. Gatot Subroto No. 45, Jakarta'
+  ]; // List of addresses to display
 
   @override
   void initState() {
@@ -98,94 +105,150 @@ class _NearestServiceScreenState extends State<NearestServiceScreen> {
           ),
           const SizedBox(height: 10),
           Expanded(
-            child: Container(
-              color: Colors.white, // Set background color to white
-              child: Stack(
-                children: [
-                  if (_isMapView) // Show map if map view is selected
-                    FlutterMap(
-                      mapController: _mapController,
-                      options: MapOptions(
-                        center: _markerLocation,
-                        zoom: _zoom,
-                        rotation: 0,
-                        interactiveFlags: InteractiveFlag.all & ~InteractiveFlag.rotate,
-                        onPositionChanged: (position, hasGesture) {
-                          setState(() {
-                            if (position.center != null) {
-                              _markerLocation = position.center!;
-                              // Cancel previous timer if exists
-                              if (_debounce?.isActive ?? false) _debounce!.cancel();
-                              // Set a new timer for 300 ms
-                              _debounce = Timer(const Duration(milliseconds: 300), () {
-                                // You can update anything needed when the map moves here
-                              });
-                            }
-                          });
-                        },
-                      ),
-                      children: [
-                        TileLayer(
-                          urlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-                          subdomains: ['a', 'b', 'c'],
-                        ),
-                      ],
-                    )
-                  else // Show list if list view is selected
-                    ListView.builder(
-                      itemCount: 10, // Example: number of positions
-                      itemBuilder: (context, index) {
-                        return ListTile(
-                          title: Text('Posisi ${index + 1}'), // Example position name
-                          onTap: () {
-                            // Handle position selection
-                            print('Selected Posisi ${index + 1}');
-                          },
-                        );
+            child: Stack(
+              children: [
+                if (_isMapView) // Show map only if map view is selected
+                  FlutterMap(
+                    mapController: _mapController,
+                    options: MapOptions(
+                      center: _markerLocation,
+                      zoom: _zoom,
+                      rotation: 0,
+                      interactiveFlags: InteractiveFlag.all & ~InteractiveFlag.rotate,
+                      onPositionChanged: (position, hasGesture) {
+                        setState(() {
+                          if (position.center != null) {
+                            _markerLocation = position.center!;
+                            // Cancel previous timer if exists
+                            if (_debounce?.isActive ?? false) _debounce!.cancel();
+                            // Set a new timer for 300 ms
+                            _debounce = Timer(const Duration(milliseconds: 300), () {
+                              // You can update anything needed when the map moves here
+                            });
+                          }
+                        });
                       },
                     ),
-                  // Show zoom controls only if map view is selected
-                  if (_isMapView)
-                    Positioned(
-                      bottom: 90,
-                      right: 20,
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          FloatingActionButton(
-                            heroTag: null,
-                            mini: true,
-                            backgroundColor: Colors.blue,
-                            onPressed: () {
-                              setState(() {
-                                if (_zoom < 18.0) {
-                                  _zoom++;
-                                  _mapController.move(_markerLocation, _zoom);
-                                }
-                              });
-                            },
-                            child: const Icon(Icons.add, color: Colors.white),
-                          ),
-                          const SizedBox(height: 8),
-                          FloatingActionButton(
-                            heroTag: null,
-                            mini: true,
-                            backgroundColor: Colors.blue,
-                            onPressed: () {
-                              setState(() {
-                                if (_zoom > 1.0) {
-                                  _zoom--;
-                                  _mapController.move(_markerLocation, _zoom);
-                                }
-                              });
-                            },
-                            child: const Icon(Icons.remove, color: Colors.white),
-                          ),
-                        ],
+                    children: [
+                      TileLayer(
+                        urlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+                        subdomains: ['a', 'b', 'c'],
+                      ),
+                    ],
+                  )
+                else // Show list if list view is selected
+                  ListView.builder(
+                    itemCount: 10, // Example: number of positions
+                    itemBuilder: (context, index) {
+                      return ListTile(
+                        title: Text('Posisi ${index + 1}'), // Example position name
+                        onTap: () {
+                          // Handle position selection
+                          print('Selected Posisi ${index + 1}');
+                        },
+                      );
+                    },
+                  ),
+                // Show zoom controls only if map view is selected
+                if (_isMapView)
+                  Positioned(
+                    bottom: 160, // Adjust the bottom position to make room for cards
+                    right: 20,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        FloatingActionButton(
+                          heroTag: null,
+                          mini: true,
+                          backgroundColor: Colors.blue,
+                          onPressed: () {
+                            setState(() {
+                              if (_zoom < 18.0) {
+                                _zoom++;
+                                _mapController.move(_markerLocation, _zoom);
+                              }
+                            });
+                          },
+                          child: const Icon(Icons.add, color: Colors.white),
+                        ),
+                        const SizedBox(height: 8),
+                        FloatingActionButton(
+                          heroTag: null,
+                          mini: true,
+                          backgroundColor: Colors.blue,
+                          onPressed: () {
+                            setState(() {
+                              if (_zoom > 1.0) {
+                                _zoom--;
+                                _mapController.move(_markerLocation, _zoom);
+                              }
+                            });
+                          },
+                          child: const Icon(Icons.remove, color: Colors.white),
+                        ),
+                      ],
+                    ),
+                  ),
+                if (_isMapView) // Show card only if map view is active
+                  Positioned(
+                    bottom: 20, // Adjust this value as needed
+                    left: 0,
+                    right: 0,
+                    child: Container(
+                      height: 110, 
+                      child: PageView.builder(
+                        controller: PageController(viewportFraction: 0.9), // ViewportFraction for spacing between cards
+                        onPageChanged: (index) {
+                          setState(() {
+                            _currentCardIndex = index;
+                          });
+                        },
+                        itemCount: _locations.length,
+                        itemBuilder: (context, index) {
+                          return AnimatedContainer(
+                            duration: const Duration(milliseconds: 300),
+                            margin: EdgeInsets.symmetric(horizontal: 10),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(15),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.1),
+                                  blurRadius: 10,
+                                  offset: Offset(0, 5),
+                                ),
+                              ],
+                            ),
+                            padding: const EdgeInsets.all(20),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  'Solonet ${index + 1}',
+                                  style: TextStyle(
+                                    fontFamily: 'Poppins',
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                    color: Colors.blueAccent,
+                                  ),
+                                ),
+                                const SizedBox(height: 10),
+                                Text(
+                                  _locations[index],
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
                       ),
                     ),
-                ],
-              ),
+                  ),
+              ],
             ),
           ),
         ],
