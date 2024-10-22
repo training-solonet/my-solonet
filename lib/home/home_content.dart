@@ -188,7 +188,7 @@ class _HomePageContentState extends State<HomePageContent> {
             ),
             const SizedBox(height: 10),
             SizedBox(
-              height: 157.5,
+              height: 165,
               child: _banners.isNotEmpty
                   ? PageView.builder(
                       controller: _pageController,
@@ -216,16 +216,16 @@ class _HomePageContentState extends State<HomePageContent> {
                             );
                           },
                           child: Container(
-                            width: 280,
+                            width: 290,
                             margin: const EdgeInsets.symmetric(horizontal: 5),
                             decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
+                              borderRadius: BorderRadius.circular(20),
                             ),
                             child: ClipRRect(
-                              borderRadius: BorderRadius.circular(10),
+                              borderRadius: BorderRadius.circular(20),
                               child: Image.network(
                                 imagePath,
-                                fit: BoxFit.cover,
+                                fit: BoxFit.contain,
                               ),
                             ),
                           ),
@@ -245,93 +245,89 @@ class _HomePageContentState extends State<HomePageContent> {
               ),
             ),
             const SizedBox(height: 10),
-            SizedBox(
-              height: 160,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: _products.length, // Use the length of products
-                itemBuilder: (context, index) {
-                  final product = _products[index]; // Access each product
-                  final imageUrl = product['gambar'];
+         SizedBox(
+  height: 140, // Reduced height for the product card container
+  child: ListView.builder(
+    scrollDirection: Axis.horizontal,
+    itemCount: _products.length, // Use the length of products
+    itemBuilder: (context, index) {
+      final product = _products[index]; // Access each product
+      final imageUrl = product['gambar'];
+      final productName = product['nama'];
+      final productPrice = formatRupiah(product['harga']); // Convert price to string
 
-                  // Check if the image URL contains "undefined" and replace it
-
-                  final productName = product['nama'];
-                  final productPrice =
-                      formatRupiah(product['harga']); // Convert price to string
-
-                  return GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => DetailProductScreen(
-                            productData: product,
-                          ),
-                        ),
-                      );
-                    },
-                    child: Container(
-                      width: 120,
-                      margin: const EdgeInsets.only(right: 3, bottom: 3),
-                      child: Card(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        clipBehavior: Clip.antiAliasWithSaveLayer,
-                        elevation: 5.0,
-                        shadowColor: Colors.black38,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding:
-                                  const EdgeInsets.fromLTRB(6.5, 6.5, 6.5, 0),
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(8),
-                                child: Image.network(
-                                  imageUrl, // Use the valid image URL
-                                  height: 80,
-                                  width: double.infinity,
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.fromLTRB(7, 7, 7, 0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    productName,
-                                    style: TextStyle(
-                                      fontSize: 9.5,
-                                      fontFamily: 'Poppins',
-                                      color: Colors.grey[800],
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 5),
-                                  Text(
-                                    productPrice,
-                                    style: const TextStyle(
-                                      fontSize: 9.5,
-                                      fontFamily: 'Poppins',
-                                      color: Color.fromARGB(255, 34, 50, 64),
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  );
-                },
+      return GestureDetector(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => DetailProductScreen(
+                productData: product,
               ),
             ),
+          );
+        },
+        child: Container(
+          width: 100, // Smaller width to reduce the card size
+          margin: const EdgeInsets.only(right: 10, bottom: 1),
+          child: Card(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+            clipBehavior: Clip.antiAliasWithSaveLayer,
+            elevation: 5.0,
+            shadowColor: Colors.black38,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(6.5, 6.5, 6.5, 0),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: Image.network(
+                      imageUrl, // Product image
+                      height: 80, // Reduced image height
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(7, 7, 7, 0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        productName,
+                        style: TextStyle(
+                          fontSize: 8.0, // Smaller font for product name
+                          fontFamily: 'Poppins',
+                          color: Colors.grey[800],
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(height: 3), // Reduced spacing
+                      Text(
+                        productPrice,
+                        style: const TextStyle(
+                          fontSize: 8.0, // Smaller font for product price
+                          fontFamily: 'Poppins',
+                          color: Color.fromARGB(255, 34, 50, 64),
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    },
+  ),
+),
+
           ],
         ),
       ),
