@@ -81,12 +81,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => DetailHistoryScreen(
-                transactionId: transaction['transactionId'],
-                date: transaction['date'],
-                totalAmount: transaction['totalAmount'],
-                items: transaction['items'],
-              ),
+              builder: (context) => DetailHistoryScreen(),
             ),
           );
         },
