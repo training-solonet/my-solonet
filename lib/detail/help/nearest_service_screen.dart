@@ -1,7 +1,10 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:http/http.dart' as http;
 
 class NearestServiceScreen extends StatefulWidget {
   @override
@@ -13,20 +16,63 @@ class _NearestServiceScreenState extends State<NearestServiceScreen> {
   double _zoom = 13.0;
   final MapController _mapController = MapController();
   Timer? _debounce;
-  bool _isMapView = true; // State to manage view type
-  int _currentCardIndex = 0; // Index for active card
-
-  final List<String> _locations = [
-    'Jl. Thamrin No. 1, Jakarta',
-    'Jl. Sudirman No. 20, Jakarta',
-    'Jl. Gatot Subroto No. 45, Jakarta'
-  ]; // List of addresses to display
+  bool _isMapView = true;
+  List<NearbyLocation> _nearbyLocations = [];
 
   @override
   void initState() {
     super.initState();
-    // Initialize to a default location or implement current location fetch if needed
     _markerLocation = LatLng(-6.200000, 106.816666); // Example: Jakarta
+    _requestLocationPermission();
+  }
+
+  Future<void> _requestLocationPermission() async {
+    LocationPermission permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+    }
+
+    if (permission == LocationPermission.whileInUse || permission == LocationPermission.always) {
+      await _getCurrentLocation();
+    }
+  }
+
+  Future<void> _getCurrentLocation() async {
+    try {
+      Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+      setState(() {
+        _markerLocation = LatLng(position.latitude, position.longitude);
+        _mapController.move(_markerLocation, _zoom);
+      });
+      await _fetchNearbyLocations(position.latitude, position.longitude);
+    } catch (e) {
+      print('Error getting location: $e');
+    }
+  }
+
+  Future<void> _fetchNearbyLocations(double latitude, double longitude) async {
+    final url = 'https://api.connectis.my.id/nearLocation';
+    final response = await http.post(
+      Uri.parse(url),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode({
+        'latitude': latitude,
+        'longitude': longitude,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      final List<dynamic> data = jsonDecode(response.body);
+      setState(() {
+        _nearbyLocations = data.map((location) => NearbyLocation.fromJson(location)).toList();
+        // Sort the locations by distance
+        _nearbyLocations.sort((a, b) => a.distance.compareTo(b.distance));
+      });
+    } else {
+      print('Failed to load nearby locations: ${response.reasonPhrase}');
+    }
   }
 
   @override
@@ -38,18 +84,15 @@ class _NearestServiceScreenState extends State<NearestServiceScreen> {
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            // Back Button
             IconButton(
               icon: const Icon(Icons.arrow_back, color: Colors.blueAccent),
               onPressed: () {
-                Navigator.pop(context); // Navigate back
+                Navigator.pop(context);
               },
             ),
-            // Help Button
             IconButton(
               icon: const Icon(Icons.help, color: Colors.blueAccent),
               onPressed: () {
-                // Show help dialog
                 showDialog(
                   context: context,
                   builder: (BuildContext context) {
@@ -59,7 +102,7 @@ class _NearestServiceScreenState extends State<NearestServiceScreen> {
                       actions: [
                         TextButton(
                           onPressed: () {
-                            Navigator.of(context).pop(); // Close the dialog
+                            Navigator.of(context).pop();
                           },
                           child: const Text("OK"),
                         ),
@@ -87,18 +130,17 @@ class _NearestServiceScreenState extends State<NearestServiceScreen> {
               ),
             ),
           ),
-          // Buttons for view selection styled similarly
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               _buildStyledButton("Peta", () {
                 setState(() {
-                  _isMapView = true; // Show map view
+                  _isMapView = true;
                 });
               }, isActive: _isMapView),
               _buildStyledButton("Daftar Posisi", () {
                 setState(() {
-                  _isMapView = false; // Show list view
+                  _isMapView = false;
                 });
               }, isActive: !_isMapView),
             ],
@@ -107,7 +149,7 @@ class _NearestServiceScreenState extends State<NearestServiceScreen> {
           Expanded(
             child: Stack(
               children: [
-                if (_isMapView) // Show map only if map view is selected
+                if (_isMapView)
                   FlutterMap(
                     mapController: _mapController,
                     options: MapOptions(
@@ -119,11 +161,9 @@ class _NearestServiceScreenState extends State<NearestServiceScreen> {
                         setState(() {
                           if (position.center != null) {
                             _markerLocation = position.center!;
-                            // Cancel previous timer if exists
                             if (_debounce?.isActive ?? false) _debounce!.cancel();
-                            // Set a new timer for 300 ms
                             _debounce = Timer(const Duration(milliseconds: 300), () {
-                              // You can update anything needed when the map moves here
+                              // Additional map-related updates can be done here.
                             });
                           }
                         });
@@ -134,29 +174,60 @@ class _NearestServiceScreenState extends State<NearestServiceScreen> {
                         urlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
                         subdomains: ['a', 'b', 'c'],
                       ),
+                      MarkerLayer(
+                        markers: [
+                          Marker(
+                            point: _markerLocation,
+                            builder: (ctx) => const Icon(
+                              Icons.location_on,
+                              color: Colors.red,
+                              size: 40,
+                            ),
+                          ),
+                        ],
+                      ),
                     ],
                   )
-                else // Show list if list view is selected
-                  ListView.builder(
-                    itemCount: 10, // Example: number of positions
-                    itemBuilder: (context, index) {
-                      return ListTile(
-                        title: Text('Posisi ${index + 1}'), // Example position name
-                        onTap: () {
-                          // Handle position selection
-                          print('Selected Posisi ${index + 1}');
-                        },
-                      );
-                    },
-                  ),
-                // Show zoom controls only if map view is selected
+                else
+                  _nearbyLocations.isEmpty
+                      ? Center(child: Text("No nearby locations found."))
+                      : ListView.builder(
+                          itemCount: _nearbyLocations.length,
+                          itemBuilder: (context, index) {
+                            return Card(
+                              margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                              child: ListTile(
+                                title: Text(_nearbyLocations[index].name),
+                                subtitle: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text('${_nearbyLocations[index].distance} meters'),
+                                    Text('Latitude: ${_nearbyLocations[index].latitude}'),
+                                    Text('Longitude: ${_nearbyLocations[index].longitude}'),
+                                  ],
+                                ),
+                                onTap: () {
+                                  print('Selected: ${_nearbyLocations[index].name}');
+                                },
+                              ),
+                            );
+                          },
+                        ),
                 if (_isMapView)
                   Positioned(
-                    bottom: 160, // Adjust the bottom position to make room for cards
+                    bottom: 160,
                     right: 20,
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
+                        FloatingActionButton(
+                          heroTag: 'my_location',
+                          mini: true,
+                          backgroundColor: Colors.blue,
+                          onPressed: _goToMyLocation,
+                          child: const Icon(Icons.my_location, color: Colors.white),
+                        ),
+                        const SizedBox(height: 8),
                         FloatingActionButton(
                           heroTag: null,
                           mini: true,
@@ -189,65 +260,6 @@ class _NearestServiceScreenState extends State<NearestServiceScreen> {
                       ],
                     ),
                   ),
-                if (_isMapView) // Show card only if map view is active
-                  Positioned(
-                    bottom: 20, // Adjust this value as needed
-                    left: 0,
-                    right: 0,
-                    child: Container(
-                      height: 110, 
-                      child: PageView.builder(
-                        controller: PageController(viewportFraction: 0.9), // ViewportFraction for spacing between cards
-                        onPageChanged: (index) {
-                          setState(() {
-                            _currentCardIndex = index;
-                          });
-                        },
-                        itemCount: _locations.length,
-                        itemBuilder: (context, index) {
-                          return AnimatedContainer(
-                            duration: const Duration(milliseconds: 300),
-                            margin: EdgeInsets.symmetric(horizontal: 10),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(15),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.1),
-                                  blurRadius: 10,
-                                  offset: Offset(0, 5),
-                                ),
-                              ],
-                            ),
-                            padding: const EdgeInsets.all(20),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  'Solonet ${index + 1}',
-                                  style: TextStyle(
-                                    fontFamily: 'Poppins',
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16,
-                                    color: Colors.blueAccent,
-                                  ),
-                                ),
-                                const SizedBox(height: 10),
-                                Text(
-                                  _locations[index],
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    color: Colors.black,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                  ),
               ],
             ),
           ),
@@ -256,7 +268,6 @@ class _NearestServiceScreenState extends State<NearestServiceScreen> {
     );
   }
 
-  // Method to build styled buttons with underline effect
   Widget _buildStyledButton(String title, VoidCallback onPressed, {required bool isActive}) {
     return GestureDetector(
       onTap: onPressed,
@@ -274,7 +285,7 @@ class _NearestServiceScreenState extends State<NearestServiceScreen> {
           const SizedBox(height: 5),
           Container(
             height: 2,
-            width: 50, // Width of the underline
+            width: 50,
             color: isActive ? Colors.blueAccent : Colors.transparent,
           ),
         ],
@@ -282,9 +293,43 @@ class _NearestServiceScreenState extends State<NearestServiceScreen> {
     );
   }
 
+  Future<void> _goToMyLocation() async {
+    LocationPermission permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+    }
+
+    if (permission == LocationPermission.whileInUse || permission == LocationPermission.always) {
+      await _getCurrentLocation();
+    }
+  }
+
   @override
   void dispose() {
     _debounce?.cancel();
     super.dispose();
+  }
+}
+
+class NearbyLocation {
+  final String name;
+  final double distance;
+  final double latitude;
+  final double longitude;
+
+  NearbyLocation({
+    required this.name,
+    required this.distance,
+    required this.latitude,
+    required this.longitude,
+  });
+
+  factory NearbyLocation.fromJson(Map<String, dynamic> json) {
+    return NearbyLocation(
+      name: json['name'] as String,
+      distance: (json['distance'] as num).toDouble(),
+      latitude: (json['latitude'] as num).toDouble(),
+      longitude: (json['longitude'] as num).toDouble(),
+    );
   }
 }
