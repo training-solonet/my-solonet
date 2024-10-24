@@ -32,14 +32,16 @@ class _NearestServiceScreenState extends State<NearestServiceScreen> {
       permission = await Geolocator.requestPermission();
     }
 
-    if (permission == LocationPermission.whileInUse || permission == LocationPermission.always) {
+    if (permission == LocationPermission.whileInUse ||
+        permission == LocationPermission.always) {
       await _getCurrentLocation();
     }
   }
 
   Future<void> _getCurrentLocation() async {
     try {
-      Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+      Position position = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.high);
       setState(() {
         _markerLocation = LatLng(position.latitude, position.longitude);
         _mapController.move(_markerLocation, _zoom);
@@ -58,15 +60,23 @@ class _NearestServiceScreenState extends State<NearestServiceScreen> {
         'Content-Type': 'application/json',
       },
       body: jsonEncode({
-        'latitude': latitude,
-        'longitude': longitude,
+        'lat': latitude.toString(),
+        'long': longitude.toString(),
       }),
     );
 
     if (response.statusCode == 200) {
       final List<dynamic> data = jsonDecode(response.body);
       setState(() {
-        _nearbyLocations = data.map((location) => NearbyLocation.fromJson(location)).toList();
+        _nearbyLocations = data.map((location) {
+          return NearbyLocation(
+            name: location['name'],
+            distance: double.parse(location['distance']),
+            latitude: latitude, // Set latitude
+            longitude: longitude, // Set longitude
+          );
+        }).toList();
+
         // Sort the locations by distance
         _nearbyLocations.sort((a, b) => a.distance.compareTo(b.distance));
       });
@@ -156,13 +166,16 @@ class _NearestServiceScreenState extends State<NearestServiceScreen> {
                       center: _markerLocation,
                       zoom: _zoom,
                       rotation: 0,
-                      interactiveFlags: InteractiveFlag.all & ~InteractiveFlag.rotate,
+                      interactiveFlags:
+                          InteractiveFlag.all & ~InteractiveFlag.rotate,
                       onPositionChanged: (position, hasGesture) {
                         setState(() {
                           if (position.center != null) {
                             _markerLocation = position.center!;
-                            if (_debounce?.isActive ?? false) _debounce!.cancel();
-                            _debounce = Timer(const Duration(milliseconds: 300), () {
+                            if (_debounce?.isActive ?? false)
+                              _debounce!.cancel();
+                            _debounce =
+                                Timer(const Duration(milliseconds: 300), () {
                               // Additional map-related updates can be done here.
                             });
                           }
@@ -171,7 +184,8 @@ class _NearestServiceScreenState extends State<NearestServiceScreen> {
                     ),
                     children: [
                       TileLayer(
-                        urlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+                        urlTemplate:
+                            "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
                         subdomains: ['a', 'b', 'c'],
                       ),
                       MarkerLayer(
@@ -195,19 +209,20 @@ class _NearestServiceScreenState extends State<NearestServiceScreen> {
                           itemCount: _nearbyLocations.length,
                           itemBuilder: (context, index) {
                             return Card(
-                              margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                              margin: const EdgeInsets.symmetric(
+                                  vertical: 8.0, horizontal: 16.0),
                               child: ListTile(
                                 title: Text(_nearbyLocations[index].name),
                                 subtitle: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text('${_nearbyLocations[index].distance} meters'),
-                                    Text('Latitude: ${_nearbyLocations[index].latitude}'),
-                                    Text('Longitude: ${_nearbyLocations[index].longitude}'),
+                                    Text(
+                                        '${_nearbyLocations[index].distance} meters'),
                                   ],
                                 ),
                                 onTap: () {
-                                  print('Selected: ${_nearbyLocations[index].name}');
+                                  print(
+                                      'Selected: ${_nearbyLocations[index].name}');
                                 },
                               ),
                             );
@@ -225,7 +240,8 @@ class _NearestServiceScreenState extends State<NearestServiceScreen> {
                           mini: true,
                           backgroundColor: Colors.blue,
                           onPressed: _goToMyLocation,
-                          child: const Icon(Icons.my_location, color: Colors.white),
+                          child: const Icon(Icons.my_location,
+                              color: Colors.white),
                         ),
                         const SizedBox(height: 8),
                         FloatingActionButton(
@@ -268,7 +284,8 @@ class _NearestServiceScreenState extends State<NearestServiceScreen> {
     );
   }
 
-  Widget _buildStyledButton(String title, VoidCallback onPressed, {required bool isActive}) {
+  Widget _buildStyledButton(String title, VoidCallback onPressed,
+      {required bool isActive}) {
     return GestureDetector(
       onTap: onPressed,
       child: Column(
@@ -299,7 +316,8 @@ class _NearestServiceScreenState extends State<NearestServiceScreen> {
       permission = await Geolocator.requestPermission();
     }
 
-    if (permission == LocationPermission.whileInUse || permission == LocationPermission.always) {
+    if (permission == LocationPermission.whileInUse ||
+        permission == LocationPermission.always) {
       await _getCurrentLocation();
     }
   }
