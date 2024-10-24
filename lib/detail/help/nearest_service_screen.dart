@@ -211,13 +211,35 @@ class _NearestServiceScreenState extends State<NearestServiceScreen> {
                             return Card(
                               margin: const EdgeInsets.symmetric(
                                   vertical: 8.0, horizontal: 16.0),
+                                  shadowColor: Colors.black,
+                              elevation: 5.0,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10.0),
+                              ),
                               child: ListTile(
-                                title: Text(_nearbyLocations[index].name),
+                                title: Text(
+                                  _nearbyLocations[index].name,
+                                  style: const TextStyle(
+                                    fontFamily:
+                                        'Poppins', // Poppins font for location name
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                    color: Colors.blue,
+                                  ),
+                                ),
                                 subtitle: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                        '${_nearbyLocations[index].distance} meters'),
+                                      '${_nearbyLocations[index].distance} Km',
+                                      style: const TextStyle(
+                                        fontFamily:
+                                            'Poppins', // Poppins font for location name
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 12,
+                                        color: Colors.grey,
+                                      ),
+                                    ),
                                   ],
                                 ),
                                 onTap: () {
