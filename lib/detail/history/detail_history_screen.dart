@@ -18,6 +18,7 @@ class DetailHistoryScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.blueAccent,
+        iconTheme: const IconThemeData(color: Colors.white),
         title: const Text(
           'Detail Riwayat Transaksi',
           style: TextStyle(
@@ -39,8 +40,8 @@ class DetailHistoryScreen extends StatelessWidget {
                 alignment: Alignment.center,
                 child: CircleAvatar(
                   radius: 45,
-                  backgroundImage: NetworkImage(
-                    'https://icon2.cleanpng.com/20190218/tsh/kisspng-checkbox-vector-graphics-computer-icons-check-mark-toodoo-ocr-to-do-and-task-list-apps-on-google-1713906799832.webp',
+                  child: Image.asset(
+                    'assets/images/checkbox.png',
                   ),
                 ),
               ),
