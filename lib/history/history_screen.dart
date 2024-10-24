@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mysolonet/detail/history/detail_history_screen.dart';
+import 'package:mysolonet/alert/confirm_popup.dart';
+import 'package:mysolonet/pembayaran/payment_method.dart';
 
 class HistoryScreen extends StatefulWidget {
   const HistoryScreen({Key? key}) : super(key: key);
@@ -21,12 +23,6 @@ class _HistoryScreenState extends State<HistoryScreen> {
       'date': '17 Nov 2024',
       'totalAmount': '200,000',
       'status': 'belum dibayar',
-    },
-    {
-      'transactionName': 'Pengiriman Barang',
-      'date': '18 Nov 2024',
-      'totalAmount': '75,000',
-      'status': 'failed',
     },
   ];
 
@@ -67,100 +63,114 @@ class _HistoryScreenState extends State<HistoryScreen> {
   }
 
   Widget _buildItem(Map<String, dynamic> transaction) {
-    IconData icon;
-    Color iconColor;
-    String statusText;
+  IconData icon;
+  Color iconColor;
+  String statusText;
 
-    switch (transaction['status']) {
-      case 'success':
-        icon = Icons.check_circle_outline;
-        iconColor = Colors.green;
-        statusText = 'Berhasil';
-        break;
-      case 'failed':
-        icon = Icons.error_outline;
-        iconColor = Colors.red;
-        statusText = 'Gagal';
-        break;
-      default:
-        icon = Icons.pending_actions_outlined;
-        iconColor = Colors.grey;
-        statusText = 'Belum Dibayar';
-        break;
-    }
+  switch (transaction['status']) {
+    case 'success':
+      icon = Icons.check_circle_outline;
+      iconColor = Colors.green;
+      statusText = 'Berhasil';
+      break;
+    default:
+      icon = Icons.pending_actions_outlined;
+      iconColor = Colors.grey;
+      statusText = 'Belum Dibayar';
+      break;
+  }
 
-    return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      elevation: 3,
-      margin: const EdgeInsets.only(bottom: 15),
-      child: InkWell(
-        onTap: () {
+  return Card(
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+    elevation: 3,
+    margin: const EdgeInsets.only(bottom: 15),
+    child: InkWell(
+      onTap: () {
+        if (transaction['status'] == 'belum dibayar') {
+          // Call confirmPopup for unpaid transactions
+          confirmPopup(
+            context,
+            'Konfirmasi Pembayaran',
+            'Apakah Anda ingin melanjutkan untuk membayar transaksi ini?',
+            'Bayar Sekarang',
+            () {
+             Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const PaymentMethodScreen(),
+                ),
+              );
+            },
+          );
+        } else {
           Navigator.push(
             context,
             MaterialPageRoute(
               builder: (context) => DetailHistoryScreen(),
             ),
           );
-        },
-        child: Padding(
-          padding: const EdgeInsets.all(15),
-          child: Row(
-            children: [
-              Icon(
-                icon,
-                size: 30,
-                color: iconColor, 
+        }
+      },
+      child: Padding(
+        padding: const EdgeInsets.all(15),
+        child: Row(
+          children: [
+            Icon(
+              icon,
+              size: 30,
+              color: iconColor,
+            ),
+            const SizedBox(width: 15),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    transaction['transactionName'],
+                    style: const TextStyle(
+                      fontFamily: 'Poppins',
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.black,
+                    ),
+                  ),
+                  Text(
+                    transaction['date'],
+                    style: const TextStyle(
+                      fontFamily: 'Poppins',
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.blueGrey,
+                    ),
+                  ),
+                  Text(
+                    'Total: Rp${transaction['totalAmount']}',
+                    style: const TextStyle(
+                      fontFamily: 'Poppins',
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Status: $statusText',
+                    style: TextStyle(
+                      fontFamily: 'Poppins',
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: iconColor,
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(width: 15),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      transaction['transactionName'],
-                      style: const TextStyle(
-                        fontFamily: 'Poppins',
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.black,
-                      ),
-                    ),
-                    Text(
-                      transaction['date'],
-                      style: const TextStyle(
-                        fontFamily: 'Poppins',
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.blueGrey,
-                      ),
-                    ),
-                    Text(
-                      'Total: Rp${transaction['totalAmount']}',
-                      style: const TextStyle(
-                        fontFamily: 'Poppins',
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.black,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Status: $statusText',
-                      style: TextStyle(
-                        fontFamily: 'Poppins',
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: iconColor, 
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const Icon(Icons.chevron_right, color: Colors.blue),
-            ],
-          ),
+            ),
+            const Icon(Icons.chevron_right, color: Colors.blue),
+          ],
         ),
       ),
-    );
-  }
+    ),
+  );
+}
+
 }
