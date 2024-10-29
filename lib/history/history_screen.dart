@@ -13,16 +13,16 @@ class HistoryScreen extends StatefulWidget {
 class _HistoryScreenState extends State<HistoryScreen> {
   final List<Map<String, dynamic>> transactions = [
     {
-      'transactionName': 'Pasang Wifi 50 Mbps',
-      'date': '17 Okt 2024',
+      'transactionName': 'Langganan Wifi 50 Mbps',
+      'date': '17 Nov 2024',
       'totalAmount': '150,000',
-      'status': 'success',
+      'status': 'belum dibayar',
     },
     {
-      'transactionName': 'Tagihan Internet',
-      'date': '17 Nov 2024',
+      'transactionName': 'Langganan Wifi 50 Mbps',
+      'date': '17 Okt 2024',
       'totalAmount': '200,000',
-      'status': 'belum dibayar',
+      'status': 'success',
     },
   ];
 
