@@ -4,6 +4,9 @@ import 'package:mysolonet/alert/confirm_popup.dart';
 import 'package:mysolonet/auth/login.dart';
 import 'package:mysolonet/pembayaran/payment_method.dart';
 import 'package:mysolonet/auth/service/service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
 class HistoryScreen extends StatefulWidget {
   const HistoryScreen({Key? key}) : super(key: key);
@@ -13,22 +16,8 @@ class HistoryScreen extends StatefulWidget {
 }
 
 class _HistoryScreenState extends State<HistoryScreen> {
-  final List<Map<String, dynamic>> transactions = [
-    {
-      'transactionName': 'Langganan Wifi 50 Mbps',
-      'date': '17 Nov 2024',
-      'totalAmount': '150,000',
-      'status': 'belum dibayar',
-    },
-    {
-      'transactionName': 'Langganan Wifi 50 Mbps',
-      'date': '17 Okt 2024',
-      'totalAmount': '200,000',
-      'status': 'success',
-    },
-  ];
-
   bool isLoggedIn = false;
+  List<Map<String, dynamic>> transactions = [];
 
   @override
   void initState() {
@@ -40,15 +29,72 @@ class _HistoryScreenState extends State<HistoryScreen> {
     final authService = AuthService();
     final userData = await authService.getUserData();
     setState(() {
-      isLoggedIn = userData != null; // Check if user data is available
+      isLoggedIn = userData != null;
     });
 
-    if (!isLoggedIn) {
-      // Redirect to LoginScreen if not logged in
+    if (isLoggedIn) {
+      await _fetchTransactions();
+    } else {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const SignInScreen()),
       );
+    }
+  }
+
+  Future<void> _fetchTransactions() async {
+    try {
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      final String? token = prefs.getString('token');
+
+      if (token == null || token.isEmpty) {
+        throw Exception('Token not found');
+      }
+
+      final response = await http.get(
+        Uri.parse('https://api.connectis.my.id/tagihan-user'),
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        setState(() {
+          transactions = (data['tagihan'] as List).map((item) {
+            final dateParts = item['bulan'].split('-');
+            final year = dateParts[0];
+            final monthNumber = int.parse(dateParts[1]);
+            final monthNames = [
+              "Januari",
+              "Februari",
+              "Maret",
+              "April",
+              "Mei",
+              "Juni",
+              "Juli",
+              "Agustus",
+              "September",
+              "Oktober",
+              "November",
+              "Desember"
+            ];
+            final monthName = monthNames[monthNumber - 1];
+
+            return {
+              'transactionName': 'Tagihan $monthName $year',
+              'date': item['bulan'],
+              'status': item['status_pembayaran'] == '1'
+                  ? 'success'
+                  : 'belum dibayar',
+            };
+          }).toList();
+        });
+      } else {
+        throw Exception('Failed to load transactions');
+      }
+    } catch (e) {
+      print('Error fetching transactions: $e');
     }
   }
 
@@ -69,37 +115,30 @@ class _HistoryScreenState extends State<HistoryScreen> {
         backgroundColor: Colors.blueAccent,
       ),
       body: isLoggedIn
-          ? Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                children: [
-                  Expanded(
-                    child: ListView.builder(
-                      padding: const EdgeInsets.only(top: 10),
-                      itemCount: transactions.length,
-                      itemBuilder: (context, index) {
-                        final transaction = transactions[index];
-                        return _buildItem(transaction);
-                      },
-                    ),
+          ? transactions.isNotEmpty
+              ? Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: ListView.builder(
+                    padding: const EdgeInsets.only(top: 10),
+                    itemCount: transactions.length,
+                    itemBuilder: (context, index) {
+                      final transaction = transactions[index];
+                      return _buildItem(transaction);
+                    },
                   ),
-                ],
-              ),
-            )
+                )
+              : const Center(child: CircularProgressIndicator())
           : Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Center(
-                    child: Text(
-                      'Anda harus login untuk melihat riwayat transaksi.',
-                      textAlign: TextAlign
-                          .center, // Center the text within its container
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontFamily: 'Poppins',
-                        fontWeight: FontWeight.w600,
-                      ),
+                  const Text(
+                    'Anda harus login untuk melihat riwayat transaksi.',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontFamily: 'Poppins',
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                   const SizedBox(height: 20),
@@ -112,20 +151,19 @@ class _HistoryScreenState extends State<HistoryScreen> {
                       );
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blueAccent, // Button color
+                      backgroundColor: Colors.blueAccent,
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 24, vertical: 12), // Button padding
+                          horizontal: 24, vertical: 12),
                       shape: RoundedRectangleBorder(
-                        borderRadius:
-                            BorderRadius.circular(30), // Rounded corners
+                        borderRadius: BorderRadius.circular(30),
                       ),
                     ),
                     child: const Text(
                       'Login Sekarang',
                       style: TextStyle(
-                        color: Colors.white, // Text color
-                        fontFamily: 'Poppins', // Font family
-                        fontSize: 16, // Font size
+                        color: Colors.white,
+                        fontFamily: 'Poppins',
+                        fontSize: 16,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -188,11 +226,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
           padding: const EdgeInsets.all(15),
           child: Row(
             children: [
-              Icon(
-                icon,
-                size: 30,
-                color: iconColor,
-              ),
+              Icon(icon, size: 30, color: iconColor),
               const SizedBox(width: 15),
               Expanded(
                 child: Column(
@@ -214,15 +248,6 @@ class _HistoryScreenState extends State<HistoryScreen> {
                         fontSize: 12,
                         fontWeight: FontWeight.w500,
                         color: Colors.blueGrey,
-                      ),
-                    ),
-                    Text(
-                      'Total: Rp${transaction['totalAmount']}',
-                      style: const TextStyle(
-                        fontFamily: 'Poppins',
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.black,
                       ),
                     ),
                     const SizedBox(height: 8),
