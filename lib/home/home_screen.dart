@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:mysolonet/alert/confirm_popup.dart';
-import 'package:mysolonet/auth/connecting_account.dart';
 import 'package:mysolonet/auth/login.dart';
 import 'package:mysolonet/auth/service/service.dart';
 import 'package:mysolonet/constants.dart';
@@ -45,6 +44,18 @@ class _HomeScreenState extends State<HomeScreen> {
             nama = data['name'];
             email = data['email'];
           });
+        } else if (response.statusCode == 401) {
+          await authService.removeToken();
+          confirmPopup(
+            context, 
+            'Session Expired', 
+            'Silahkan login kembali', 
+            'Login', 
+            () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const SignInScreen()),
+            ),
+          );
         } else {
           print('Error: ${response.body}');
         }
