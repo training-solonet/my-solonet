@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'payment_screen.dart'; // Pastikan untuk mengimpor PaymentScreen
+import 'payment_screen.dart';
 
 class PaymentMethodScreen extends StatefulWidget {
   const PaymentMethodScreen({Key? key}) : super(key: key);
@@ -9,6 +9,8 @@ class PaymentMethodScreen extends StatefulWidget {
 }
 
 class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
+  String? _selectedBank;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,46 +41,40 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
               ),
             ),
             const SizedBox(height: 10),
-            const Text(
-              'Bank',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-                fontFamily: 'Poppins',
-              ),
-            ),
+            _buildBankCard('assets/images/bri.png', 'BRI'),
             const SizedBox(height: 10),
-            // Single card for multiple banks using ExpansionTile
-            Card(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-              elevation: 3,
-              child: ExpansionTile(
-                title: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Image.asset(
-                      'assets/images/bri.png',
-                      width: 40,
-                      height: 25,
-                      fit: BoxFit.contain,
-                    ),
-                    const SizedBox(width: 20),
-                    Image.asset(
-                      'assets/images/bni.png',
-                      width: 40,
-                      height: 25,
-                      fit: BoxFit.contain,
-                    ),
-                  ],
+            _buildBankCard('assets/images/bni.png', 'BNI'),
+            const Spacer(),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: _selectedBank != null
+                    ? () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                PaymentScreen(bankName: _selectedBank!),
+                          ),
+                        );
+                      }
+                    : null,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blueAccent,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
                 ),
-                children: [
-                  // When expanded, show each bank in a row with image, name, and chevron
-                  _buildBankRow('assets/images/bri.png', 'BRI'),
-                  const Divider(),  // Optional: add a divider between banks
-                  _buildBankRow('assets/images/bni.png', 'BNI'),
-                ],
+                child: const Text(
+                  'Pilih Pembayaran',
+                  style: TextStyle(
+                    fontFamily: 'Poppins',
+                    fontWeight: FontWeight.w600,
+                    fontSize: 16,
+                    color: Colors.white,
+                  ),
+                ),
               ),
             ),
           ],
@@ -87,47 +83,50 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
     );
   }
 
-  // Widget for each bank row with image, name, and chevron icon
-  Widget _buildBankRow(String imagePath, String bankName) {
+  Widget _buildBankCard(String imagePath, String bankName) {
     return GestureDetector(
       onTap: () {
-        // Navigate to PaymentScreen with the selected bank name
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => PaymentScreen(bankName: bankName),
-          ),
-        );
+        setState(() {
+          _selectedBank = bankName;
+        });
       },
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
-        child: Row(
-          children: [
-            // Bank logo on the left
-            Image.asset(
-              imagePath,
-              width: 40,
-              height: 25,
-              fit: BoxFit.contain,
-            ),
-            const SizedBox(width: 20),
-            // Bank name in the middle
-            Expanded(
-              child: Text(
-                bankName,
-                style: const TextStyle(
-                  fontFamily: 'Poppins',
-                  fontWeight: FontWeight.w500,
-                  fontSize: 16,
+      child: Card(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+          side: BorderSide(
+            color: _selectedBank == bankName ? Colors.blue : Colors.grey,
+            width: 2,
+          ),
+        ),
+        elevation: 3,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
+          child: Row(
+            children: [
+              Image.asset(
+                imagePath,
+                width: 40,
+                height: 25,
+                fit: BoxFit.contain,
+              ),
+              const SizedBox(width: 20),
+              Expanded(
+                child: Text(
+                  bankName,
+                  style: const TextStyle(
+                    fontFamily: 'Poppins',
+                    fontWeight: FontWeight.w500,
+                    fontSize: 16,
+                  ),
                 ),
               ),
-            ),
-            // Chevron icon on the right
-            const Icon(
-              Icons.chevron_right,
-              color: Colors.blue,
-            ),
-          ],
+              if (_selectedBank == bankName)
+                const Icon(
+                  Icons.check_circle,
+                  color: Colors.blue,
+                ),
+            ],
+          ),
         ),
       ),
     );
