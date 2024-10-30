@@ -44,18 +44,6 @@ class _HomeScreenState extends State<HomeScreen> {
             nama = data['name'];
             email = data['email'];
           });
-        } else if (response.statusCode == 401) {
-          await authService.removeToken();
-          confirmPopup(
-            context, 
-            'Session Expired', 
-            'Silahkan login kembali', 
-            'Login', 
-            () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const SignInScreen()),
-            ),
-          );
         } else {
           print('Error: ${response.body}');
         }
