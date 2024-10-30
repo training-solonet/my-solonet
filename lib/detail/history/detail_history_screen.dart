@@ -1,20 +1,70 @@
 import 'package:flutter/material.dart';
+import 'package:mysolonet/constants.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
-class DetailHistoryScreen extends StatelessWidget {
-  const DetailHistoryScreen({Key? key}) : super(key: key);
+class DetailHistoryScreen extends StatefulWidget {
+  final int id;
+
+  const DetailHistoryScreen({super.key, required this.id});
+
+  @override
+  _DetailHistoryScreenState createState() => _DetailHistoryScreenState();
+}
+
+class _DetailHistoryScreenState extends State<DetailHistoryScreen> {
+  Map<String, dynamic>? tagihanData;
+  Map<String, dynamic>? pembayaranData;
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    initializeDateFormatting('id', null).then((_) {
+      fetchTransactionDetails();
+    });
+  }
+
+  Future<String> getToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('token') ?? '';
+  }
+
+  Future<void> fetchTransactionDetails() async {
+    final token = await getToken();
+    final response = await http.get(
+      Uri.parse('${baseUrl}detail-tagihan/${widget.id}'),
+      headers: {
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      setState(() {
+        tagihanData = data['tagihan'];
+        pembayaranData = data['pembayaran'];
+        isLoading = false;
+      });
+    } else {
+      setState(() {
+        isLoading = false;
+      });
+      print('Failed to load data');
+    }
+  }
+
+  String formatDate(String date) {
+    final parsedDate = DateTime.parse(date);
+    final formattedDate = DateFormat('d MMMM yyyy', 'id').format(parsedDate);
+    return formattedDate;
+  }
 
   @override
   Widget build(BuildContext context) {
-    // Data statis
-    final String date = '12 Oktober 2024';
-    final String totalAmount = '1.500.000';
-    final List<Map<String, dynamic>> items = [
-      {'period': 'September 2024'},
-      {'paymentMethod': 'Transfer Bank'},
-      {'tax': '150.000'},
-      {'amount': '1.350.000'},
-    ];
-
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.blueAccent,
@@ -31,91 +81,104 @@ class DetailHistoryScreen extends StatelessWidget {
         elevation: 2,
       ),
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Align(
-                alignment: Alignment.center,
-                child: CircleAvatar(
-                  radius: 45,
-                  child: Image.asset(
-                    'assets/images/checkbox.png',
-                  ),
+        child: isLoading
+            ? Center(child: CircularProgressIndicator())
+            : Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Align(
+                      alignment: Alignment.center,
+                      child: CircleAvatar(
+                        radius: 45,
+                        child: Image.asset(
+                          'assets/images/checkbox.png',
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    const Text(
+                      'Pembayaran Berhasil',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontFamily: 'Poppins',
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      tagihanData != null
+                          ? formatDate(tagihanData!['createdAt'])
+                          : 'Tanggal tidak tersedia',
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontFamily: 'Poppins',
+                        fontSize: 12.5,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      pembayaranData != null
+                          ? formatRupiah(pembayaranData!['total_pembayaran'])
+                          : 'Total tidak tersedia',
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontFamily: 'Poppins',
+                        fontSize: 28,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    _buildItemList(),
+                    const SizedBox(height: 20),
+                    _buildTotalAmount(),
+                    const SizedBox(height: 16),
+                    ElevatedButton(
+                      onPressed: () {
+                        print('Button pressed');
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blueAccent,
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(24),
+                        ),
+                        elevation: 5,
+                      ),
+                      child: const Text(
+                        'Download',
+                        style: TextStyle(
+                          fontFamily: 'Poppins',
+                          color: Colors.white,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              const SizedBox(height: 16),
-              const Text(
-                'Pembayaran Berhasil',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontFamily: 'Poppins',
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                date,
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontFamily: 'Poppins',
-                  fontSize: 12.5,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                'Rp $totalAmount',
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontFamily: 'Poppins',
-                  fontSize: 28,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const SizedBox(height: 20),
-              _buildItemList(items),
-              const SizedBox(height: 20),
-              _buildTotalAmount(totalAmount),
-              const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: () {
-                  print('Button pressed');
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blueAccent,
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(24),
-                  ),
-                  elevation: 5,
-                ),
-                child: const Text(
-                  'Download',
-                  style: TextStyle(
-                    fontFamily: 'Poppins',
-                    color: Colors.white,
-                    fontSize: 14,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
       ),
     );
   }
 
-  Widget _buildItemList(List<Map<String, dynamic>> items) {
+  Widget _buildItemList() {
+    if (tagihanData == null || pembayaranData == null) return Container();
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildItemRow('Periode Tagihan', items[0]['period']),
-        _buildItemRow('Metode Pembayaran', items[1]['paymentMethod']),
-        _buildItemRow('PPN', 'Rp ${items[2]['tax']}'),
-        _buildItemRow('Nominal', 'Rp ${items[3]['amount']}'),
+        _buildItemRow('Periode Tagihan', formatDate(tagihanData!['bulan'])),
+        _buildItemRow('Transaction Id', pembayaranData!['trx_id']),
+        _buildItemRow('Metode Pembayaran', pembayaranData!['bank']),
+        _buildItemRow('Tanggal Pembayaran',
+            formatDate(pembayaranData!['tanggal_pembayaran'])),
+        _buildItemRow(
+            'Virtual Account', pembayaranData!['virtual_account'].toString()),
+        _buildItemRow('Total Pembayaran',
+            formatRupiah(pembayaranData!['total_pembayaran'])),
       ],
     );
   }
@@ -149,7 +212,7 @@ class DetailHistoryScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildTotalAmount(String totalAmount) {
+  Widget _buildTotalAmount() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -163,7 +226,9 @@ class DetailHistoryScreen extends StatelessWidget {
           ),
         ),
         Text(
-          'Rp $totalAmount',
+          pembayaranData != null
+              ? formatRupiah(pembayaranData!['total_pembayaran'])
+              : 'Tidak tersedia',
           style: const TextStyle(
             fontFamily: 'Poppins',
             fontSize: 16,

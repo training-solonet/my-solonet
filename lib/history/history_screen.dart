@@ -87,6 +87,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
               'status': item['status_pembayaran'] == '1'
                   ? 'success'
                   : 'belum dibayar',
+              'tagihanId': item['id'],
             };
           }).toList();
         });
@@ -217,7 +218,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => DetailHistoryScreen(),
+                builder: (context) => DetailHistoryScreen(id: transaction['tagihanId']),
               ),
             );
           }
