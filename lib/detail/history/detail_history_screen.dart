@@ -5,6 +5,9 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:screenshot/screenshot.dart';
+import 'package:path_provider/path_provider.dart';
+import 'dart:io';
 
 class DetailHistoryScreen extends StatefulWidget {
   final int id;
@@ -19,6 +22,7 @@ class _DetailHistoryScreenState extends State<DetailHistoryScreen> {
   Map<String, dynamic>? tagihanData;
   Map<String, dynamic>? pembayaranData;
   bool isLoading = true;
+  final ScreenshotController screenshotController = ScreenshotController();
 
   @override
   void initState() {
@@ -59,8 +63,20 @@ class _DetailHistoryScreenState extends State<DetailHistoryScreen> {
 
   String formatDate(String date) {
     final parsedDate = DateTime.parse(date);
-    final formattedDate = DateFormat('d MMMM yyyy', 'id').format(parsedDate);
-    return formattedDate;
+    return DateFormat('d MMMM yyyy', 'id').format(parsedDate);
+  }
+
+  Future<void> _downloadReceipt() async {
+    final image = await screenshotController.capture();
+    if (image != null) {
+      final directory = await getApplicationDocumentsDirectory();
+      final imagePath = File('${directory.path}/receipt.png');
+      await imagePath.writeAsBytes(image);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Receipt saved at ${imagePath.path}')),
+      );
+    }
   }
 
   @override
@@ -80,105 +96,100 @@ class _DetailHistoryScreenState extends State<DetailHistoryScreen> {
         ),
         elevation: 2,
       ),
-      body: SafeArea(
-        child: isLoading
-            ? Center(child: CircularProgressIndicator())
-            : Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Align(
-                      alignment: Alignment.center,
-                      child: CircleAvatar(
-                        radius: 45,
-                        child: Image.asset(
-                          'assets/images/checkbox.png',
+      body: Screenshot(
+        controller: screenshotController,
+        child: SafeArea(
+          child: isLoading
+              ? Center(child: CircularProgressIndicator())
+              : Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Align(
+                        alignment: Alignment.center,
+                        child: CircleAvatar(
+                          radius: 45,
+                          child: Image.asset('assets/images/checkbox.png'),
                         ),
                       ),
-                    ),
-                    const SizedBox(height: 16),
-                    const Text(
-                      'Pembayaran Berhasil',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontFamily: 'Poppins',
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      tagihanData != null
-                          ? formatDate(tagihanData!['createdAt'])
-                          : 'Tanggal tidak tersedia',
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        fontFamily: 'Poppins',
-                        fontSize: 12.5,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      pembayaranData != null
-                          ? formatRupiah(pembayaranData!['total_pembayaran'])
-                          : 'Total tidak tersedia',
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        fontFamily: 'Poppins',
-                        fontSize: 28,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    _buildItemList(),
-                    const SizedBox(height: 20),
-                    _buildTotalAmount(),
-                    const SizedBox(height: 16),
-                    ElevatedButton(
-                      onPressed: () {
-                        print('Button pressed');
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blueAccent,
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(24),
-                        ),
-                        elevation: 5,
-                      ),
-                      child: const Text(
-                        'Download',
+                      const SizedBox(height: 16),
+                      const Text(
+                        'Pembayaran Berhasil',
+                        textAlign: TextAlign.center,
                         style: TextStyle(
                           fontFamily: 'Poppins',
-                          color: Colors.white,
-                          fontSize: 14,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
-                    ),
-                  ],
+                      const SizedBox(height: 8),
+                      Text(
+                        tagihanData != null
+                            ? formatDate(tagihanData!['createdAt'])
+                            : 'Tanggal tidak tersedia',
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          fontFamily: 'Poppins',
+                          fontSize: 12.5,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        pembayaranData != null
+                            ? formatRupiah(pembayaranData!['total_pembayaran'])
+                            : 'Total tidak tersedia',
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          fontFamily: 'Poppins',
+                          fontSize: 28,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      _buildItemList(),
+                      const SizedBox(height: 20),
+                      _buildTotalAmount(),
+                      const SizedBox(height: 16),
+                      ElevatedButton(
+                        onPressed: _downloadReceipt,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blueAccent,
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(24),
+                          ),
+                          elevation: 5,
+                        ),
+                        child: const Text(
+                          'Download',
+                          style: TextStyle(
+                            fontFamily: 'Poppins',
+                            color: Colors.white,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
+        ),
       ),
     );
   }
 
   Widget _buildItemList() {
     if (tagihanData == null || pembayaranData == null) return Container();
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _buildItemRow('Periode Tagihan', formatDate(tagihanData!['bulan'])),
         _buildItemRow('Transaction Id', pembayaranData!['trx_id']),
         _buildItemRow('Metode Pembayaran', pembayaranData!['bank']),
-        _buildItemRow('Tanggal Pembayaran',
-            formatDate(pembayaranData!['tanggal_pembayaran'])),
-        _buildItemRow(
-            'Virtual Account', pembayaranData!['virtual_account'].toString()),
-        _buildItemRow('Total Pembayaran',
-            formatRupiah(pembayaranData!['total_pembayaran'])),
+        _buildItemRow('Tanggal Pembayaran', formatDate(pembayaranData!['tanggal_pembayaran'])),
+        _buildItemRow('Virtual Account', pembayaranData!['virtual_account'].toString()),
+        _buildItemRow('Total Pembayaran', formatRupiah(pembayaranData!['total_pembayaran'])),
       ],
     );
   }
