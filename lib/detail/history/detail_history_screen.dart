@@ -7,6 +7,8 @@ import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'dart:io';
 
 class DetailHistoryScreen extends StatefulWidget {
@@ -66,16 +68,42 @@ class _DetailHistoryScreenState extends State<DetailHistoryScreen> {
     return DateFormat('d MMMM yyyy', 'id').format(parsedDate);
   }
 
-  Future<void> _downloadReceipt() async {
+ Future<void> _downloadReceipt() async {
+  // Request storage permission
+  if (await Permission.storage.request().isGranted) {
+    final image = await screenshotController.capture();
+    
+    if (image != null) {
+      // Path for the "Screenshots" folder in the Pictures directory
+      final directory = Directory('/storage/emulated/0/Pictures/Screenshots');
+      if (!(await directory.exists())) {
+        await directory.create(recursive: true);
+      }
+
+      final imagePath = File('${directory.path}/receipt_${DateTime.now().millisecondsSinceEpoch}.png');
+      await imagePath.writeAsBytes(image);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Receipt saved at ${imagePath.path}')),
+      );
+    }
+  } else {
+    // Handle the case where permission is denied
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Storage permission denied')),
+    );
+  }
+}
+
+  Future<void> _shareReceipt() async {
     final image = await screenshotController.capture();
     if (image != null) {
       final directory = await getApplicationDocumentsDirectory();
       final imagePath = File('${directory.path}/receipt.png');
       await imagePath.writeAsBytes(image);
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Receipt saved at ${imagePath.path}')),
-      );
+      await Share.shareXFiles([XFile(imagePath.path)],
+          text: 'Here is your receipt!');
     }
   }
 
@@ -95,6 +123,12 @@ class _DetailHistoryScreenState extends State<DetailHistoryScreen> {
           ),
         ),
         elevation: 2,
+        actions: [
+          IconButton(
+            icon: Icon(Icons.share),
+            onPressed: _shareReceipt,
+          ),
+        ],
       ),
       body: Screenshot(
         controller: screenshotController,
@@ -187,9 +221,12 @@ class _DetailHistoryScreenState extends State<DetailHistoryScreen> {
         _buildItemRow('Periode Tagihan', formatDate(tagihanData!['bulan'])),
         _buildItemRow('Transaction Id', pembayaranData!['trx_id']),
         _buildItemRow('Metode Pembayaran', pembayaranData!['bank']),
-        _buildItemRow('Tanggal Pembayaran', formatDate(pembayaranData!['tanggal_pembayaran'])),
-        _buildItemRow('Virtual Account', pembayaranData!['virtual_account'].toString()),
-        _buildItemRow('Total Pembayaran', formatRupiah(pembayaranData!['total_pembayaran'])),
+        _buildItemRow('Tanggal Pembayaran',
+            formatDate(pembayaranData!['tanggal_pembayaran'])),
+        _buildItemRow(
+            'Virtual Account', pembayaranData!['virtual_account'].toString()),
+        _buildItemRow('Total Pembayaran',
+            formatRupiah(pembayaranData!['total_pembayaran'])),
       ],
     );
   }
