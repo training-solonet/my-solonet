@@ -29,7 +29,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
     final authService = AuthService();
     final userData = await authService.getUserData();
     setState(() {
-      isLoggedIn = userData != null;
+      isLoggedIn = userData.isNotEmpty;
     });
 
     if (isLoggedIn) {
@@ -92,6 +92,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
           }).toList();
         });
       } else {
+        transactions = [];
         throw Exception('Failed to load transactions');
       }
     } catch (e) {
@@ -128,7 +129,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
                     },
                   ),
                 )
-              : const Center(child: CircularProgressIndicator())
+              : const Center(
+                  child: Text(
+                      'Tidak ada transaksi ditemukan.')) // Pesan ketika tidak ada transaksi
           : Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -218,7 +221,8 @@ class _HistoryScreenState extends State<HistoryScreen> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => DetailHistoryScreen(id: transaction['tagihanId']),
+                builder: (context) =>
+                    DetailHistoryScreen(id: transaction['tagihanId']),
               ),
             );
           }
