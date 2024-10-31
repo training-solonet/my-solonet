@@ -87,7 +87,6 @@ class _DetailHistoryScreenState extends State<DetailHistoryScreen> {
       );
       return;
     }
-
   }
 
   await requestStoragePermission();
@@ -140,7 +139,9 @@ class _DetailHistoryScreenState extends State<DetailHistoryScreen> {
       ),
       body: Screenshot(
         controller: screenshotController,
-        child: SafeArea(
+       child: Container(
+        color: Colors.white,
+         child: SafeArea(
           child: isLoading
               ? Center(child: CircularProgressIndicator())
               : Padding(
@@ -218,6 +219,7 @@ class _DetailHistoryScreenState extends State<DetailHistoryScreen> {
                   ),
                 ),
         ),
+       ),
       ),
     );
   }
