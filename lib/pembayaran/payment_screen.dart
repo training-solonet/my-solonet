@@ -1,35 +1,33 @@
-import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mysolonet/alert/show_message_success.dart';
 
 class PaymentScreen extends StatefulWidget {
   final String bankName;
+  final String virtualAccount;
+  final String amount;
+  final String expirationDate;
+  final String trxId;
+  final String virtualAccountName;
+  final int tagihanId;
 
-  PaymentScreen({Key? key, required this.bankName}) : super(key: key);
+  PaymentScreen({
+    Key? key,
+    required this.bankName,
+    required this.virtualAccount,
+    required this.amount,
+    required this.expirationDate,
+    required this.trxId,
+    required this.virtualAccountName,
+    required this.tagihanId
+  }) : super(key: key);
 
   @override
   _PaymentScreenState createState() => _PaymentScreenState();
 }
 
 class _PaymentScreenState extends State<PaymentScreen> {
-  String? virtualAccount;
-  double amount = 0.0;
-  DateTime? expirationDate;
   int _selectedTabIndex = 0;
-
-  String generateVirtualAccount() {
-    Random random = Random();
-    return 'VA${random.nextInt(1000000000).toString().padLeft(10, '0')}';
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    virtualAccount = generateVirtualAccount();
-    amount = 150000;
-    expirationDate = DateTime.now().add(Duration(days: 1));
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -64,7 +62,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      '$virtualAccount',
+                      widget.virtualAccount,
                       style: const TextStyle(
                           fontSize: 16,
                           fontFamily: 'Poppins',
@@ -74,7 +72,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                       icon: Icon(Icons.copy, color: Colors.black),
                       iconSize: 15,
                       onPressed: () {
-                        Clipboard.setData(ClipboardData(text: virtualAccount!));
+                        Clipboard.setData(ClipboardData(text: widget.virtualAccount));
                         showSuccessMessage(context, 'Nomor VA telah disalin');
                       },
                     ),
@@ -82,7 +80,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                 ),
                 const SizedBox(height: 10),
                 Text(
-                  'Rp${amount.toStringAsFixed(2)}',
+                  'Rp${widget.amount}',
                   style: const TextStyle(
                       fontSize: 35,
                       fontWeight: FontWeight.bold,
@@ -91,8 +89,8 @@ class _PaymentScreenState extends State<PaymentScreen> {
                 const SizedBox(height: 20),
                 Center(
                   child: Text(
-                    'Lakukan Pembayaran Sebelum\n${expirationDate!.toLocal().toString().split(' ')[0]}',
-                    textAlign: TextAlign.center, 
+                    'Lakukan Pembayaran Sebelum\n${widget.expirationDate}',
+                    textAlign: TextAlign.center,
                     style: const TextStyle(
                         fontSize: 16,
                         fontFamily: 'Poppins',

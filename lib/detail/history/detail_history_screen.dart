@@ -71,54 +71,54 @@ class _DetailHistoryScreenState extends State<DetailHistoryScreen> {
   }
 
   Future<void> _downloadAndShareReceipt() async {
-  Future<void> requestStoragePermission() async {
-    PermissionStatus status = await Permission.storage.status;
+    Future<void> requestStoragePermission() async {
+      PermissionStatus status = await Permission.storage.status;
 
-    if (status.isPermanentlyDenied) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text(
-              'Izin penyimpanan ditolak secara permanen. Harap aktifkan di Pengaturan.'),
-          action: SnackBarAction(
-            label: 'Pengaturan',
-            onPressed: () => openAppSettings(),
+      if (status.isPermanentlyDenied) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text(
+                'Izin penyimpanan ditolak secara permanen. Harap aktifkan di Pengaturan.'),
+            action: SnackBarAction(
+              label: 'Pengaturan',
+              onPressed: () => openAppSettings(),
+            ),
           ),
-        ),
+        );
+        return;
+      }
+    }
+
+    await requestStoragePermission();
+
+    final image = await screenshotController.capture();
+
+    if (image != null) {
+      final directory = await getApplicationDocumentsDirectory();
+      final imagePath = File(
+          '${directory.path}/receipt_${DateTime.now().millisecondsSinceEpoch}.png');
+      await imagePath.writeAsBytes(image);
+
+      // Save to gallery
+      await GallerySaver.saveImage(imagePath.path).then((bool? success) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(success == true
+                ? 'Gambar disimpan ke galeri'
+                : 'Gagal menyimpan ke galeri'),
+          ),
+        );
+      });
+
+      // Share image after saving to gallery
+      await Share.shareXFiles([XFile(imagePath.path)],
+          text: 'Berikut adalah bukti pembayaran Anda!');
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Gagal menangkap tangkapan layar')),
       );
-      return;
     }
   }
-
-  await requestStoragePermission();
-
-  final image = await screenshotController.capture();
-
-  if (image != null) {
-    final directory = await getApplicationDocumentsDirectory();
-    final imagePath = File(
-        '${directory.path}/receipt_${DateTime.now().millisecondsSinceEpoch}.png');
-    await imagePath.writeAsBytes(image);
-
-    // Save to gallery
-    await GallerySaver.saveImage(imagePath.path).then((bool? success) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(success == true
-              ? 'Gambar disimpan ke galeri'
-              : 'Gagal menyimpan ke galeri'),
-        ),
-      );
-    });
-
-    // Share image after saving to gallery
-    await Share.shareXFiles([XFile(imagePath.path)],
-        text: 'Berikut adalah bukti pembayaran Anda!');
-  } else {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Gagal menangkap tangkapan layar')),
-    );
-  }
-}
 
   @override
   Widget build(BuildContext context) {
@@ -139,87 +139,88 @@ class _DetailHistoryScreenState extends State<DetailHistoryScreen> {
       ),
       body: Screenshot(
         controller: screenshotController,
-       child: Container(
-        color: Colors.white,
-         child: SafeArea(
-          child: isLoading
-              ? Center(child: CircularProgressIndicator())
-              : Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Align(
-                        alignment: Alignment.center,
-                        child: CircleAvatar(
-                          radius: 45,
-                          child: Image.asset('assets/images/checkbox.png'),
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      const Text(
-                        'Pembayaran Berhasil',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontFamily: 'Poppins',
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        tagihanData != null
-                            ? formatDate(tagihanData!['createdAt'])
-                            : 'Tanggal tidak tersedia',
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(
-                          fontFamily: 'Poppins',
-                          fontSize: 12.5,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      Text(
-                        pembayaranData != null
-                            ? formatRupiah(pembayaranData!['total_pembayaran'])
-                            : 'Total tidak tersedia',
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(
-                          fontFamily: 'Poppins',
-                          fontSize: 28,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-                      _buildItemList(),
-                      const SizedBox(height: 20),
-                      _buildTotalAmount(),
-                      const SizedBox(height: 16),
-                      ElevatedButton(
-                        onPressed:
-                            _downloadAndShareReceipt, // Mengganti fungsi yang dipanggil
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blueAccent,
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(24),
+        child: Container(
+          color: Colors.white,
+          child: SafeArea(
+            child: isLoading
+                ? Center(child: CircularProgressIndicator())
+                : Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Align(
+                          alignment: Alignment.center,
+                          child: CircleAvatar(
+                            radius: 45,
+                            child: Image.asset('assets/images/checkbox.png'),
                           ),
-                          elevation: 5,
                         ),
-                        child: const Text(
-                          'Download',
+                        const SizedBox(height: 16),
+                        const Text(
+                          'Pembayaran Berhasil',
+                          textAlign: TextAlign.center,
                           style: TextStyle(
                             fontFamily: 'Poppins',
-                            color: Colors.white,
-                            fontSize: 14,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
-                      ),
-                    ],
+                        const SizedBox(height: 8),
+                        Text(
+                          tagihanData != null
+                              ? formatDate(tagihanData!['createdAt'])
+                              : 'Tanggal tidak tersedia',
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            fontFamily: 'Poppins',
+                            fontSize: 12.5,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          pembayaranData != null
+                              ? formatRupiah(
+                                  pembayaranData!['total_pembayaran'])
+                              : 'Total tidak tersedia',
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            fontFamily: 'Poppins',
+                            fontSize: 28,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        _buildItemList(),
+                        const SizedBox(height: 20),
+                        _buildTotalAmount(),
+                        const SizedBox(height: 16),
+                        ElevatedButton(
+                          onPressed:
+                              _downloadAndShareReceipt, // Mengganti fungsi yang dipanggil
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.blueAccent,
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(24),
+                            ),
+                            elevation: 5,
+                          ),
+                          child: const Text(
+                            'Download',
+                            style: TextStyle(
+                              fontFamily: 'Poppins',
+                              color: Colors.white,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
+          ),
         ),
-       ),
       ),
     );
   }

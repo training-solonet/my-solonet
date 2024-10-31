@@ -57,7 +57,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     try {
       final response = await http.post(url, headers: headers, body: body);
 
-      if (response.statusCode == 200) {
+      if (response.statusCode == 201) {
         final responseData = json.decode(response.body);
         print(responseData['message']);
 
