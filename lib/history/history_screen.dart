@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mysolonet/constants.dart';
 import 'package:mysolonet/detail/history/detail_history_screen.dart';
 import 'package:mysolonet/alert/confirm_popup.dart';
 import 'package:mysolonet/auth/login.dart';
@@ -52,7 +53,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
       }
 
       final response = await http.get(
-        Uri.parse('https://api.connectis.my.id/tagihan-user'),
+        Uri.parse('${baseUrl}/tagihan-user'),
         headers: {
           'Authorization': 'Bearer $token',
         },
@@ -88,6 +89,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                   ? 'success'
                   : 'belum dibayar',
               'tagihanId': item['id'],
+              'customerId': item['customer_id']
             };
           }).toList();
         });
@@ -120,18 +122,39 @@ class _HistoryScreenState extends State<HistoryScreen> {
           ? transactions.isNotEmpty
               ? Padding(
                   padding: const EdgeInsets.all(16.0),
-                  child: ListView.builder(
-                    padding: const EdgeInsets.only(top: 10),
-                    itemCount: transactions.length,
-                    itemBuilder: (context, index) {
-                      final transaction = transactions[index];
-                      return _buildItem(transaction);
-                    },
+                  child: RefreshIndicator(
+                    onRefresh: _fetchTransactions,
+                    child: ListView.builder(
+                      padding: const EdgeInsets.only(top: 5),
+                      itemCount: transactions.length,
+                      itemBuilder: (context, index) {
+                        final transaction = transactions[index];
+                        return _buildItem(transaction);
+                      },
+                    ),
                   ),
                 )
-              : const Center(
-                  child: Text(
-                      'Tidak ada transaksi ditemukan.')) // Pesan ketika tidak ada transaksi
+              : RefreshIndicator(
+                  onRefresh: _fetchTransactions,
+                  child: ListView(
+                    padding: const EdgeInsets.only(top: 5),
+                    children: const [
+                      Center(
+                        child: Padding(
+                          padding: EdgeInsets.all(16.0),
+                          child: Text(
+                            'Tidak ada transaksi ditemukan.',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontFamily: 'Poppins',
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                )
           : Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -212,7 +235,10 @@ class _HistoryScreenState extends State<HistoryScreen> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const PaymentMethodScreen(),
+                    builder: (context) => PaymentMethodScreen(
+                      customerId: transaction['customerId'],
+                      tagihanId: transaction['tagihanId'],
+                    ),
                   ),
                 );
               },
