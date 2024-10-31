@@ -29,7 +29,7 @@ class _HomeScreenState extends State<HomeScreen> {
     token = await authService.getToken();
 
     if (token != null) {
-      final url = Uri.parse(baseUrl + 'users');
+      final url = Uri.parse('${baseUrl}/users');
 
       try {
         final response = await http.get(url, headers: {
@@ -67,7 +67,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         );
       } else {
-        final url = Uri.parse(baseUrl + 'users');
+        final url = Uri.parse('${baseUrl}/users');
         try {
           final response = await http.get(url, headers: {
             'Authorization': 'Bearer $token',

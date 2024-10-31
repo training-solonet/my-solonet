@@ -33,7 +33,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       _isLoading = true;
     });
 
-    final url = Uri.parse(baseUrl + "request-otp");
+    final url = Uri.parse('${baseUrl}/request-otp');
     final headers = {
       "Access-Control-Allow-Origin": "*",
       'Content-Type': 'application/json',

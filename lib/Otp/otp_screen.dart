@@ -78,7 +78,7 @@ class _OtpScreenState extends State<OtpScreen> {
 
     String otp = _controllers.map((controller) => controller.text).join();
 
-    final url = Uri.parse(baseUrl + "verify-otp");
+    final url = Uri.parse("${baseUrl}/verify-otp");
     final headers = {
       "Access-Control-Allow-Origin": "*",
       'Content-Type': 'application/json',
@@ -131,7 +131,7 @@ class _OtpScreenState extends State<OtpScreen> {
     });
     _startTimer(); 
 
-    final url = Uri.parse(baseUrl + "send-otp");
+    final url = Uri.parse('${baseUrl}/send-otp');
     final headers = {
       "Access-Control-Allow-Origin": "*",
       'Content-Type': 'application/json',

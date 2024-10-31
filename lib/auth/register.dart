@@ -40,7 +40,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       _isLoading = true;
     });
 
-    final url = Uri.parse(baseUrl + "register");
+    final url = Uri.parse('${baseUrl}/register');
     final headers = {
       "Access-Control-Allow-Origin": "*",
       'Content-Type': 'application/json',
