@@ -24,7 +24,7 @@ class _ChangeProfileState extends State<ChangeProfileScreen> {
     final token = await authservice.getToken();
     print(token);
 
-    final url = Uri.parse('${baseUrl}users');
+    final url = Uri.parse('${baseUrl}/users');
 
     try {
       final response = await http.get(

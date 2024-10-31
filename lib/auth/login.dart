@@ -41,7 +41,7 @@ class _SignInScreenState extends State<SignInScreen> {
       _isLoading = true;
     });
 
-    final url = Uri.parse(baseUrl + "login");
+    final url = Uri.parse('${baseUrl}/login');
     final headers = {
       "Access-Control-Allow-Origin": "*",
       'Content-Type': 'application/json',

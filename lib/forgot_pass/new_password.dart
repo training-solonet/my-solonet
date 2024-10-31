@@ -37,7 +37,7 @@ class _NewPasswordState extends State<NewPasswordScreen> {
       _isLoading = true;
     });
 
-    final url = Uri.parse(baseUrl + "reset-password");
+    final url = Uri.parse("${baseUrl}/reset-password");
     final headers = {
       "Access-Control-Allow-Origin": "*",
       'Content-Type': 'application/json',

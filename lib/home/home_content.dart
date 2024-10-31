@@ -32,7 +32,7 @@ class _HomePageContentState extends State<HomePageContent> {
   List<dynamic> _products = [];
 
   Future<void> _fetchBanners() async {
-    final url = Uri.parse(baseUrl + 'banner');
+    final url = Uri.parse('${baseUrl}/banner');
 
     try {
       final response = await http.get(url, headers: {
@@ -54,7 +54,7 @@ class _HomePageContentState extends State<HomePageContent> {
   }
 
   Future<void> _fetchProducts() async {
-    final url = Uri.parse(baseUrl + 'paket');
+    final url = Uri.parse('${baseUrl}/paket');
 
     try {
       final response = await http.get(url, headers: {

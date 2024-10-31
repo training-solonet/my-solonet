@@ -44,7 +44,7 @@ class _DetailHistoryScreenState extends State<DetailHistoryScreen> {
   Future<void> fetchTransactionDetails() async {
     final token = await getToken();
     final response = await http.get(
-      Uri.parse('${baseUrl}detail-tagihan/${widget.id}'),
+      Uri.parse('${baseUrl}/detail-tagihan/${widget.id}'),
       headers: {
         'Authorization': 'Bearer $token',
       },

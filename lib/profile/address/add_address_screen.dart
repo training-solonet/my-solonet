@@ -44,7 +44,7 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
   List<String> _subdistrictsNames = [];
 
   Future<void> _getProvinces() async {
-    final url = Uri.parse(baseUrl + 'provinsi');
+    final url = Uri.parse('${baseUrl}/provinsi'); 
     final authService = AuthService();
     final token = await authService.getToken();
 
@@ -70,7 +70,7 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
   }
 
   Future<void> _getCity() async {
-    final url = Uri.parse(baseUrl + 'kabupaten/${_selectedProvinceId}');
+    final url = Uri.parse('${baseUrl}/kabupaten/${_selectedProvinceId}');
     final authService = AuthService();
     final token = await authService.getToken();
 
@@ -96,7 +96,7 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
   }
 
   Future<void> _getDistrict() async {
-    final url = Uri.parse(baseUrl + 'kecamatan/${_selectedCityId}');
+    final url = Uri.parse('${baseUrl}/kecamatan/${_selectedCityId}');
     final authService = AuthService();
     final token = await authService.getToken();
 
@@ -122,7 +122,7 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
   }
 
   Future<void> _getSubDistrict() async {
-    final url = Uri.parse(baseUrl + 'kelurahan/${_selectedDistrictId}');
+    final url = Uri.parse('${baseUrl}/kelurahan/${_selectedDistrictId}');
     final authService = AuthService();
     final token = await authService.getToken();
 
