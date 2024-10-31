@@ -68,42 +68,38 @@ class _DetailHistoryScreenState extends State<DetailHistoryScreen> {
     return DateFormat('d MMMM yyyy', 'id').format(parsedDate);
   }
 
- Future<void> _downloadReceipt() async {
-  // Request storage permission
-  if (await Permission.storage.request().isGranted) {
-    final image = await screenshotController.capture();
-    
-    if (image != null) {
-      // Path for the "Screenshots" folder in the Pictures directory
-      final directory = Directory('/storage/emulated/0/Pictures/Screenshots');
-      if (!(await directory.exists())) {
-        await directory.create(recursive: true);
+  Future<void> _downloadAndShareReceipt() async {
+    // Meminta izin penyimpanan terlebih dahulu
+    if (await Permission.storage.request().isGranted) {
+      // Mengambil screenshot menggunakan ScreenshotController
+      final image = await screenshotController.capture();
+
+      if (image != null) {
+        // Menyimpan gambar ke direktori aplikasi untuk diakses
+        final directory = await getApplicationDocumentsDirectory();
+        final imagePath = File(
+            '${directory.path}/receipt_${DateTime.now().millisecondsSinceEpoch}.png');
+        await imagePath.writeAsBytes(image);
+
+        // Tampilkan pesan bahwa tangkapan layar berhasil disimpan
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+              content: Text('Tangkapan layar disimpan di ${imagePath.path}')),
+        );
+
+        // Bagikan gambar yang telah disimpan
+        await Share.shareXFiles([XFile(imagePath.path)],
+            text: 'Berikut adalah bukti pembayaran Anda!');
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Gagal menangkap tangkapan layar')),
+        );
       }
-
-      final imagePath = File('${directory.path}/receipt_${DateTime.now().millisecondsSinceEpoch}.png');
-      await imagePath.writeAsBytes(image);
-
+    } else {
+      // Tampilkan pesan jika izin ditolak
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Receipt saved at ${imagePath.path}')),
+        SnackBar(content: Text('Izin penyimpanan ditolak')),
       );
-    }
-  } else {
-    // Handle the case where permission is denied
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Storage permission denied')),
-    );
-  }
-}
-
-  Future<void> _shareReceipt() async {
-    final image = await screenshotController.capture();
-    if (image != null) {
-      final directory = await getApplicationDocumentsDirectory();
-      final imagePath = File('${directory.path}/receipt.png');
-      await imagePath.writeAsBytes(image);
-
-      await Share.shareXFiles([XFile(imagePath.path)],
-          text: 'Here is your receipt!');
     }
   }
 
@@ -123,12 +119,6 @@ class _DetailHistoryScreenState extends State<DetailHistoryScreen> {
           ),
         ),
         elevation: 2,
-        actions: [
-          IconButton(
-            icon: Icon(Icons.share),
-            onPressed: _shareReceipt,
-          ),
-        ],
       ),
       body: Screenshot(
         controller: screenshotController,
@@ -187,7 +177,8 @@ class _DetailHistoryScreenState extends State<DetailHistoryScreen> {
                       _buildTotalAmount(),
                       const SizedBox(height: 16),
                       ElevatedButton(
-                        onPressed: _downloadReceipt,
+                        onPressed:
+                            _downloadAndShareReceipt, // Mengganti fungsi yang dipanggil
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.blueAccent,
                           padding: const EdgeInsets.symmetric(vertical: 12),
