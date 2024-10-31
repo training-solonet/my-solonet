@@ -9,6 +9,8 @@ import 'package:screenshot/screenshot.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:gallery_saver/gallery_saver.dart';
+
 import 'dart:io';
 
 class DetailHistoryScreen extends StatefulWidget {
@@ -69,39 +71,55 @@ class _DetailHistoryScreenState extends State<DetailHistoryScreen> {
   }
 
   Future<void> _downloadAndShareReceipt() async {
-    // Meminta izin penyimpanan terlebih dahulu
-    if (await Permission.storage.request().isGranted) {
-      // Mengambil screenshot menggunakan ScreenshotController
-      final image = await screenshotController.capture();
+  Future<void> requestStoragePermission() async {
+    PermissionStatus status = await Permission.storage.status;
 
-      if (image != null) {
-        // Menyimpan gambar ke direktori aplikasi untuk diakses
-        final directory = await getApplicationDocumentsDirectory();
-        final imagePath = File(
-            '${directory.path}/receipt_${DateTime.now().millisecondsSinceEpoch}.png');
-        await imagePath.writeAsBytes(image);
-
-        // Tampilkan pesan bahwa tangkapan layar berhasil disimpan
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-              content: Text('Tangkapan layar disimpan di ${imagePath.path}')),
-        );
-
-        // Bagikan gambar yang telah disimpan
-        await Share.shareXFiles([XFile(imagePath.path)],
-            text: 'Berikut adalah bukti pembayaran Anda!');
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Gagal menangkap tangkapan layar')),
-        );
-      }
-    } else {
-      // Tampilkan pesan jika izin ditolak
+    if (status.isPermanentlyDenied) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Izin penyimpanan ditolak')),
+        SnackBar(
+          content: const Text(
+              'Izin penyimpanan ditolak secara permanen. Harap aktifkan di Pengaturan.'),
+          action: SnackBarAction(
+            label: 'Pengaturan',
+            onPressed: () => openAppSettings(),
+          ),
+        ),
       );
+      return;
     }
+
   }
+
+  await requestStoragePermission();
+
+  final image = await screenshotController.capture();
+
+  if (image != null) {
+    final directory = await getApplicationDocumentsDirectory();
+    final imagePath = File(
+        '${directory.path}/receipt_${DateTime.now().millisecondsSinceEpoch}.png');
+    await imagePath.writeAsBytes(image);
+
+    // Save to gallery
+    await GallerySaver.saveImage(imagePath.path).then((bool? success) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(success == true
+              ? 'Gambar disimpan ke galeri'
+              : 'Gagal menyimpan ke galeri'),
+        ),
+      );
+    });
+
+    // Share image after saving to gallery
+    await Share.shareXFiles([XFile(imagePath.path)],
+        text: 'Berikut adalah bukti pembayaran Anda!');
+  } else {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Gagal menangkap tangkapan layar')),
+    );
+  }
+}
 
   @override
   Widget build(BuildContext context) {
