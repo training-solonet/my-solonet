@@ -238,6 +238,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                     builder: (context) => PaymentMethodScreen(
                       customerId: transaction['customerId'],
                       tagihanId: transaction['tagihanId'],
+                      trxName: transaction['transactionName'],
                     ),
                   ),
                 );

@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 import 'package:mysolonet/alert/show_message_success.dart';
+import 'package:mysolonet/alert/confirm_popup.dart';
 
 class PaymentScreen extends StatefulWidget {
   final String bankName;
   final String virtualAccount;
   final String amount;
   final String expirationDate;
-  final String trxId;
-  final String virtualAccountName;
+  final String? virtualAccountName;
   final int tagihanId;
 
   PaymentScreen({
@@ -17,9 +18,8 @@ class PaymentScreen extends StatefulWidget {
     required this.virtualAccount,
     required this.amount,
     required this.expirationDate,
-    required this.trxId,
     required this.virtualAccountName,
-    required this.tagihanId
+    required this.tagihanId,
   }) : super(key: key);
 
   @override
@@ -29,134 +29,168 @@ class PaymentScreen extends StatefulWidget {
 class _PaymentScreenState extends State<PaymentScreen> {
   int _selectedTabIndex = 0;
 
+  String formatAmount(String amount) {
+    try {
+      double amountValue = double.parse(amount);
+      final formattedAmount =
+          NumberFormat.currency(locale: 'id', symbol: 'Rp').format(amountValue);
+      return formattedAmount;
+    } catch (e) {
+      print('Error formatting amount: $e');
+      return amount;
+    }
+  }
+
+  Future<bool> _onWillPop() {
+    return confirmPopupBack(
+      context,
+      'Konfirmasi',
+      'Apakah Anda yakin ingin kembali?',
+      'Ya',
+      () => Navigator.pop(context),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        iconTheme: const IconThemeData(color: Colors.white),
-        title: Text(
-          'Pembayaran untuk ${widget.bankName}',
-          style: const TextStyle(
+    return WillPopScope(
+      onWillPop: _onWillPop,
+      child: Scaffold(
+        appBar: AppBar(
+          iconTheme: const IconThemeData(color: Colors.white),
+          title: Text(
+            'Pembayaran untuk ${widget.bankName}',
+            style: const TextStyle(
               fontFamily: 'Poppins',
               color: Colors.white,
-              fontWeight: FontWeight.bold),
-        ),
-        backgroundColor: Colors.blue,
-      ),
-      body: Stack(
-        children: [
-          SingleChildScrollView(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              children: [
-                const Text(
-                  'Nomor Virtual Account',
-                  style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'Poppins'),
-                ),
-                const Text('-----------------------------------------',
-                    style: TextStyle(fontFamily: 'Poppins')),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      widget.virtualAccount,
-                      style: const TextStyle(
-                          fontSize: 16,
-                          fontFamily: 'Poppins',
-                          fontWeight: FontWeight.w400),
-                    ),
-                    IconButton(
-                      icon: Icon(Icons.copy, color: Colors.black),
-                      iconSize: 15,
-                      onPressed: () {
-                        Clipboard.setData(ClipboardData(text: widget.virtualAccount));
-                        showSuccessMessage(context, 'Nomor VA telah disalin');
-                      },
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 10),
-                Text(
-                  'Rp${widget.amount}',
-                  style: const TextStyle(
-                      fontSize: 35,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'Poppins'),
-                ),
-                const SizedBox(height: 20),
-                Center(
-                  child: Text(
-                    'Lakukan Pembayaran Sebelum\n${widget.expirationDate}',
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                        fontSize: 16,
-                        fontFamily: 'Poppins',
-                        fontWeight: FontWeight.w500),
-                  ),
-                ),
-                const SizedBox(height: 35),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    _buildTabButton('ATM', 0),
-                    _buildTabButton('Mobile Banking', 1),
-                  ],
-                ),
-                const SizedBox(height: 10),
-                _selectedTabIndex == 0
-                    ? _buildSection([
-                        '- Masukkan kartu ATM dan PIN.',
-                        '- Pilih menu “Transfer”.',
-                        '- Pilih “Virtual Account” dan masukkan nomor VA.',
-                        '- Masukkan nominal pembayaran.',
-                        '- Ikuti instruksi untuk menyelesaikan pembayaran.'
-                      ])
-                    : _buildSection([
-                        '- Buka aplikasi mobile banking.',
-                        '- Pilih menu “Transfer”.',
-                        '- Pilih “Virtual Account” dan masukkan nomor VA.',
-                        '- Masukkan nominal pembayaran.',
-                        '- Konfirmasi pembayaran.'
-                      ]),
-                const SizedBox(height: 80),
-              ],
+              fontWeight: FontWeight.bold,
             ),
           ),
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: ElevatedButton(
-                onPressed: () {
-                  // Implementasi logika pembayaran di sini
-                },
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
-                  backgroundColor: Colors.blue,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
+          backgroundColor: Colors.blue,
+        ),
+        body: Stack(
+          children: [
+            SingleChildScrollView(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                children: [
+                  const Text(
+                    'Nomor Virtual Account',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'Poppins',
+                    ),
                   ),
-                ),
-                child: const Text(
-                  'Cek Status Pembayaran',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontFamily: 'Poppins',
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white,
+                  const Text(
+                    '-----------------------------------------',
+                    style: TextStyle(fontFamily: 'Poppins'),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        widget.virtualAccount,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontFamily: 'Poppins',
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.copy, color: Colors.black),
+                        iconSize: 15,
+                        onPressed: () {
+                          Clipboard.setData(
+                              ClipboardData(text: widget.virtualAccount));
+                          showSuccessMessage(context, 'Nomor VA telah disalin');
+                        },
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    formatAmount(widget.amount),
+                    style: const TextStyle(
+                      fontSize: 35,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'Poppins',
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  Center(
+                    child: Text(
+                      'Lakukan Pembayaran Sebelum\n${widget.expirationDate}',
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontFamily: 'Poppins',
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 35),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      _buildTabButton('ATM', 0),
+                      _buildTabButton('Mobile Banking', 1),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  _selectedTabIndex == 0
+                      ? _buildSection([
+                          '- Masukkan kartu ATM dan PIN.',
+                          '- Pilih menu “Transfer”.',
+                          '- Pilih “Virtual Account” dan masukkan nomor VA.',
+                          '- Masukkan nominal pembayaran.',
+                          '- Ikuti instruksi untuk menyelesaikan pembayaran.'
+                        ])
+                      : _buildSection([
+                          '- Buka aplikasi mobile banking.',
+                          '- Pilih menu “Transfer”.',
+                          '- Pilih “Virtual Account” dan masukkan nomor VA.',
+                          '- Masukkan nominal pembayaran.',
+                          '- Konfirmasi pembayaran.'
+                        ]),
+                  const SizedBox(height: 80),
+                ],
+              ),
+            ),
+            Positioned(
+              bottom: 0,
+              left: 0,
+              right: 0,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: ElevatedButton(
+                  onPressed: () {
+                    // Implementasi logika pembayaran di sini
+                  },
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 12, horizontal: 20),
+                    backgroundColor: Colors.blue,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                  ),
+                  child: const Text(
+                    'Cek Status Pembayaran',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontFamily: 'Poppins',
+                      fontWeight: FontWeight.w600,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
+        resizeToAvoidBottomInset: false,
       ),
-      resizeToAvoidBottomInset: false,
     );
   }
 
@@ -174,7 +208,8 @@ class _PaymentScreenState extends State<PaymentScreen> {
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
-              color: _selectedTabIndex == index ? Colors.blueAccent : Colors.grey,
+              color:
+                  _selectedTabIndex == index ? Colors.blueAccent : Colors.grey,
               fontFamily: 'Poppins',
             ),
           ),
