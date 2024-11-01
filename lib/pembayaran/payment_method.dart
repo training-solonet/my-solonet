@@ -6,9 +6,10 @@ import 'package:mysolonet/pembayaran/service/bank_payment.dart';
 class PaymentMethodScreen extends StatefulWidget {
   final int tagihanId;
   final int customerId;
+  final String trxName;
 
   const PaymentMethodScreen(
-      {super.key, required this.tagihanId, required this.customerId});
+      {super.key, required this.tagihanId, required this.customerId, required this.trxName});
 
   @override
   _PaymentMethodScreenState createState() => _PaymentMethodScreenState();
@@ -38,7 +39,11 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
         showFailedMessage(context, 'Pilih metode pembayaran terlebih dahulu');
       } else if (_selectedBank == 'BRI') {
         await bankPayment.briPayment(
-            context, token!, widget.customerId, widget.tagihanId, '200000.00');
+            context, token!, widget.customerId, widget.tagihanId, '200000.00', widget.trxName);
+      } else if (_selectedBank == 'BNI') {
+        await bankPayment.bniPayment(
+          context, token!, widget.customerId, widget.tagihanId, '100000', widget.trxName
+        );
       } else {
         showFailedMessage(context, 'Metode pembayaran tidak tersedia');
       }
