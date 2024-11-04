@@ -46,8 +46,8 @@ class _DetailPromoScreenState extends State<DetailPromoScreen> {
               borderRadius: BorderRadius.circular(10),
               child: Image.network(
                 widget.imagePath, 
-                height: 150,
-                width: double.infinity,
+                height: 180,
+                width: double.maxFinite,
                 fit: BoxFit.cover,
               ),
             ),

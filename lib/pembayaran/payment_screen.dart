@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:mysolonet/alert/show_message_success.dart';
 import 'package:mysolonet/alert/confirm_popup.dart';
+import 'package:mysolonet/pembayaran/service/check_payment.dart';
 
 class PaymentScreen extends StatefulWidget {
   final String bankName;
@@ -11,6 +12,9 @@ class PaymentScreen extends StatefulWidget {
   final String expirationDate;
   final String? virtualAccountName;
   final int tagihanId;
+  final int customerId;
+  final String token;
+  final String? trxId;
 
   PaymentScreen({
     Key? key,
@@ -20,6 +24,9 @@ class PaymentScreen extends StatefulWidget {
     required this.expirationDate,
     required this.virtualAccountName,
     required this.tagihanId,
+    required this.customerId,
+    required this.token,
+    required this.trxId,
   }) : super(key: key);
 
   @override
@@ -28,6 +35,7 @@ class PaymentScreen extends StatefulWidget {
 
 class _PaymentScreenState extends State<PaymentScreen> {
   int _selectedTabIndex = 0;
+  bool _isLoading = false;
 
   String formatAmount(String amount) {
     try {
@@ -38,6 +46,24 @@ class _PaymentScreenState extends State<PaymentScreen> {
     } catch (e) {
       print('Error formatting amount: $e');
       return amount;
+    }
+  }
+
+  void _checkPaymentStatus() async {
+    try {
+      setState(() {
+        _isLoading = true;
+      });
+
+      if (widget.bankName == "BNI") {
+        await CheckPayment().checkBni(context, widget.token, widget.customerId, widget.trxId!, widget.tagihanId);
+      }
+    } catch (e) {
+      print(e);
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 
@@ -165,7 +191,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: ElevatedButton(
                   onPressed: () {
-                    // Implementasi logika pembayaran di sini
+                    _checkPaymentStatus();
                   },
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(
@@ -175,9 +201,10 @@ class _PaymentScreenState extends State<PaymentScreen> {
                       borderRadius: BorderRadius.circular(20),
                     ),
                   ),
-                  child: const Text(
+                  child: Text(
+                    _isLoading ? 'Loading...' :
                     'Cek Status Pembayaran',
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 16,
                       fontFamily: 'Poppins',
                       fontWeight: FontWeight.w600,
