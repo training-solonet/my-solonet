@@ -6,10 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:mysolonet/pembayaran/payment_screen.dart';
 
 class BankPayment {
-  final String tokenBri =
-      'EMD3nAKY0T757NYCuq1uL6W1qvy7QkeSKGv1ZUxzKXp0lwcEHJIsVU1LTWpAnFxA';
-  final String tokenBni =
-      'fFvCP2kk4wABO8CZO3z25BYF6cAuyGKmpsAIFp4rK4CWmjRkOnXNxNGfQkM5VmHf';
 
   // CREATE BRI VA
   Future<void> briPayment(BuildContext context, String tokenJwt, int customerId,
@@ -54,6 +50,9 @@ class BankPayment {
                 expirationDate: expirationDate,
                 virtualAccountName: virtualAccountName,
                 tagihanId: tagihanId,
+                customerId: customerId,
+                token: tokenJwt,
+                trxId: '',
               ),
             ),
           );
@@ -72,8 +71,7 @@ class BankPayment {
   }
 
   // CREATE BNI VA
-  Future<void> bniPayment(BuildContext context, String tokenJwt, int customerId,
-      int tagihanId, String amount, String description) async {
+  Future<void> bniPayment(BuildContext context, String tokenJwt, int customerId, int tagihanId) async {
     try {
       final url = Uri.parse('${baseUrl}/bni');
       final headers = {
@@ -83,20 +81,17 @@ class BankPayment {
       };
       final body = json.encode({
         "customer_id": customerId,
-        "trx_amount": amount,
-        "description": description,
-        "billing_type": "c"
+        "tagihan_id": tagihanId,
       });
 
       final response = await http.post(url, headers: headers, body: body);
       final res = json.decode(response.body);
 
       if (response.statusCode == 200 && res['data']['status'] == "000") {
-        // Accessing the nested virtual account information
         final virtualAccount = res['data']['data']['virtual_account'];
-        final amountValue = amount;
-        final expirationDate = res[
-            'expiredDate']; // Corrected to match the format in the debug output
+        final trxId = res['data']['data']['trx_id'];
+        final amountValue = res['trx_amount'];
+        final expirationDate = res['expired_date']; 
 
         Navigator.push(
           context,
@@ -108,6 +103,9 @@ class BankPayment {
               expirationDate: expirationDate,
               virtualAccountName: '',
               tagihanId: tagihanId,
+              customerId: customerId,
+              token: tokenJwt,
+              trxId: trxId,
             ),
           ),
         );

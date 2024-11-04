@@ -41,9 +41,7 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
         await bankPayment.briPayment(
             context, token!, widget.customerId, widget.tagihanId, '200000.00', widget.trxName);
       } else if (_selectedBank == 'BNI') {
-        await bankPayment.bniPayment(
-          context, token!, widget.customerId, widget.tagihanId, '100000', widget.trxName
-        );
+        await bankPayment.bniPayment(context, token!, widget.customerId, widget.tagihanId);
       } else {
         showFailedMessage(context, 'Metode pembayaran tidak tersedia');
       }
