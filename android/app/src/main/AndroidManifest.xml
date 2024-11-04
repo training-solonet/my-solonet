@@ -45,15 +45,16 @@
         <meta-data
             android:name="com.google.android.gms.auth.API_KEY"
             android:value="216357245101-rv0v2lpq0qobanal44t36ah3tfrmepdc.apps.googleusercontent.com" />
-        <provider
+     <provider
         android:name="androidx.core.content.FileProvider"
-        android:authorities="${applicationId}.fileprovider"
+        android:authorities="${applicationId}.provider"
         android:exported="false"
         android:grantUriPermissions="true">
-        <meta-data
-            android:name="android.support.FILE_PROVIDER_PATHS"
-            android:resource="@xml/file_paths" />
-    </provider>
+    <meta-data
+        android:name="android.support.FILE_PROVIDER_PATHS"
+        android:resource="@xml/provider_paths" />
+</provider>
+
     </application>
     <!-- Required to query activities that can process text, see:
          https://developer.android.com/training/package-visibility and
