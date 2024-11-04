@@ -111,7 +111,7 @@ class _DetailHistoryScreenState extends State<DetailHistoryScreen> {
       WidgetsBinding.instance.addPostFrameCallback((_) async {
         await Future.delayed(Duration(milliseconds: 100));
         final boundary = _repaintBoundaryKey.currentContext?.findRenderObject()
-            as RenderRepaintBoundary;
+            as RenderRepaintBoundary?;
 
         if (boundary != null) {
           // Convert the boundary to an image
