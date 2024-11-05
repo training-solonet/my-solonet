@@ -3,6 +3,8 @@ import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:mysolonet/alert/show_message_failed.dart';
+import 'package:mysolonet/alert/show_message_success.dart';
 import 'package:mysolonet/constants.dart';
 import 'package:mysolonet/history/history_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -36,7 +38,18 @@ class _DetailHistoryScreenState extends State<DetailHistoryScreen> {
     super.initState();
     initializeDateFormatting('id', null).then((_) {
       fetchTransactionDetails();
+      Permission.manageExternalStorage.request();
     });
+  }
+
+  Future<void> requestManageExternalStoragePermission() async {
+    final status = await Permission.manageExternalStorage.request();
+
+    if (status.isGranted) {
+      print("Manage external storage permission granted.");
+    } else {
+      print("Manage external storage permission denied.");
+    }
   }
 
   Future<String> getToken() async {
@@ -73,87 +86,187 @@ class _DetailHistoryScreenState extends State<DetailHistoryScreen> {
     return DateFormat('d MMMM yyyy', 'id').format(parsedDate);
   }
 
-Future<void> _captureAndSharePng() async {
-  if (_repaintBoundaryKey.currentContext == null) return;
+  Future<void> _captureAndSharePng() async {
+    if (_repaintBoundaryKey.currentContext == null) return;
 
-  // Delay capturing the image until the next frame is drawn
-  WidgetsBinding.instance.addPostFrameCallback((_) async {
-    final boundary = _repaintBoundaryKey.currentContext!.findRenderObject() as RenderRepaintBoundary?;
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      try {
+        final boundary = _repaintBoundaryKey.currentContext!.findRenderObject()
+            as RenderRepaintBoundary?;
+        if (boundary == null) {
+          print('Boundary is null');
+          return;
+        }
+
+        final image = await boundary.toImage(pixelRatio: 3.0);
+        final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+        final pngBytes = byteData!.buffer.asUint8List();
+
+        // Save image in cache directory
+        final directory = await getTemporaryDirectory();
+        final imagePath = '${directory.path}/receipt.png';
+        final file = File(imagePath);
+        await file.writeAsBytes(pngBytes);
+
+        // Share the image using the file path
+        final xFile = XFile(imagePath);
+        await Share.shareXFiles([xFile], text: 'Struk Pembayaran');
+      } catch (e) {
+        print("Error during capture and share: $e");
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to share receipt')),
+        );
+      }
+    });
+  }
+
+Future<void> _downloadReceiptWithWhiteBackground() async {
+  try {
+    // Render the download view layout
+    final boundary = _repaintBoundaryKey.currentContext?.findRenderObject() as RenderRepaintBoundary?;
     if (boundary == null) {
       print('Boundary is null');
       return;
     }
 
+    // Capture image as before
     final image = await boundary.toImage(pixelRatio: 3.0);
     final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
     final pngBytes = byteData!.buffer.asUint8List();
 
+    // Use canvas to draw white background
+    final recorder = ui.PictureRecorder();
+    final canvas = Canvas(recorder);
+    final paint = Paint()..color = Colors.white;
+
+    canvas.drawRect(Rect.fromLTWH(0, 0, image.width.toDouble(), image.height.toDouble()), paint);
+
+    final ui.Codec codec = await ui.instantiateImageCodec(pngBytes);
+    final ui.FrameInfo frame = await codec.getNextFrame();
+    canvas.drawImage(frame.image, Offset.zero, Paint());
+
+    final whiteBgImage = await recorder.endRecording().toImage(image.width, image.height);
+    final whiteBgByteData = await whiteBgImage.toByteData(format: ui.ImageByteFormat.png);
+    final whiteBgPngBytes = whiteBgByteData!.buffer.asUint8List();
+
     final directory = await getTemporaryDirectory();
-    final imagePath = '${directory.path}/receipt.png';
+    final imagePath = '${directory.path}/receipt_with_white_background.png';
     final file = File(imagePath);
+    await file.writeAsBytes(whiteBgPngBytes);
 
-    // Write the PNG bytes to the file
-    await file.writeAsBytes(pngBytes);
-    print('File saved at: $imagePath');
+    final result = await GallerySaver.saveImage(imagePath);
+    print('Gallery save result: $result');
 
-    // Create the XFile after the file has been written
-    final xFile = XFile(imagePath);
-
-    // Share the image
-    await Share.shareXFiles([xFile], text: 'Detail Riwayat Transaksi');
-  });
-}
-
-Future<void> _downloadReceipt() async {
-  try {
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await Future.delayed(Duration(milliseconds: 100));
-      final boundary = _repaintBoundaryKey.currentContext?.findRenderObject() as RenderRepaintBoundary?;
-
-      if (boundary != null) {
-        ui.Image image = await boundary.toImage(pixelRatio: 3.0);
-        ByteData? byteData = await image.toByteData(format: ui.ImageByteFormat.png);
-        Uint8List pngBytes = byteData!.buffer.asUint8List();
-
-        // Check and request permission only if it hasn't been granted yet
-        PermissionStatus status = await Permission.storage.status;
-        if (!status.isGranted) {
-          status = await Permission.storage.request();
-        }
-
-        if (status.isGranted) {
-          final directory = await getTemporaryDirectory();
-          final imagePath = '${directory.path}/receipt.png';
-          final file = File(imagePath);
-
-          await file.writeAsBytes(pngBytes);
-          print('File path: $imagePath');
-
-          // Save the image to the gallery
-          final result = await GallerySaver.saveImage(imagePath);
-          print('Gallery save result: $result');
-
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Struk berhasil disimpan ke galeri')),
-          );
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Izin penyimpanan ditolak')),
-          );
-        }
-      } else {
-        print('Boundary is null');
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Gagal menangkap struk')),
-        );
-      }
-    });
+    showSuccessMessage(context, 'Gambar berhasil disimpan ke galeri');
   } catch (e) {
     print("Error capturing and downloading image: $e");
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Error: $e')),
+    showFailedMessage(context, 'Gagal menyimpan gambar');
+  }
+}
+
+  Widget _buildDownloadButton() {
+    return Container(
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        border: Border.all(color: Colors.blueAccent),
+      ),
+      child: IconButton(
+        icon: Icon(Icons.download, color: Colors.blueAccent),
+        onPressed: _downloadReceiptWithWhiteBackground,
+      ),
     );
   }
+
+Widget _buildDownloadView({bool isDownload = false}) {
+  return Container(
+    color: Colors.white,
+    padding: const EdgeInsets.all(16.0),
+    child: Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Align(
+          alignment: Alignment.center,
+          child: CircleAvatar(
+            radius: 45,
+            child: Image.asset('assets/images/checkbox.png'),
+          ),
+        ),
+        const SizedBox(height: 16),
+        const Text(
+          'Pembayaran Berhasil',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontFamily: 'Poppins',
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            color: Colors.black,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          tagihanData != null
+              ? formatDate(tagihanData!['createdAt'] ?? '')
+              : 'Tanggal tidak tersedia',
+          textAlign: TextAlign.center,
+          style: const TextStyle(
+            fontFamily: 'Poppins',
+            fontSize: 12.5,
+            fontWeight: FontWeight.w500,
+            color: Colors.black,
+          ),
+        ),
+        const SizedBox(height: 16),
+        Text(
+          pembayaranData != null
+              ? formatRupiah(pembayaranData!['total_pembayaran'] ?? 0)
+              : 'Total tidak tersedia',
+          textAlign: TextAlign.center,
+          style: const TextStyle(
+            fontFamily: 'Poppins',
+            fontSize: 28,
+            fontWeight: FontWeight.w600,
+            color: Colors.black,
+          ),
+        ),
+        const SizedBox(height: 20),
+        _buildItemList(isDownload: isDownload),
+        const SizedBox(height: 20),
+        _buildTotalAmount(isDownload: isDownload),
+
+        if (!isDownload) ...[
+          const SizedBox(height: 20),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              _buildDownloadButton(),
+              const SizedBox(width: 10),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: const Text(
+                  'Selesai',
+                  style: TextStyle(
+                    fontFamily: 'Poppins',
+                    color: Colors.white,
+                    fontSize: 14,
+                  ),
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blueAccent,
+                  padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 40),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(24),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ],
+    ),
+  );
 }
 
   @override
@@ -172,16 +285,16 @@ Future<void> _downloadReceipt() async {
           ),
         ),
         elevation: 2,
-       leading: IconButton(
-        icon: const Icon(Icons.arrow_back),
-        onPressed: () {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => HistoryScreen()),
-          );
-        },
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => HistoryScreen()),
+            );
+          },
+        ),
       ),
-    ),
       body: SafeArea(
         child: isLoading
             ? Center(child: CircularProgressIndicator())
@@ -224,7 +337,8 @@ Future<void> _downloadReceipt() async {
                       const SizedBox(height: 16),
                       Text(
                         pembayaranData != null
-                            ? formatRupiah(pembayaranData!['total_pembayaran'] ?? 0)
+                            ? formatRupiah(
+                                pembayaranData!['total_pembayaran'] ?? 0)
                             : 'Total tidak tersedia',
                         textAlign: TextAlign.center,
                         style: const TextStyle(
@@ -239,7 +353,6 @@ Future<void> _downloadReceipt() async {
                       _buildTotalAmount(),
                       const SizedBox(height: 16),
 
-                      // Share and download button section
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -255,17 +368,7 @@ Future<void> _downloadReceipt() async {
                             ),
                           ),
                           const SizedBox(width: 10),
-                          // Download Button
-                          Container(
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              border: Border.all(color: Colors.blueAccent),
-                            ),
-                            child: IconButton(
-                              icon: Icon(Icons.download, color: Colors.blueAccent),
-                              onPressed: _downloadReceipt,
-                            ),
-                          ),
+                          _buildDownloadButton(),
                           const SizedBox(width: 10),
                           ElevatedButton(
                             onPressed: () {
@@ -281,7 +384,8 @@ Future<void> _downloadReceipt() async {
                             ),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.blueAccent,
-                              padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 40),
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 14, horizontal: 40),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(24),
                               ),
@@ -297,23 +401,33 @@ Future<void> _downloadReceipt() async {
     );
   }
 
-  Widget _buildItemList() {
+  Widget _buildItemList({bool isDownload = false}) {
     if (tagihanData == null || pembayaranData == null) return Container();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildItemRow('Periode Tagihan', formatDate(tagihanData!['bulan'] ?? '')),
-        _buildItemRow('Transaction Id', pembayaranData!['trx_id'] ?? 'N/A'),
-        _buildItemRow('Metode Pembayaran', pembayaranData!['bank'] ?? 'N/A'),
-        _buildItemRow('Tanggal Pembayaran', formatDate(pembayaranData!['tanggal_pembayaran'] ?? '')),
-        _buildItemRow('Virtual Account', pembayaranData!['virtual_account']?.toString() ?? 'N/A'),
-        _buildItemRow('Total Pembayaran', formatRupiah(pembayaranData!['total_pembayaran'] ?? 0)),
+        _buildItemRow(
+            'Periode Tagihan', formatDate(tagihanData!['bulan'] ?? ''),
+            isDownload: isDownload),
+        _buildItemRow('Transaction Id', pembayaranData!['trx_id'] ?? 'N/A',
+            isDownload: isDownload),
+        _buildItemRow('Metode Pembayaran', pembayaranData!['bank'] ?? 'N/A',
+            isDownload: isDownload),
+        _buildItemRow('Tanggal Pembayaran',
+            formatDate(pembayaranData!['tanggal_pembayaran'] ?? ''),
+            isDownload: isDownload),
+        _buildItemRow('Virtual Account',
+            pembayaranData!['virtual_account']?.toString() ?? 'N/A',
+            isDownload: isDownload),
+        _buildItemRow('Total Pembayaran',
+            formatRupiah(pembayaranData!['total_pembayaran'] ?? 0),
+            isDownload: isDownload),
       ],
     );
   }
 
-  Widget _buildItemRow(String label, String value) {
+  Widget _buildItemRow(String label, String value, {bool isDownload = false}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 5.0),
       child: Row(
@@ -321,18 +435,20 @@ Future<void> _downloadReceipt() async {
         children: [
           Text(
             label,
-            style: const TextStyle(
+            style: TextStyle(
               fontFamily: 'Poppins',
               fontSize: 14,
               fontWeight: FontWeight.w500,
+              color: isDownload ? Colors.black : null,
             ),
           ),
           Text(
             value,
-            style: const TextStyle(
+            style: TextStyle(
               fontFamily: 'Poppins',
               fontSize: 14,
               fontWeight: FontWeight.w500,
+              color: isDownload ? Colors.black : null,
             ),
           ),
         ],
@@ -340,26 +456,28 @@ Future<void> _downloadReceipt() async {
     );
   }
 
-  Widget _buildTotalAmount() {
+  Widget _buildTotalAmount({bool isDownload = false}) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        const Text(
+        Text(
           'Total Pembayaran',
           style: TextStyle(
             fontFamily: 'Poppins',
             fontSize: 16,
             fontWeight: FontWeight.w600,
+            color: isDownload ? Colors.black : null,
           ),
         ),
         Text(
           pembayaranData != null
               ? formatRupiah(pembayaranData!['total_pembayaran'] ?? 0)
               : 'Total tidak tersedia',
-          style: const TextStyle(
+          style: TextStyle(
             fontFamily: 'Poppins',
             fontSize: 16,
             fontWeight: FontWeight.w600,
+            color: isDownload ? Colors.black : null,
           ),
         ),
       ],
