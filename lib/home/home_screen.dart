@@ -14,11 +14,11 @@ class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  State<HomeScreen> createState() => HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
-  int _selectedIndex = 0;
+class HomeScreenState extends State<HomeScreen> {
+  int selectedIndex = 0; 
   int userId = 0;
   String nama = '';
   String email = '';
@@ -87,7 +87,7 @@ class _HomeScreenState extends State<HomeScreen> {
             );
           } else {
             setState(() {
-              _selectedIndex = index;
+              selectedIndex = index;
             });
           }
         } catch (e) {
@@ -96,7 +96,7 @@ class _HomeScreenState extends State<HomeScreen> {
       }
     } else {
       setState(() {
-        _selectedIndex = index;
+        selectedIndex = index;
       });
     }
   }
@@ -125,7 +125,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: _selectedIndex == 0
+      appBar: selectedIndex == 0
           ? AppBar(
               automaticallyImplyLeading: false,
               title: Row(
@@ -170,7 +170,7 @@ class _HomeScreenState extends State<HomeScreen> {
             )
           : null,
       body: IndexedStack(
-        index: _selectedIndex,
+        index: selectedIndex,
         children: _screens,
       ),
       bottomNavigationBar: BottomNavigationBar(
@@ -193,7 +193,7 @@ class _HomeScreenState extends State<HomeScreen> {
             label: 'Profil',
           ),
         ],
-        currentIndex: _selectedIndex,
+        currentIndex: selectedIndex,
         selectedItemColor: Colors.blue,
         onTap: _onItemTapped,
         selectedFontSize: 10,
