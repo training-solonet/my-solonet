@@ -14,7 +14,7 @@ class PaymentScreen extends StatefulWidget {
   final int tagihanId;
   final int customerId;
   final String token;
-  final String? trxId;
+  final String trxId;
 
   PaymentScreen({
     Key? key,
@@ -56,7 +56,9 @@ class _PaymentScreenState extends State<PaymentScreen> {
       });
 
       if (widget.bankName == "BNI") {
-        await CheckPayment().checkBni(context, widget.token, widget.customerId, widget.trxId!, widget.tagihanId);
+        await CheckPayment().checkBni(context, widget.token, widget.customerId, widget.trxId, widget.tagihanId);
+      } else if (widget.bankName == "BRI") {
+        await CheckPayment().checkBri(context, widget.token, widget.customerId, widget.tagihanId);
       }
     } catch (e) {
       print(e);

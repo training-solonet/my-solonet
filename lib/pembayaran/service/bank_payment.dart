@@ -6,10 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:mysolonet/pembayaran/payment_screen.dart';
 
 class BankPayment {
-
   // CREATE BRI VA
-  Future<void> briPayment(BuildContext context, String tokenJwt, int customerId,
-      int tagihanId, String amount, String description) async {
+  Future<void> briPayment(BuildContext context, String tokenJwt, int customerId, int tagihanId) async {
     try {
       final url = Uri.parse('${baseUrl}/bri');
       final headers = {
@@ -20,18 +18,12 @@ class BankPayment {
       final body = json.encode({
         "customer_id": customerId,
         "tagihan_id": tagihanId,
-        "partnerServiceId": "   14948",
-        "totalAmount": {
-          "value": amount,
-          "currency": "IDR",
-        },
-        "additionalInfo": {"description": description}
       });
 
       final response = await http.post(url, headers: headers, body: body);
       final res = json.decode(response.body);
 
-      if (res['responseCode'] == "2002600") {
+      if (res['responseCode'] == "2002700" && response.statusCode == 200) {
         var virtualAccountData = res['virtualAccountData'];
 
         if (virtualAccountData != null) {
@@ -46,7 +38,7 @@ class BankPayment {
               builder: (context) => PaymentScreen(
                 bankName: "BRI",
                 virtualAccount: virtualAccountNo,
-                amount: amountValue,
+                amount: amountValue.toString(),
                 expirationDate: expirationDate,
                 virtualAccountName: virtualAccountName,
                 tagihanId: tagihanId,
@@ -71,7 +63,8 @@ class BankPayment {
   }
 
   // CREATE BNI VA
-  Future<void> bniPayment(BuildContext context, String tokenJwt, int customerId, int tagihanId) async {
+  Future<void> bniPayment(BuildContext context, String tokenJwt, int customerId,
+      int tagihanId) async {
     try {
       final url = Uri.parse('${baseUrl}/bni');
       final headers = {
@@ -89,28 +82,30 @@ class BankPayment {
 
       if (response.statusCode == 200 && res['data']['status'] == "000") {
         final virtualAccount = res['data']['data']['virtual_account'];
-        final trxId = res['data']['data']['trx_id'];
-        final amountValue = res['trx_amount'];
-        final expirationDate = res['expired_date']; 
+        final trxId = res['data']['data']['trx_id'].toString();
+        final amountValue = res['trx_amount'].toString();
+        final expirationDate = res['expired_date'];
 
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => PaymentScreen(
-              bankName: "BNI",
-              virtualAccount: virtualAccount,
-              amount: amountValue,
-              expirationDate: expirationDate,
-              virtualAccountName: '',
-              tagihanId: tagihanId,
-              customerId: customerId,
-              token: tokenJwt,
-              trxId: trxId,
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => PaymentScreen(
+                bankName: "BNI",
+                virtualAccount: virtualAccount,
+                amount: amountValue.toString(),
+                expirationDate: expirationDate,
+                virtualAccountName: '',
+                tagihanId: tagihanId,
+                customerId: customerId,
+                token: tokenJwt,
+                trxId: trxId,
+              ),
             ),
-          ),
-        );
+          );
+        });
       } else {
-        final message = res['message'] ?? 'Unknown error';
+        final message = res['data']['message'];
         showFailedMessage(context, message);
       }
     } catch (e) {

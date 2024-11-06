@@ -38,8 +38,7 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
       if (_selectedBank == null) {
         showFailedMessage(context, 'Pilih metode pembayaran terlebih dahulu');
       } else if (_selectedBank == 'BRI') {
-        await bankPayment.briPayment(
-            context, token!, widget.customerId, widget.tagihanId, '200000.00', widget.trxName);
+        await bankPayment.briPayment(context, token!, widget.customerId, widget.tagihanId);
       } else if (_selectedBank == 'BNI') {
         await bankPayment.bniPayment(context, token!, widget.customerId, widget.tagihanId);
       } else {

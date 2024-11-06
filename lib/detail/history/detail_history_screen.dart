@@ -6,7 +6,7 @@ import 'package:flutter/rendering.dart';
 import 'package:mysolonet/alert/show_message_failed.dart';
 import 'package:mysolonet/alert/show_message_success.dart';
 import 'package:mysolonet/constants.dart';
-import 'package:mysolonet/history/history_screen.dart';
+import 'package:mysolonet/home/home_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:share_plus/share_plus.dart';
 import 'dart:convert';
@@ -120,49 +120,54 @@ class _DetailHistoryScreenState extends State<DetailHistoryScreen> {
     });
   }
 
-Future<void> _downloadReceiptWithWhiteBackground() async {
-  try {
-    // Render the download view layout
-    final boundary = _repaintBoundaryKey.currentContext?.findRenderObject() as RenderRepaintBoundary?;
-    if (boundary == null) {
-      print('Boundary is null');
-      return;
+  Future<void> _downloadReceiptWithWhiteBackground() async {
+    try {
+      // Render the download view layout
+      final boundary = _repaintBoundaryKey.currentContext?.findRenderObject()
+          as RenderRepaintBoundary?;
+      if (boundary == null) {
+        print('Boundary is null');
+        return;
+      }
+
+      // Capture image as before
+      final image = await boundary.toImage(pixelRatio: 3.0);
+      final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+      final pngBytes = byteData!.buffer.asUint8List();
+
+      // Use canvas to draw white background
+      final recorder = ui.PictureRecorder();
+      final canvas = Canvas(recorder);
+      final paint = Paint()..color = Colors.white;
+
+      canvas.drawRect(
+          Rect.fromLTWH(0, 0, image.width.toDouble(), image.height.toDouble()),
+          paint);
+
+      final ui.Codec codec = await ui.instantiateImageCodec(pngBytes);
+      final ui.FrameInfo frame = await codec.getNextFrame();
+      canvas.drawImage(frame.image, Offset.zero, Paint());
+
+      final whiteBgImage =
+          await recorder.endRecording().toImage(image.width, image.height);
+      final whiteBgByteData =
+          await whiteBgImage.toByteData(format: ui.ImageByteFormat.png);
+      final whiteBgPngBytes = whiteBgByteData!.buffer.asUint8List();
+
+      final directory = await getTemporaryDirectory();
+      final imagePath = '${directory.path}/receipt_with_white_background.png';
+      final file = File(imagePath);
+      await file.writeAsBytes(whiteBgPngBytes);
+
+      final result = await GallerySaver.saveImage(imagePath);
+      print('Gallery save result: $result');
+
+      showSuccessMessage(context, 'Gambar berhasil disimpan ke galeri');
+    } catch (e) {
+      print("Error capturing and downloading image: $e");
+      showFailedMessage(context, 'Gagal menyimpan gambar');
     }
-
-    // Capture image as before
-    final image = await boundary.toImage(pixelRatio: 3.0);
-    final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
-    final pngBytes = byteData!.buffer.asUint8List();
-
-    // Use canvas to draw white background
-    final recorder = ui.PictureRecorder();
-    final canvas = Canvas(recorder);
-    final paint = Paint()..color = Colors.white;
-
-    canvas.drawRect(Rect.fromLTWH(0, 0, image.width.toDouble(), image.height.toDouble()), paint);
-
-    final ui.Codec codec = await ui.instantiateImageCodec(pngBytes);
-    final ui.FrameInfo frame = await codec.getNextFrame();
-    canvas.drawImage(frame.image, Offset.zero, Paint());
-
-    final whiteBgImage = await recorder.endRecording().toImage(image.width, image.height);
-    final whiteBgByteData = await whiteBgImage.toByteData(format: ui.ImageByteFormat.png);
-    final whiteBgPngBytes = whiteBgByteData!.buffer.asUint8List();
-
-    final directory = await getTemporaryDirectory();
-    final imagePath = '${directory.path}/receipt_with_white_background.png';
-    final file = File(imagePath);
-    await file.writeAsBytes(whiteBgPngBytes);
-
-    final result = await GallerySaver.saveImage(imagePath);
-    print('Gallery save result: $result');
-
-    showSuccessMessage(context, 'Gambar berhasil disimpan ke galeri');
-  } catch (e) {
-    print("Error capturing and downloading image: $e");
-    showFailedMessage(context, 'Gagal menyimpan gambar');
   }
-}
 
   Widget _buildDownloadButton() {
     return Container(
@@ -177,97 +182,97 @@ Future<void> _downloadReceiptWithWhiteBackground() async {
     );
   }
 
-Widget _buildDownloadView({bool isDownload = false}) {
-  return Container(
-    color: Colors.white,
-    padding: const EdgeInsets.all(16.0),
-    child: Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Align(
-          alignment: Alignment.center,
-          child: CircleAvatar(
-            radius: 45,
-            child: Image.asset('assets/images/checkbox.png'),
+  Widget _buildDownloadView({bool isDownload = false}) {
+    return Container(
+      color: Colors.white,
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Align(
+            alignment: Alignment.center,
+            child: CircleAvatar(
+              radius: 45,
+              child: Image.asset('assets/images/checkbox.png'),
+            ),
           ),
-        ),
-        const SizedBox(height: 16),
-        const Text(
-          'Pembayaran Berhasil',
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            fontFamily: 'Poppins',
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-            color: Colors.black,
+          const SizedBox(height: 16),
+          const Text(
+            'Pembayaran Berhasil',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontFamily: 'Poppins',
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              color: Colors.black,
+            ),
           ),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          tagihanData != null
-              ? formatDate(tagihanData!['createdAt'] ?? '')
-              : 'Tanggal tidak tersedia',
-          textAlign: TextAlign.center,
-          style: const TextStyle(
-            fontFamily: 'Poppins',
-            fontSize: 12.5,
-            fontWeight: FontWeight.w500,
-            color: Colors.black,
+          const SizedBox(height: 8),
+          Text(
+            tagihanData != null
+                ? formatDate(tagihanData!['createdAt'] ?? '')
+                : 'Tanggal tidak tersedia',
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              fontFamily: 'Poppins',
+              fontSize: 12.5,
+              fontWeight: FontWeight.w500,
+              color: Colors.black,
+            ),
           ),
-        ),
-        const SizedBox(height: 16),
-        Text(
-          pembayaranData != null
-              ? formatRupiah(pembayaranData!['total_pembayaran'] ?? 0)
-              : 'Total tidak tersedia',
-          textAlign: TextAlign.center,
-          style: const TextStyle(
-            fontFamily: 'Poppins',
-            fontSize: 28,
-            fontWeight: FontWeight.w600,
-            color: Colors.black,
+          const SizedBox(height: 16),
+          Text(
+            pembayaranData != null
+                ? formatRupiah(pembayaranData!['total_pembayaran'] ?? 0)
+                : 'Total tidak tersedia',
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              fontFamily: 'Poppins',
+              fontSize: 28,
+              fontWeight: FontWeight.w600,
+              color: Colors.black,
+            ),
           ),
-        ),
-        const SizedBox(height: 20),
-        _buildItemList(isDownload: isDownload),
-        const SizedBox(height: 20),
-        _buildTotalAmount(isDownload: isDownload),
-
-        if (!isDownload) ...[
           const SizedBox(height: 20),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              _buildDownloadButton(),
-              const SizedBox(width: 10),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: const Text(
-                  'Selesai',
-                  style: TextStyle(
-                    fontFamily: 'Poppins',
-                    color: Colors.white,
-                    fontSize: 14,
+          _buildItemList(isDownload: isDownload),
+          const SizedBox(height: 20),
+          _buildTotalAmount(isDownload: isDownload),
+          if (!isDownload) ...[
+            const SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                _buildDownloadButton(),
+                const SizedBox(width: 10),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: const Text(
+                    'Selesai',
+                    style: TextStyle(
+                      fontFamily: 'Poppins',
+                      color: Colors.white,
+                      fontSize: 14,
+                    ),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blueAccent,
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 14, horizontal: 40),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(24),
+                    ),
                   ),
                 ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blueAccent,
-                  padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 40),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(24),
-                  ),
-                ),
-              ),
-            ],
-          ),
+              ],
+            ),
+          ],
         ],
-      ],
-    ),
-  );
-}
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -288,10 +293,15 @@ Widget _buildDownloadView({bool isDownload = false}) {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => HistoryScreen()),
-            );
+            Navigator.pop(
+                context);
+            final homeScreen =
+                context.findAncestorStateOfType<HomeScreenState>();
+            if (homeScreen != null) {
+              homeScreen.setState(() {
+                homeScreen.selectedIndex = 1;
+              });
+            }
           },
         ),
       ),
@@ -352,7 +362,6 @@ Widget _buildDownloadView({bool isDownload = false}) {
                       const SizedBox(height: 20),
                       _buildTotalAmount(),
                       const SizedBox(height: 16),
-
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
