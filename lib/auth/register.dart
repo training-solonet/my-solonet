@@ -7,6 +7,8 @@ import 'package:mysolonet/constants.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+import 'package:mysolonet/loading/loading_screen.dart';
+
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
 
@@ -40,6 +42,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
       _isLoading = true;
     });
 
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return LoadingScreen();
+      },
+    );
     final url = Uri.parse('${baseUrl}/register');
     final headers = {
       "Access-Control-Allow-Origin": "*",
@@ -61,6 +70,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
         final responseData = json.decode(response.body);
         print(responseData['message']);
 
+        // Tutup LoadingScreen
+        Navigator.of(context).pop();
+
         // showSuccessMessage(context, responseData['message']);
 
         Navigator.pushReplacement(
@@ -70,24 +82,19 @@ class _SignUpScreenState extends State<SignUpScreen> {
         );
         print(
             "Navigating to OTP Screen with phone: ${_whatsappController.text}");
-
-        setState(() {
-          _isLoading = false;
-        });
       } else {
         final responseData = json.decode(response.body);
+
+        // Tutup LoadingScreen
+        Navigator.of(context).pop();
 
         showFailedMessage(context, responseData['message']);
 
         print(responseData['message']);
-        setState(() {
-          _isLoading = false;
-        });
       }
     } catch (e) {
-      setState(() {
-        _isLoading = false;
-      });
+      // Tutup LoadingScreen jika terjadi error
+      Navigator.of(context).pop();
 
       showFailedMessage(context, '$e');
     }
@@ -144,9 +151,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             _buildWhatsappTextField(),
                             const SizedBox(height: 16.0),
                             _buildLabel('Email'),
-                            _buildTextField(
-                                _emailController,
-                                'Masukkan Email',
+                            _buildTextField(_emailController, 'Masukkan Email',
                                 TextInputType.emailAddress, (value) {
                               if (value!.isEmpty) {
                                 return "Email tidak boleh kosong";

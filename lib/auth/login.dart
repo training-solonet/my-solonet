@@ -9,6 +9,7 @@ import 'package:mysolonet/alert/show_message_success.dart';
 import 'package:mysolonet/home/home_screen.dart';
 import 'package:mysolonet/forgot_pass/forgot_password.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:mysolonet/loading/loading_screen.dart';
 
 class SignInScreen extends StatefulWidget {
   const SignInScreen({super.key});
@@ -41,6 +42,14 @@ class _SignInScreenState extends State<SignInScreen> {
       _isLoading = true;
     });
 
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return LoadingScreen();
+      },
+    );
+
     final url = Uri.parse('${baseUrl}/login');
     final headers = {
       "Access-Control-Allow-Origin": "*",
@@ -58,6 +67,8 @@ class _SignInScreenState extends State<SignInScreen> {
         headers: headers,
         body: body,
       );
+      Navigator.of(context).pop();
+
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
 
@@ -75,11 +86,9 @@ class _SignInScreenState extends State<SignInScreen> {
         showFailedMessage(context, responseData);
       }
     } catch (e) {
+      // Tutup LoadingScreen jika terjadi error
+      Navigator.of(context).pop();
       showFailedMessage(context, 'An error occurred: $e');
-    } finally {
-      setState(() {
-        _isLoading = false;
-      });
     }
   }
 
