@@ -1,7 +1,6 @@
 import 'package:mysolonet/auth/service/service.dart';
 import 'package:flutter/material.dart';
 import 'package:mysolonet/alert/show_message_failed.dart';
-import 'package:mysolonet/loading/loading_screen.dart';
 import 'package:mysolonet/pembayaran/service/bank_payment.dart';
 
 class PaymentMethodScreen extends StatefulWidget {
@@ -31,36 +30,26 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
     setState(() {
       _isLoading = true;
     });
-
-     showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return LoadingScreen();
-      },
-    );
     
     try {
       final authService = AuthService();
       token = await authService.getToken();
 
       if (_selectedBank == null) {
-       Navigator.of(context).pop(); // Tutup loading jika bank tidak dipilih
         showFailedMessage(context, 'Pilih metode pembayaran terlebih dahulu');
       } else if (_selectedBank == 'BRI') {
         await bankPayment.briPayment(context, token!, widget.customerId, widget.tagihanId);
       } else if (_selectedBank == 'BNI') {
         await bankPayment.bniPayment(context, token!, widget.customerId, widget.tagihanId);
       } else {
-        Navigator.of(context).pop(); // Tutup loading jika metode tidak tersedia
         showFailedMessage(context, 'Metode pembayaran tidak tersedia');
       }
     } catch (e) {
       print('Payment error: $e');
-      Navigator.of(context).pop(); // Tutup loading jika terjadi error
-      showFailedMessage(context, "Terjadi kesalahan saat memproses pembayaran");
     } finally {
-      Navigator.of(context).pop(); // Tutup loading setelah proses selesai
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 
@@ -101,7 +90,8 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: _selectedBank != null ? _navigateToPaymentScreen : null,
+                onPressed:
+                    _selectedBank != null ? _navigateToPaymentScreen : null,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blueAccent,
                   padding: const EdgeInsets.symmetric(vertical: 16),
@@ -109,9 +99,9 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
-                child: const Text(
-                  'Lanjutkan',
-                  style: TextStyle(
+                child: Text(
+                  _isLoading ? 'Wait a moment...' : 'Lanjutkan',
+                  style: const TextStyle(
                     fontFamily: 'Poppins',
                     fontWeight: FontWeight.w600,
                     fontSize: 16,

@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
-import 'package:mysolonet/alert/show_message_failed.dart';
 import 'package:mysolonet/alert/show_message_success.dart';
 import 'package:mysolonet/alert/confirm_popup.dart';
-import 'package:mysolonet/loading/loading_screen.dart';
 import 'package:mysolonet/pembayaran/service/check_payment.dart';
 
 class PaymentScreen extends StatefulWidget {
@@ -37,6 +35,7 @@ class PaymentScreen extends StatefulWidget {
 
 class _PaymentScreenState extends State<PaymentScreen> {
   int _selectedTabIndex = 0;
+  bool _isLoading = false;
 
   String formatAmount(String amount) {
     try {
@@ -52,29 +51,21 @@ class _PaymentScreenState extends State<PaymentScreen> {
 
   void _checkPaymentStatus() async {
     try {
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (BuildContext context) {
-          return LoadingScreen();
-        },
-      );
+      setState(() {
+        _isLoading = true;
+      });
 
       if (widget.bankName == "BNI") {
-        await CheckPayment().checkBni(context, widget.token, widget.customerId,
-            widget.trxId, widget.tagihanId);
+        await CheckPayment().checkBni(context, widget.token, widget.customerId, widget.trxId, widget.tagihanId);
       } else if (widget.bankName == "BRI") {
-        await CheckPayment().checkBri(
-            context, widget.token, widget.customerId, widget.tagihanId);
+        await CheckPayment().checkBri(context, widget.token, widget.customerId, widget.tagihanId);
       }
-
-      Navigator.of(context).pop();
     } catch (e) {
       print(e);
-      // Tutup LoadingScreen jika terjadi error
-      Navigator.of(context).pop();
-      showFailedMessage(
-          context, "Terjadi kesalahan saat mengecek status pembayaran");
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 
@@ -201,7 +192,9 @@ class _PaymentScreenState extends State<PaymentScreen> {
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: ElevatedButton(
-                  onPressed: _checkPaymentStatus,
+                  onPressed: () {
+                    _checkPaymentStatus();
+                  },
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(
                         vertical: 12, horizontal: 20),
@@ -210,9 +203,10 @@ class _PaymentScreenState extends State<PaymentScreen> {
                       borderRadius: BorderRadius.circular(20),
                     ),
                   ),
-                  child: const Text(
+                  child: Text(
+                    _isLoading ? 'Wait a moment...' :
                     'Cek Status Pembayaran',
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 16,
                       fontFamily: 'Poppins',
                       fontWeight: FontWeight.w600,
