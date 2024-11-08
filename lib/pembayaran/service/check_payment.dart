@@ -66,7 +66,7 @@ class CheckPayment {
       final res = json.decode(response.body);
 
       if (response.statusCode == 200 && res['data']['status'] == "000") {
-        if (res['data']['data']['va_status'] == "1") {
+        if (res['data']['data']['trx_amount'] == res['data']['data']['payment_amount']) {
           Navigator.push(
             context, 
             MaterialPageRoute(
