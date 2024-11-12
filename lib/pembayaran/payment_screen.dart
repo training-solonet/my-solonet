@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:intl/intl.dart';
 import 'package:mysolonet/alert/show_message_success.dart';
 import 'package:mysolonet/alert/confirm_popup.dart';
+import 'package:mysolonet/constants.dart';
 import 'package:mysolonet/pembayaran/service/check_payment.dart';
 
 class PaymentScreen extends StatefulWidget {
@@ -37,18 +37,6 @@ class _PaymentScreenState extends State<PaymentScreen> {
   int _selectedTabIndex = 0;
   bool _isLoading = false;
 
-  String formatAmount(String amount) {
-    try {
-      double amountValue = double.parse(amount);
-      final formattedAmount =
-          NumberFormat.currency(locale: 'id', symbol: 'Rp').format(amountValue);
-      return formattedAmount;
-    } catch (e) {
-      print('Error formatting amount: $e');
-      return amount;
-    }
-  }
-
   void _checkPaymentStatus() async {
     try {
       setState(() {
@@ -56,9 +44,11 @@ class _PaymentScreenState extends State<PaymentScreen> {
       });
 
       if (widget.bankName == "BNI") {
-        await CheckPayment().checkBni(context, widget.token, widget.customerId, widget.trxId, widget.tagihanId);
+        await CheckPayment().checkBni(context, widget.token, widget.customerId,
+            widget.trxId, widget.tagihanId);
       } else if (widget.bankName == "BRI") {
-        await CheckPayment().checkBri(context, widget.token, widget.customerId, widget.tagihanId);
+        await CheckPayment().checkBri(
+            context, widget.token, widget.customerId, widget.tagihanId);
       }
     } catch (e) {
       print(e);
@@ -148,7 +138,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   const SizedBox(height: 20),
                   Center(
                     child: Text(
-                      'Lakukan Pembayaran Sebelum\n${widget.expirationDate}',
+                      'Lakukan Pembayaran Sebelum\n${formatDateTime(widget.expirationDate)}',
                       textAlign: TextAlign.center,
                       style: const TextStyle(
                         fontSize: 16,
@@ -204,8 +194,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                     ),
                   ),
                   child: Text(
-                    _isLoading ? 'Wait a moment...' :
-                    'Cek Status Pembayaran',
+                    _isLoading ? 'Wait a moment...' : 'Cek Status Pembayaran',
                     style: const TextStyle(
                       fontSize: 16,
                       fontFamily: 'Poppins',
