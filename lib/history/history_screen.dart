@@ -273,15 +273,6 @@ class _HistoryScreenState extends State<HistoryScreen> {
                         color: Colors.black,
                       ),
                     ),
-                    Text(
-                      transaction['date'],
-                      style: const TextStyle(
-                        fontFamily: 'Poppins',
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.blueGrey,
-                      ),
-                    ),
                     const SizedBox(height: 8),
                     Text(
                       'Status: $statusText',

@@ -97,6 +97,7 @@ class _SignInScreenState extends State<SignInScreen> {
     if (googleUser != null) {
       final GoogleSignInAuthentication googleAuth =
           await googleUser.authentication;
+          // print('ID Token: ${googleAuth.id}');
       print('ID Token: ${googleAuth.idToken}');
       print('email: ${googleUser.email}');
       print('displayName: ${googleUser.displayName}');
