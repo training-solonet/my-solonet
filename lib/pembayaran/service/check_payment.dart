@@ -18,7 +18,7 @@ class CheckPayment {
         'Authorization': 'Bearer $tokenJwt'
       };
       final body = json.encode({
-        "customer_id": customerId,
+        "customer_id": customerId, 
         "tagihan_id": tagihanId,
       });
 
