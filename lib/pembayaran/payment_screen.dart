@@ -71,7 +71,6 @@ class _PaymentScreenState extends State<PaymentScreen> {
       Navigator.of(context).pop();
     } catch (e) {
       print(e);
-      // Tutup LoadingScreen jika terjadi error
       Navigator.of(context).pop();
       showFailedMessage(
           context, "Terjadi kesalahan saat mengecek status pembayaran");

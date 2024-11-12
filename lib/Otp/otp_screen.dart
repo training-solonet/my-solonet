@@ -173,115 +173,75 @@ class _OtpScreenState extends State<OtpScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FA),
-      appBar: PreferredSize(
-        preferredSize: Size.fromHeight(56.0),
-        child: Container(
-          height: 56.0,
-          color: Colors.transparent,
+    return SingleChildScrollView(
+      child: Scaffold(
+        backgroundColor: const Color(0xFFF8F9FA),
+        appBar: PreferredSize(
+          preferredSize: Size.fromHeight(56.0),
+          child: Container(
+            height: 56.0,
+            color: Colors.transparent,
+          ),
         ),
-      ),
-      body: Center(
-        child: Container(
-          width: double.infinity,
-          margin: const EdgeInsets.symmetric(horizontal: 20),
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Image.asset(
-                'assets/images/solonet.png',
-                width: 150,
-                height: 50,
-                fit: BoxFit.contain,
-              ),
-              const SizedBox(height: 20),
-              const Text(
-                "Verifikasi Kode OTP",
-                style: TextStyle(
-                  fontFamily: 'Poppins',
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF333333),
+        body: Center(
+          child: Container(
+            width: double.infinity,
+            margin: const EdgeInsets.symmetric(horizontal: 20),
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Image.asset(
+                  'assets/images/solonet.png',
+                  width: 150,
+                  height: 50,
+                  fit: BoxFit.contain,
                 ),
-              ),
-              const SizedBox(height: 10),
-              const Text(
-                "Silakan masukkan kode 6 digit OTP yang telah dikirimkan melalui nomor Whatsapp anda",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontFamily: 'Poppins',
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF666666),
-                ),
-              ),
-              const SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: List.generate(6, (index) => _buildOtpField(index)),
-              ),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () {
-                  String otp =
-                      _controllers.map((controller) => controller.text).join();
-                  _submitOtp(context);
-                  print("OTP entered: $otp");
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF00BCD4),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(5),
-                  ),
-                ),
-                child: Text(
-                  'Kirim Kode',
+                const SizedBox(height: 20),
+                const Text(
+                  "Verifikasi Kode OTP",
                   style: TextStyle(
                     fontFamily: 'Poppins',
-                    fontSize: 16,
-                    color: Colors.white,
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF333333),
                   ),
                 ),
-              ),
-              const SizedBox(height: 20),
-              const Text(
-                "Belum menerima kode?",
-                style: TextStyle(
-                  fontFamily: 'Poppins',
-                  fontSize: 14,
-                  color: Color(0xFF666666),
+                const SizedBox(height: 10),
+                const Text(
+                  "Silakan masukkan kode 6 digit OTP yang telah dikirimkan melalui nomor Whatsapp anda",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontFamily: 'Poppins',
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF666666),
+                  ),
                 ),
-              ),
-              const SizedBox(height: 5),
-              Text(
-                _isResendOtp
-                    ? 'Minta kode baru sekarang'
-                    : 'Minta kode baru dalam 00:${_start.toString().padLeft(2, '0')} detik',
-                style: TextStyle(
-                  fontFamily: 'Poppins',
-                  fontSize: 14,
-                  color: _isResendOtp ? Colors.blue : Color(0xFF333333),
+                const SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: List.generate(6, (index) => _buildOtpField(index)),
                 ),
-              ),
-              const SizedBox(height: 10),
-              if (_isResendOtp)
+                const SizedBox(height: 20),
                 ElevatedButton(
-                  onPressed: _handleResendOtp,
+                  onPressed: () {
+                    String otp =
+                        _controllers.map((controller) => controller.text).join();
+                    _submitOtp(context);
+                    print("OTP entered: $otp");
+                  },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF00BCD4),
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 30, vertical: 10),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(5),
                     ),
                   ),
                   child: Text(
-                    "Resend OTP",
+                    'Kirim Kode',
                     style: TextStyle(
                       fontFamily: 'Poppins',
                       fontSize: 16,
@@ -289,7 +249,49 @@ class _OtpScreenState extends State<OtpScreen> {
                     ),
                   ),
                 ),
-            ],
+                const SizedBox(height: 20),
+                const Text(
+                  "Belum menerima kode?",
+                  style: TextStyle(
+                    fontFamily: 'Poppins',
+                    fontSize: 14,
+                    color: Color(0xFF666666),
+                  ),
+                ),
+                const SizedBox(height: 5),
+                Text(
+                  _isResendOtp
+                      ? 'Minta kode baru sekarang'
+                      : 'Minta kode baru dalam 00:${_start.toString().padLeft(2, '0')} detik',
+                  style: TextStyle(
+                    fontFamily: 'Poppins',
+                    fontSize: 14,
+                    color: _isResendOtp ? Colors.blue : Color(0xFF333333),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                if (_isResendOtp)
+                  ElevatedButton(
+                    onPressed: _handleResendOtp,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF00BCD4),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 30, vertical: 10),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                    ),
+                    child: Text(
+                      "Resend OTP",
+                      style: TextStyle(
+                        fontFamily: 'Poppins',
+                        fontSize: 16,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+              ],
+            ),
           ),
         ),
       ),

@@ -10,7 +10,10 @@ class PaymentMethodScreen extends StatefulWidget {
   final String trxName;
 
   const PaymentMethodScreen(
-      {super.key, required this.tagihanId, required this.customerId, required this.trxName});
+      {super.key,
+      required this.tagihanId,
+      required this.customerId,
+      required this.trxName});
 
   @override
   _PaymentMethodScreenState createState() => _PaymentMethodScreenState();
@@ -28,39 +31,43 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
   }
 
   Future<void> _navigateToPaymentScreen() async {
-    setState(() {
-      _isLoading = true;
-    });
+  
 
-     showDialog(
+    try {
+       showDialog(
       context: context,
       barrierDismissible: false,
       builder: (BuildContext context) {
         return LoadingScreen();
       },
     );
-    
-    try {
+
       final authService = AuthService();
       token = await authService.getToken();
 
       if (_selectedBank == null) {
-       Navigator.of(context).pop(); // Tutup loading jika bank tidak dipilih
-        showFailedMessage(context, 'Pilih metode pembayaran terlebih dahulu');
-      } else if (_selectedBank == 'BRI') {
-        await bankPayment.briPayment(context, token!, widget.customerId, widget.tagihanId);
-      } else if (_selectedBank == 'BNI') {
-        await bankPayment.bniPayment(context, token!, widget.customerId, widget.tagihanId);
-      } else {
-        Navigator.of(context).pop(); // Tutup loading jika metode tidak tersedia
-        showFailedMessage(context, 'Metode pembayaran tidak tersedia');
-      }
-    } catch (e) {
-      print('Payment error: $e');
-      Navigator.of(context).pop(); // Tutup loading jika terjadi error
-      showFailedMessage(context, "Terjadi kesalahan saat memproses pembayaran");
-    } finally {
-      Navigator.of(context).pop(); // Tutup loading setelah proses selesai
+      Navigator.of(context).pop(); // Tutup loading
+      showFailedMessage(context, 'Pilih metode pembayaran terlebih dahulu');
+    } else if (_selectedBank == 'BRI') {
+      await bankPayment.briPayment(
+          context, token!, widget.customerId, widget.tagihanId);
+      Navigator.of(context).pop(); // Tutup loading
+    } else if (_selectedBank == 'BNI') {
+      await bankPayment.bniPayment(
+          context, token!, widget.customerId, widget.tagihanId);
+      Navigator.of(context).pop(); // Tutup loading
+    } else {
+      Navigator.of(context).pop(); // Tutup loading
+      showFailedMessage(context, 'Metode pembayaran tidak tersedia');
+    }
+  } catch (e) {
+    print('Payment error: $e');
+    Navigator.of(context).pop(); // Tutup loading jika terjadi error
+    showFailedMessage(context, 'Terjadi kesalahan saat memproses pembayaran');
+  }  finally {
+    setState(() {
+      _isLoading = false;
+      });
     }
   }
 
@@ -101,7 +108,8 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: _selectedBank != null ? _navigateToPaymentScreen : null,
+                onPressed:
+                    _selectedBank != null ? _navigateToPaymentScreen : null,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blueAccent,
                   padding: const EdgeInsets.symmetric(vertical: 16),
