@@ -168,7 +168,7 @@ class _NearestServiceScreenState extends State<NearestServiceScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              _buildStyledButton("Peta", () {
+              _buildStyledButton("Petaa", () {
                 setState(() {
                   _isMapView = true;
                 });
