@@ -17,6 +17,13 @@ class _NearestServiceScreenState extends State<NearestServiceScreen> {
   final MapController _mapController = MapController();
   List<NearbyLocation> _nearbyLocations = [];
 
+ final List<LatLng> _highlightedLocations = [
+    LatLng(-7.5593449, 110.8289958),
+    LatLng(-7.4749536, 110.2079672), 
+    LatLng(-6.8673007, 110.8217086), 
+  ];
+  final double _highlightRadius = 100; 
+
   @override
   void initState() {
     super.initState();
@@ -178,6 +185,17 @@ class _NearestServiceScreenState extends State<NearestServiceScreen> {
                     );
                   }).toList(),
                 ],
+              ),
+                            CircleLayer(
+                circles: _highlightedLocations.map((location) {
+                  return CircleMarker(
+                    point: location,
+                    radius: _highlightRadius, // Circle radius
+                    color: Colors.blue.withOpacity(0.3), // Fill color
+                    borderStrokeWidth: 2,
+                    borderColor: Colors.blueAccent, // Border color
+                  );
+                }).toList(),
               ),
             ],
           ),
