@@ -87,7 +87,8 @@ class _NearestServiceScreenState extends State<NearestServiceScreen> {
     }
   }
 
-  Future<String> _getAddressFromLatLng(double latitude, double longitude) async {
+  Future<String> _getAddressFromLatLng(
+      double latitude, double longitude) async {
     final url =
         'https://nominatim.openstreetmap.org/reverse?lat=$latitude&lon=$longitude&format=json';
 
@@ -134,7 +135,11 @@ class _NearestServiceScreenState extends State<NearestServiceScreen> {
         iconTheme: const IconThemeData(color: Colors.blueAccent),
         title: const Text(
           'Lokasi Solonet Terdekat',
-          style: TextStyle(color: Colors.black),
+          style: TextStyle(
+              color: Colors.black,
+              fontFamily: 'Poppins',
+              fontWeight: FontWeight.bold,
+              fontSize: 20),
         ),
       ),
       body: Stack(
@@ -177,7 +182,7 @@ class _NearestServiceScreenState extends State<NearestServiceScreen> {
             ],
           ),
           Positioned(
-            top: 10,
+            top: 540,
             right: 10,
             child: Column(
               children: [
@@ -229,7 +234,8 @@ class _NearestServiceScreenState extends State<NearestServiceScreen> {
                               borderRadius: BorderRadius.circular(10.0),
                             ),
                             child: Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 15.0),
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 12.0, horizontal: 15.0),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
