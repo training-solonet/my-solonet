@@ -4,6 +4,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
+import 'package:mysolonet/loading/loading_screen.dart';
 
 class NearestServiceScreen extends StatefulWidget {
   @override
@@ -57,6 +58,7 @@ class _NearestServiceScreenState extends State<NearestServiceScreen> {
   }
 
   Future<void> _fetchNearbyLocations(double latitude, double longitude) async {
+
     final url = 'https://api.connectis.my.id/nearLocation';
     final response = await http.post(
       Uri.parse(url),
@@ -68,6 +70,7 @@ class _NearestServiceScreenState extends State<NearestServiceScreen> {
         'long': longitude.toString(),
       }),
     );
+
 
     if (response.statusCode == 200) {
       final List<dynamic> data = jsonDecode(response.body);

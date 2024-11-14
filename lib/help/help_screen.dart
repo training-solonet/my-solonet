@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:mysolonet/help/faq/faq_sreen.dart';
+import 'package:mysolonet/help/reboot/reboot_screen.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:mysolonet/detail/help/nearest_service_screen.dart';
+import 'package:mysolonet/help/nearest_service/nearest_service_screen.dart';
 
 class HelpScreen extends StatelessWidget {
   const HelpScreen({Key? key}) : super(key: key);
@@ -28,7 +29,10 @@ class HelpScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              _buildHelpCard('assets/images/1.png', 'Setel Ulang Modem', 0, () {}),
+              _buildHelpCard('assets/images/1.png', 'Setel Ulang Modem', 0, () {
+               Navigator.push(context, MaterialPageRoute(builder: (context) =>  RebootScreen()));
+
+              }),
               _buildHelpCard('assets/images/2.png', 'Lihat Pertanyaan', 1, () {
                 Navigator.push(context, MaterialPageRoute(builder: (context) => const FaqScreen()));
               }),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mysolonet/alert/confirm_popup.dart';
 import 'package:mysolonet/auth/login.dart';
 import 'package:mysolonet/auth/service/service.dart';
+import 'package:mysolonet/loading/loading_screen.dart';
 import 'change_profile.dart';
 import 'package:mysolonet/alert/show_message_failed.dart';
 import 'package:mysolonet/alert/show_message_success.dart';
@@ -39,6 +40,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _logout() async {
+
+    showDialog(
+    context: context,
+    barrierDismissible: false,
+    builder: (BuildContext context) {
+      return LoadingScreen(); // Pastikan Anda memiliki LoadingScreen yang sesuai
+    },
+  );
+
     try {
       final authService = AuthService();
       await authService.removeToken();
@@ -49,6 +59,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
       showSuccessMessage(context, 'Logout successful');
     } catch (e) {
+      Navigator.of(context).pop();
       showFailedMessage(context, 'Failed to logout');
     }
   }
