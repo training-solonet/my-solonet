@@ -288,12 +288,7 @@ class _SignInScreenState extends State<SignInScreen> {
                               minimumSize: const Size(double.infinity, 48),
                               shape: const StadiumBorder(),
                             ),
-                            child: _isLoading
-                                ? const CircularProgressIndicator(
-                                    valueColor: AlwaysStoppedAnimation<Color>(
-                                        Colors.white),
-                                  )
-                                : const Text(
+                            child: const Text(
                                     'Login',
                                     style: TextStyle(
                                       fontFamily: 'Poppins',
