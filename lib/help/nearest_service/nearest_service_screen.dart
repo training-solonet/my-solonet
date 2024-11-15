@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:geolocator/geolocator.dart';
+import 'dart:math';
 import 'package:http/http.dart' as http;
-import 'package:mysolonet/loading/loading_screen.dart';
 
 class NearestServiceScreen extends StatefulWidget {
   @override
@@ -14,16 +14,18 @@ class NearestServiceScreen extends StatefulWidget {
 class _NearestServiceScreenState extends State<NearestServiceScreen> {
   LatLng _userLocation = LatLng(0, 0);
   LatLng _selectedLocation = LatLng(0, 0);
-  double _zoom = 13.0;
+  double _currentZoom = 11.0;
   final MapController _mapController = MapController();
   List<NearbyLocation> _nearbyLocations = [];
 
- final List<LatLng> _highlightedLocations = [
-    LatLng(-7.5593449, 110.8289958),
-    LatLng(-7.4749536, 110.2079672), 
-    LatLng(-6.8673007, 110.8217086), 
-  ];
-  final double _highlightRadius = 100; 
+  static const double EARTH_RADIUS = 6371000; // meter
+  double _radiusMeters = 4000; // 5 km
+
+  // Fungsi menghitung radius pixel yang konsisten
+  double calculateConsistentRadius(double zoom) {
+    double resolution = 156543.03392 * cos(0 * pi / 180) / pow(2, zoom);
+    return _radiusMeters / resolution;
+  }
 
   @override
   void initState() {
@@ -36,20 +38,18 @@ class _NearestServiceScreenState extends State<NearestServiceScreen> {
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
     }
-    if (permission == LocationPermission.whileInUse ||
-        permission == LocationPermission.always) {
+    if (permission == LocationPermission.whileInUse || permission == LocationPermission.always) {
       await _getCurrentLocation();
     }
   }
 
   Future<void> _getCurrentLocation() async {
     try {
-      Position position = await Geolocator.getCurrentPosition(
-          desiredAccuracy: LocationAccuracy.high);
+      Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
       setState(() {
         _userLocation = LatLng(position.latitude, position.longitude);
         _selectedLocation = _userLocation;
-        _mapController.move(_userLocation, _zoom);
+        _mapController.move(_userLocation, _currentZoom);
       });
       await _fetchNearbyLocations(position.latitude, position.longitude);
     } catch (e) {
@@ -58,19 +58,12 @@ class _NearestServiceScreenState extends State<NearestServiceScreen> {
   }
 
   Future<void> _fetchNearbyLocations(double latitude, double longitude) async {
-
     final url = 'https://api.connectis.my.id/nearLocation';
     final response = await http.post(
       Uri.parse(url),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: jsonEncode({
-        'lat': latitude.toString(),
-        'long': longitude.toString(),
-      }),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'lat': latitude.toString(), 'long': longitude.toString()}),
     );
-
 
     if (response.statusCode == 200) {
       final List<dynamic> data = jsonDecode(response.body);
@@ -97,14 +90,11 @@ class _NearestServiceScreenState extends State<NearestServiceScreen> {
     }
   }
 
-  Future<String> _getAddressFromLatLng(
-      double latitude, double longitude) async {
-    final url =
-        'https://nominatim.openstreetmap.org/reverse?lat=$latitude&lon=$longitude&format=json';
+  Future<String> _getAddressFromLatLng(double latitude, double longitude) async {
+    final url = 'https://nominatim.openstreetmap.org/reverse?lat=$latitude&lon=$longitude&format=json';
 
     try {
       final response = await http.get(Uri.parse(url));
-
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         return data['display_name'] ?? 'Unknown location';
@@ -117,24 +107,21 @@ class _NearestServiceScreenState extends State<NearestServiceScreen> {
     }
   }
 
-  void _onLocationTap(NearbyLocation location) {
-    setState(() {
-      _selectedLocation = LatLng(location.latitude, location.longitude);
-    });
-    _mapController.move(_selectedLocation, _zoom);
-  }
-
   void _zoomIn() {
     setState(() {
-      _zoom += 1;
-      _mapController.move(_mapController.center, _zoom);
+      if (_currentZoom < 18) { // Batasi zoom maksimal
+        _currentZoom++;
+        _mapController.move(_mapController.center, _currentZoom);
+      }
     });
   }
 
   void _zoomOut() {
     setState(() {
-      _zoom -= 1;
-      _mapController.move(_mapController.center, _zoom);
+      if (_currentZoom > 3) { // Batasi zoom minimal
+        _currentZoom--;
+        _mapController.move(_mapController.center, _currentZoom);
+      }
     });
   }
 
@@ -158,13 +145,12 @@ class _NearestServiceScreenState extends State<NearestServiceScreen> {
             mapController: _mapController,
             options: MapOptions(
               center: _userLocation,
-              zoom: _zoom,
+              zoom: _currentZoom,
               interactiveFlags: InteractiveFlag.all & ~InteractiveFlag.rotate,
             ),
             children: [
               TileLayer(
-                urlTemplate:
-                    "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+                urlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
                 subdomains: ['a', 'b', 'c'],
               ),
               MarkerLayer(
@@ -189,14 +175,14 @@ class _NearestServiceScreenState extends State<NearestServiceScreen> {
                   }).toList(),
                 ],
               ),
-                            CircleLayer(
-                circles: _highlightedLocations.map((location) {
+              CircleLayer(
+                circles: _nearbyLocations.map((location) {
                   return CircleMarker(
-                    point: location,
-                    radius: _highlightRadius, // Circle radius
-                    color: Colors.blue.withOpacity(0.3), // Fill color
+                    point: LatLng(location.latitude, location.longitude),
+                    radius: calculateConsistentRadius(_currentZoom), // Gunakan fungsi baru
+                    color: Colors.blue.withOpacity(0.15),
                     borderStrokeWidth: 2,
-                    borderColor: Colors.blueAccent, // Border color
+                    borderColor: Colors.blueAccent,
                   );
                 }).toList(),
               ),
@@ -233,7 +219,7 @@ class _NearestServiceScreenState extends State<NearestServiceScreen> {
             right: 0,
             child: _nearbyLocations.isNotEmpty
                 ? Container(
-                    height: 130, // Set height for the swipeable container
+                    height: 130,
                     child: PageView.builder(
                       itemCount: _nearbyLocations.length,
                       onPageChanged: (index) {
@@ -242,7 +228,7 @@ class _NearestServiceScreenState extends State<NearestServiceScreen> {
                               _nearbyLocations[index].latitude,
                               _nearbyLocations[index].longitude);
                         });
-                        _mapController.move(_selectedLocation, _zoom);
+                        _mapController.move(_selectedLocation, _currentZoom);
                       },
                       itemBuilder: (context, index) {
                         final location = _nearbyLocations[index];
