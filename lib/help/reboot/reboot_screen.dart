@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-
 class RebootScreen extends StatefulWidget {
   @override
   _RebootScreenState createState() => _RebootScreenState();
@@ -20,13 +19,13 @@ class _RebootScreenState extends State<RebootScreen> {
     }
   }
 
-   Future<void> _launchWhatsApp(String phoneNumber) async {
+  Future<void> _launchWhatsApp(String phoneNumber) async {
     final url = 'whatsapp://send?phone=$phoneNumber';
     try {
-        launch(url);
-      } catch (e) {
-        print(e);
-      }
+      launch(url);
+    } catch (e) {
+      print(e);
+    }
   }
 
   @override
@@ -62,7 +61,10 @@ class _RebootScreenState extends State<RebootScreen> {
               CustomRebootCard(
                 title: 'Cabut Kabel LAN atau Kabel FO',
                 iconPath: 'assets/images/iconslide2.png',
-                description: 'Lakukan reboot wifi mandiri, dengan mengikuti langkah-langkah berikut',
+                description: 
+                    'Jika ada kabel LAN (biasanya berwarna biru atau putih, dengan konektor RJ45), cabut kabel ini dari port di router.\n\n'
+                    'Jika ada kabel Fiber Optik (FO), cabut kabel ini dengan hati-hati dari port. Pastikan tidak menarik kabel terlalu keras agar tidak merusak konektor.\n\n'
+                    'Setelah menunggu, colokkan kembali kabel LAN atau FO ke port yang sesuai di router.',
                 buttonText: 'Next',
                 onButtonPressed: _goToNextPage,
               ),
@@ -79,7 +81,7 @@ class _RebootScreenState extends State<RebootScreen> {
                 description: 'Jika semua langkah di slide sebelumnya sudah dilakukan\nmasih juga terjadi error\nSilahkan',
                 buttonText: 'Hubungi Kami',
                 onButtonPressed: () {
-                  _launchWhatsApp('6281542017888'); 
+                  _launchWhatsApp('6281542017888');
                 },
               ),
             ],
@@ -112,56 +114,58 @@ class CustomRebootCard extends StatelessWidget {
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(
-              title,
-              textAlign: titleAlign,
-              style: const TextStyle(
-                fontSize: 32,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
-            ),
-            const SizedBox(height: 40),
-            Center(
-              child: Image.asset(
-                iconPath,
-                fit: BoxFit.contain,
-              ),
-            ),
-            const SizedBox(height: 40),
-            Text(
-              description,
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 16,
-                color: Colors.white,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-            const SizedBox(height: 40),
-            ElevatedButton(
-              onPressed: onButtonPressed,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.grey[200],
-                padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-              child: Text(
-                buttonText,
+        child: SingleChildScrollView(  // Wrap the Column with SingleChildScrollView
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                title,
+                textAlign: titleAlign,
                 style: const TextStyle(
-                  color: Color(0xFF8CA2F8),
-                  fontSize: 18,
+                  fontSize: 32,
                   fontWeight: FontWeight.bold,
+                  color: Colors.white,
                 ),
               ),
-            ),
-          ],
+              const SizedBox(height: 40),
+              Center(
+                child: Image.asset(
+                  iconPath,
+                  fit: BoxFit.contain,
+                ),
+              ),
+              const SizedBox(height: 40),
+              Text(
+                description,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontSize: 16,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              const SizedBox(height: 40),
+              ElevatedButton(
+                onPressed: onButtonPressed,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.grey[200],
+                  padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                child: Text(
+                  buttonText,
+                  style: const TextStyle(
+                    color: Color(0xFF8CA2F8),
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
