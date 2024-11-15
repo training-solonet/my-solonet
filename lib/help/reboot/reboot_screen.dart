@@ -1,34 +1,87 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
-class RebootScreen extends StatelessWidget {
+
+class RebootScreen extends StatefulWidget {
+  @override
+  _RebootScreenState createState() => _RebootScreenState();
+}
+
+class _RebootScreenState extends State<RebootScreen> {
+  final PageController _pageController = PageController();
+  int _currentIndex = 0;
+
+  void _goToNextPage() {
+    if (_currentIndex < 3) { // Since we have 3 slides (index 0, 1, 2)
+      _pageController.nextPage(
+        duration: Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
+    }
+  }
+
+   Future<void> _launchWhatsApp(String phoneNumber) async {
+    final url = 'whatsapp://send?phone=$phoneNumber';
+    try {
+        launch(url);
+      } catch (e) {
+        print(e);
+      }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFF8CA2F8), 
+      backgroundColor: Color(0xFF8CA2F8),
       appBar: AppBar(
-        title: const Text('Gangguan Koneksi', style: TextStyle(fontFamily: 'Poppins', color: Colors.white)),
+        title: const Text(
+          'Gangguan Koneksi',
+          style: TextStyle(fontFamily: 'Poppins', color: Colors.white, fontWeight: FontWeight.w600, fontSize: 20),
+        ),
         backgroundColor: const Color(0xFF8CA2F8),
         iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+          child: PageView(
+            controller: _pageController,
+            onPageChanged: (index) {
+              setState(() {
+                _currentIndex = index;
+              });
+            },
             children: [
               CustomRebootCard(
                 title: 'INTERNET LEMOT, WI-FI TIDAK CONNECT SINYAL PUTUS-PUTUS?',
-                icon: Icons.wifi_off_rounded,
-                iconColor: Colors.white,
-                iconSize: 200.0,
-                iconPosition: IconPosition.center,
-                description:
-                    'Lakukan reboot wifi mandiri, dengan mengikuti langkah-langkah berikut',
+                iconPath: 'assets/images/iconslide1.png',
+                description: '“Lakukan reboot router wifi mandiri, dengan mengikuti langkah - langkah berikut” ',
                 buttonText: 'Next',
+                onButtonPressed: _goToNextPage,
+              ),
+              CustomRebootCard(
+                title: 'Cabut Kabel LAN atau Kabel FO',
+                iconPath: 'assets/images/iconslide2.png',
+                description: 'Lakukan reboot wifi mandiri, dengan mengikuti langkah-langkah berikut',
+                buttonText: 'Next',
+                onButtonPressed: _goToNextPage,
+              ),
+              CustomRebootCard(
+                title: 'Cabut Kabel Listrik atau adaptor router wifi',
+                iconPath: 'assets/images/iconslide3.png',
+                description: 'Tunggu sekitar 10-30 detik lalu hubungkan kembali kabel atau adaptor tersebut dan tunggu hingga lampu indikator router menyala secara normal lalu coba kembali internet anda.',
+                buttonText: 'Next',
+                onButtonPressed: _goToNextPage,
+              ),
+              CustomRebootCard(
+                title: 'Hubungi customer support kami',
+                iconPath: 'assets/images/iconslide4.png',
+                description: 'Jika semua langkah di slide sebelumnya sudah dilakukan\nmasih juga terjadi error\nSilahkan',
+                buttonText: 'Hubungi Kami',
                 onButtonPressed: () {
-                  
-                }
-              )
+                  _launchWhatsApp('6281542017888'); 
+                },
+              ),
             ],
           ),
         ),
@@ -40,10 +93,7 @@ class RebootScreen extends StatelessWidget {
 class CustomRebootCard extends StatelessWidget {
   final String title;
   final TextAlign titleAlign;
-  final IconData icon;
-  final Color iconColor;
-  final double iconSize;
-  final IconPosition iconPosition;
+  final String iconPath;
   final String description;
   final String buttonText;
   final VoidCallback onButtonPressed;
@@ -51,10 +101,7 @@ class CustomRebootCard extends StatelessWidget {
   CustomRebootCard({
     required this.title,
     this.titleAlign = TextAlign.center,
-    required this.icon,
-    this.iconColor = Colors.redAccent,
-    this.iconSize = 100.0,
-    this.iconPosition = IconPosition.center,
+    required this.iconPath,
     required this.description,
     required this.buttonText,
     required this.onButtonPressed,
@@ -79,27 +126,12 @@ class CustomRebootCard extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 40),
-            if (iconPosition == IconPosition.left || iconPosition == IconPosition.right)
-              Row(
-                mainAxisAlignment: iconPosition == IconPosition.left
-                    ? MainAxisAlignment.start
-                    : MainAxisAlignment.end,
-                children: [
-                  Icon(
-                    icon,
-                    color: iconColor,
-                    size: iconSize,
-                  ),
-                ],
-              )
-            else
-              Center(
-                child: Icon(
-                  icon,
-                  color: iconColor,
-                  size: iconSize,
-                ),
+            Center(
+              child: Image.asset(
+                iconPath,
+                fit: BoxFit.contain,
               ),
+            ),
             const SizedBox(height: 40),
             Text(
               description,
