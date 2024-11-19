@@ -38,14 +38,16 @@ class _NearestServiceScreenState extends State<NearestServiceScreen> {
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
     }
-    if (permission == LocationPermission.whileInUse || permission == LocationPermission.always) {
+    if (permission == LocationPermission.whileInUse ||
+        permission == LocationPermission.always) {
       await _getCurrentLocation();
     }
   }
 
   Future<void> _getCurrentLocation() async {
     try {
-      Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+      Position position = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.high);
       setState(() {
         _userLocation = LatLng(position.latitude, position.longitude);
         _selectedLocation = _userLocation;
@@ -62,7 +64,8 @@ class _NearestServiceScreenState extends State<NearestServiceScreen> {
     final response = await http.post(
       Uri.parse(url),
       headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({'lat': latitude.toString(), 'long': longitude.toString()}),
+      body: jsonEncode(
+          {'lat': latitude.toString(), 'long': longitude.toString()}),
     );
 
     if (response.statusCode == 200) {
@@ -90,8 +93,10 @@ class _NearestServiceScreenState extends State<NearestServiceScreen> {
     }
   }
 
-  Future<String> _getAddressFromLatLng(double latitude, double longitude) async {
-    final url = 'https://nominatim.openstreetmap.org/reverse?lat=$latitude&lon=$longitude&format=json';
+  Future<String> _getAddressFromLatLng(
+      double latitude, double longitude) async {
+    final url =
+        'https://nominatim.openstreetmap.org/reverse?lat=$latitude&lon=$longitude&format=json';
 
     try {
       final response = await http.get(Uri.parse(url));
@@ -109,7 +114,8 @@ class _NearestServiceScreenState extends State<NearestServiceScreen> {
 
   void _zoomIn() {
     setState(() {
-      if (_currentZoom < 18) { // Batasi zoom maksimal
+      if (_currentZoom < 18) {
+        // Batasi zoom maksimal
         _currentZoom++;
         _mapController.move(_mapController.center, _currentZoom);
       }
@@ -118,7 +124,8 @@ class _NearestServiceScreenState extends State<NearestServiceScreen> {
 
   void _zoomOut() {
     setState(() {
-      if (_currentZoom > 3) { // Batasi zoom minimal
+      if (_currentZoom > 3) {
+        // Batasi zoom minimal
         _currentZoom--;
         _mapController.move(_mapController.center, _currentZoom);
       }
@@ -147,10 +154,18 @@ class _NearestServiceScreenState extends State<NearestServiceScreen> {
               center: _userLocation,
               zoom: _currentZoom,
               interactiveFlags: InteractiveFlag.all & ~InteractiveFlag.rotate,
+              onPositionChanged: (MapPosition position, bool hasGesture) {
+                if (hasGesture) {
+                  setState(() {
+                    _currentZoom = position.zoom ?? _currentZoom;
+                  });
+                }
+              },
             ),
             children: [
               TileLayer(
-                urlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+                urlTemplate:
+                    "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
                 subdomains: ['a', 'b', 'c'],
               ),
               MarkerLayer(
@@ -179,7 +194,8 @@ class _NearestServiceScreenState extends State<NearestServiceScreen> {
                 circles: _nearbyLocations.map((location) {
                   return CircleMarker(
                     point: LatLng(location.latitude, location.longitude),
-                    radius: calculateConsistentRadius(_currentZoom), // Gunakan fungsi baru
+                    radius: calculateConsistentRadius(
+                        _currentZoom), // Gunakan fungsi baru
                     color: Colors.blue.withOpacity(0.15),
                     borderStrokeWidth: 2,
                     borderColor: Colors.blueAccent,
