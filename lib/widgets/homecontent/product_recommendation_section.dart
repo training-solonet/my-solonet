@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mysolonet/screens/detail/product/detail_product_screen.dart';
 
 class ProductRecommendationSection extends StatelessWidget {
   final List<dynamic> products;
@@ -25,7 +26,14 @@ class ProductRecommendationSection extends StatelessWidget {
 
           return GestureDetector(
             onTap: () {
-              // Implementasi navigasi ke detail produk
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => DetailProductScreen(
+                    productData: product,
+                  ),
+                ),
+              );
             },
             child: Container(
               width: 100,

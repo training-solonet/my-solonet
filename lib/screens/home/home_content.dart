@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:mysolonet/utils/constants.dart';
 import 'package:mysolonet/widgets/homecontent/connect_account_section.dart';
+import 'package:mysolonet/widgets/homecontent/profile_info_section.dart';
 import 'package:mysolonet/widgets/homecontent/promo_section.dart';
 import 'package:mysolonet/widgets/homecontent/product_recommendation_section.dart';
+import 'package:mysolonet/widgets/homecontent/location_covered_section.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:async';
@@ -29,8 +31,9 @@ class _HomePageContentState extends State<HomePageContent> {
   late Timer _timer;
   List<dynamic> _banners = [];
   List<dynamic> _products = [];
+  bool _isConnect = true;
 
-   Future<void> _fetchBanners() async {
+  Future<void> _fetchBanners() async {
     final url = Uri.parse('${baseUrl}/banner');
 
     try {
@@ -64,7 +67,7 @@ class _HomePageContentState extends State<HomePageContent> {
         final data = json.decode(response.body);
 
         setState(() {
-          _products = data['products']; 
+          _products = data['products'];
         });
       } else {
         throw Exception('Failed to fetch products');
@@ -90,7 +93,7 @@ class _HomePageContentState extends State<HomePageContent> {
       _pageController.animateToPage(
         _currentPage,
         duration: const Duration(milliseconds: 750),
-        curve: Curves.easeInOutCubic, 
+        curve: Curves.easeInOutCubic,
       );
     });
   }
@@ -110,7 +113,24 @@ class _HomePageContentState extends State<HomePageContent> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            if (_isConnect == true)
+            const ProfileInfoSection(
+              packageName: 'Paket 30 Mbps',
+              isActive: true,
+              period: '17 Oktober 2024 s.d 17 November 2024',
+              billAmount: 'Rp 1.500.000',
+              paymentStatus: 'Dibayar via BCA',
+              paymentDate: '17 Agustus 2024',
+            ),
+
+            const SizedBox(height: 10),
+
+            if (widget.userId <= 0 ||
+                widget.email.isEmpty ||
+                widget.nama.isEmpty)
+              const LocationCoveredSection(),
             if (widget.userId > 0 &&
+                _isConnect == false &&
                 widget.email.isNotEmpty &&
                 widget.nama.isNotEmpty)
               ConnectAccountSection(
