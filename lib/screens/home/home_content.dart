@@ -1,23 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:mysolonet/utils/constants.dart';
-import 'dart:async';
-import 'package:mysolonet/screens/detail/promo/detail_promo.dart';
-import 'package:mysolonet/screens/detail/product/detail_product_screen.dart';
-import 'package:mysolonet/screens/auth/connecting_account.dart';
+import 'package:mysolonet/widgets/homecontent/connect_account_section.dart';
+import 'package:mysolonet/widgets/homecontent/promo_section.dart';
+import 'package:mysolonet/widgets/homecontent/product_recommendation_section.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'dart:async';
 
 class HomePageContent extends StatefulWidget {
   final int userId;
   final String nama;
   final String email;
 
-  HomePageContent({
+  const HomePageContent({
     Key? key,
     required this.userId,
     required this.nama,
     required this.email,
-  });
+  }) : super(key: key);
 
   @override
   _HomePageContentState createState() => _HomePageContentState();
@@ -27,11 +27,10 @@ class _HomePageContentState extends State<HomePageContent> {
   final PageController _pageController = PageController();
   int _currentPage = 0;
   late Timer _timer;
-
   List<dynamic> _banners = [];
   List<dynamic> _products = [];
 
-  Future<void> _fetchBanners() async {
+   Future<void> _fetchBanners() async {
     final url = Uri.parse('${baseUrl}/banner');
 
     try {
@@ -65,7 +64,7 @@ class _HomePageContentState extends State<HomePageContent> {
         final data = json.decode(response.body);
 
         setState(() {
-          _products = data['products']; // Parse products from API response
+          _products = data['products']; 
         });
       } else {
         throw Exception('Failed to fetch products');
@@ -114,220 +113,35 @@ class _HomePageContentState extends State<HomePageContent> {
             if (widget.userId > 0 &&
                 widget.email.isNotEmpty &&
                 widget.nama.isNotEmpty)
-              Container(
-                padding: const EdgeInsets.all(16.0),
-                margin: const EdgeInsets.only(bottom: 20),
-                decoration: BoxDecoration(
-                  color: Colors.blueAccent,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Hubungkan Sekarang!',
-                      style: TextStyle(
-                        fontFamily: 'Poppins',
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                    const Text(
-                      'Hubungkan akun Anda untuk mendapatkan pengalaman terbaik dan tawaran eksklusif.',
-                      style: TextStyle(
-                        fontFamily: 'Poppins',
-                        fontSize: 12,
-                        color: Colors.white,
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    TextButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => ConnectingAccountScreen(),
-                          ),
-                        );
-                      },
-                      style: TextButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 5),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(5),
-                        ),
-                      ),
-                      child: const Text(
-                        'Hubungkan Akun',
-                        style: TextStyle(
-                          fontFamily: 'Poppins',
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.blueAccent,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+              ConnectAccountSection(
+                userId: widget.userId,
+                nama: widget.nama,
+                email: widget.email,
               ),
             const Text(
               'Promo',
-              style: TextStyle(
-                fontFamily: 'Poppins',
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-                color: Colors.black,
-              ),
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
             ),
             const SizedBox(height: 10),
-            SizedBox(
-              height: 165,
-              child: _banners.isNotEmpty
-                  ? PageView.builder(
-                      controller: _pageController,
-                      itemCount: _banners.length,
-                      onPageChanged: (index) {
-                        setState(() {
-                          _currentPage = index;
-                        });
-                      },
-                      itemBuilder: (context, index) {
-                        final banner = _banners[index];
-                        final imagePath = banner['gambar'];
-
-                        return GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => DetailPromoScreen(
-                                  imagePath: imagePath,
-                                  title: banner['judul'],
-                                  description: banner['deskripsi'],
-                                ),
-                              ),
-                            );
-                          },
-                          child: Container(
-                            width: MediaQuery.of(context)
-                                .size
-                                .width, 
-                            margin: const EdgeInsets.symmetric(horizontal: 5),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(10),
-                              child: Image.network(
-                                imagePath,
-                                fit: BoxFit
-                                    .cover,
-                              ),
-                            ),
-                          ),
-                        );
-                      },
-                    )
-                  : const Center(child: CircularProgressIndicator()),
+            PromoSection(
+              banners: _banners,
+              pageController: _pageController,
+              currentPage: _currentPage,
+              onPageChanged: (index) {
+                setState(() {
+                  _currentPage = index;
+                });
+              },
             ),
             const SizedBox(height: 20),
             const Text(
               'Rekomendasi Produk',
-              style: TextStyle(
-                fontFamily: 'Poppins',
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-                color: Colors.black,
-              ),
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
             ),
             const SizedBox(height: 10),
-            SizedBox(
-              height: 140, 
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: _products.length,
-                itemBuilder: (context, index) {
-                  final product = _products[index];
-                  final imageUrl = product['gambar'];
-                  final productName = product['nama'];
-                  final productPrice =
-                      formatRupiah(product['harga']);
-
-                  return GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => DetailProductScreen(
-                            productData: product,
-                          ),
-                        ),
-                      );
-                    },
-                    child: Container(
-                      width: 100, 
-                      margin: const EdgeInsets.only(right: 10, bottom: 1),
-                      child: Card(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        clipBehavior: Clip.antiAliasWithSaveLayer,
-                        elevation: 5.0,
-                        shadowColor: Colors.black38,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding:
-                                  const EdgeInsets.fromLTRB(6.5, 6.5, 6.5, 0),
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(8),
-                                child: Image.network(
-                                  imageUrl,
-                                  height: 80, 
-                                  width: double.infinity,
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.fromLTRB(7, 7, 7, 0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    productName,
-                                    style: TextStyle(
-                                      fontSize:
-                                          8.0,
-                                      fontFamily: 'Poppins',
-                                      color: Colors.grey[800],
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 3), 
-                                  Text(
-                                    productPrice,
-                                    style: const TextStyle(
-                                      fontSize:
-                                          8.0,
-                                      fontFamily: 'Poppins',
-                                      color: Color.fromARGB(255, 34, 50, 64),
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  );
-                },
-              ),
+            ProductRecommendationSection(
+              products: _products,
+              formatRupiah: (price) => 'Rp $price',
             ),
           ],
         ),
