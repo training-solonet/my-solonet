@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mysolonet/home/home_screen.dart';
+import 'package:mysolonet/screens/home/home_screen.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'slide_page.dart';
