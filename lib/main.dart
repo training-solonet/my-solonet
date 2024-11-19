@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mysolonet/splash/splash_screen.dart';
-import 'constants.dart'; // Update dengan path yang benar
+import 'utils/constants.dart'; // Update dengan path yang benar
 
 void main() {
   runApp(const MyApp());
