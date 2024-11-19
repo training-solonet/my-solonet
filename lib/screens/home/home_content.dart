@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mysolonet/utils/constants.dart';
 import 'package:mysolonet/widgets/homecontent/connect_account_section.dart';
 import 'package:mysolonet/widgets/homecontent/profile_info_section.dart';
+import 'package:mysolonet/widgets/homecontent/coverage_area.dart';
 import 'package:mysolonet/widgets/homecontent/promo_section.dart';
 import 'package:mysolonet/widgets/homecontent/product_recommendation_section.dart';
 import 'package:mysolonet/widgets/homecontent/location_covered_section.dart';
@@ -32,6 +33,7 @@ class _HomePageContentState extends State<HomePageContent> {
   List<dynamic> _banners = [];
   List<dynamic> _products = [];
   bool _isConnect = true;
+  bool _isCoverageLoading = true; // Status untuk loading CoverageArea
 
   Future<void> _fetchBanners() async {
     final url = Uri.parse('${baseUrl}/banner');
@@ -162,6 +164,33 @@ class _HomePageContentState extends State<HomePageContent> {
             ProductRecommendationSection(
               products: _products,
               formatRupiah: (price) => 'Rp $price',
+            ),
+            const SizedBox(height: 20),
+           
+            const SizedBox(height: 10),
+            Card(
+              elevation: 4.0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Cek Cakupan Area',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: 'Poppins'
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    CoverageArea(),
+                  ],
+                ),
+              ),
             ),
           ],
         ),

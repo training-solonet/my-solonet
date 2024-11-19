@@ -61,6 +61,7 @@ dependencies:
   pdf: ^3.11.1
   printing: ^5.13.4
   image_picker: ^1.1.2
+  location: ^7.0.1
 
   # font_awesome_flutter: ^4.6.0
 
