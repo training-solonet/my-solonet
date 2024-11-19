@@ -33,7 +33,7 @@ class _HomePageContentState extends State<HomePageContent> {
   List<dynamic> _banners = [];
   List<dynamic> _products = [];
   bool _isConnect = true;
-  bool _isCoverageLoading = true; // Status untuk loading CoverageArea
+  bool _isCoverageLoading = true;
 
   Future<void> _fetchBanners() async {
     final url = Uri.parse('${baseUrl}/banner');
@@ -127,9 +127,7 @@ class _HomePageContentState extends State<HomePageContent> {
 
             const SizedBox(height: 10),
 
-            if (widget.userId <= 0 ||
-                widget.email.isEmpty ||
-                widget.nama.isEmpty)
+            if (_isConnect == false)
               const LocationCoveredSection(),
             if (widget.userId > 0 &&
                 _isConnect == false &&
