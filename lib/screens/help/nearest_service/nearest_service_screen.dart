@@ -212,18 +212,24 @@ class _NearestServiceScreenState extends State<NearestServiceScreen> {
                 FloatingActionButton(
                   onPressed: _zoomIn,
                   mini: true,
+                  backgroundColor: Colors.black54, // Black background with opacity
+                  foregroundColor: Colors.white, // White icon color
                   child: const Icon(Icons.zoom_in),
                 ),
                 const SizedBox(height: 8),
                 FloatingActionButton(
                   onPressed: _zoomOut,
                   mini: true,
+                  backgroundColor: Colors.black54, // Black background with opacity
+                  foregroundColor: Colors.white, // White icon color
                   child: const Icon(Icons.zoom_out),
                 ),
                 const SizedBox(height: 8),
                 FloatingActionButton(
                   onPressed: _getCurrentLocation,
                   mini: true,
+                  backgroundColor: Colors.black54, // Black background with opacity
+                  foregroundColor: Colors.white, // White icon color
                   child: const Icon(Icons.my_location),
                 ),
               ],
