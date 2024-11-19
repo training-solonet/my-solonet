@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mysolonet/screens/detail/promo/detail_promo.dart';
 
 class PromoSection extends StatelessWidget {
   final List<dynamic> banners;
@@ -29,7 +30,16 @@ class PromoSection extends StatelessWidget {
 
                 return GestureDetector(
                   onTap: () {
-                    // Implementasi navigasi ke detail promo
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => DetailPromoScreen(
+                          imagePath: imagePath,
+                          title: banner['judul'],
+                          description: banner['deskripsi'],
+                        ),
+                      ),
+                    );
                   },
                   child: Container(
                     margin: const EdgeInsets.symmetric(horizontal: 5),
