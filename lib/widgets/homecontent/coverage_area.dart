@@ -2,62 +2,48 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:geolocator/geolocator.dart';
 import 'dart:math';
 import 'package:http/http.dart' as http;
 
 class CoverageArea extends StatefulWidget {
+  final LatLng? userLocation;
+  final bool permissionGranted;
+  final bool locationFetched;
+  final double initialZoom;
+  final MapController mapController;
+
+  CoverageArea({
+    super.key,
+    required this.userLocation,
+    required this.permissionGranted,
+    required this.locationFetched,
+    required this.initialZoom,
+    required this.mapController,
+  });
+
   @override
   _CoverageAreaState createState() => _CoverageAreaState();
 }
 
 class _CoverageAreaState extends State<CoverageArea> {
-  LatLng? _userLocation; // User's location
-  double _currentZoom = 13.0;
-  final MapController _mapController = MapController();
-  bool _permissionGranted = false;
-  bool _locationFetched = false; // Track if location is fetched
   List<LatLng> _btsLocations = []; // To store BTS locations
   double _radiusMeters = 2000; // Coverage radius in meters
+  late MapController _mapController;
+  late bool _locationFetched;
+  late LatLng? _userLocation;
+  late bool _permissionGranted;
+  late double _currentZoom;
 
   @override
   void initState() {
     super.initState();
-    _requestLocationPermission();
-    _fetchBtsLocations(); // Fetch BTS locations from the API
-  }
+    _mapController = widget.mapController;
+    _locationFetched = widget.locationFetched;
+    _permissionGranted = widget.permissionGranted;
+    _userLocation = widget.userLocation;
+    _currentZoom = widget.initialZoom;
 
-  // Request location permission
-  Future<void> _requestLocationPermission() async {
-    LocationPermission permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-    }
-
-    if (permission == LocationPermission.whileInUse ||
-        permission == LocationPermission.always) {
-      setState(() {
-        _permissionGranted = true;
-      });
-      await _getCurrentLocation();
-    } else {
-      print('Permission denied');
-    }
-  }
-
-  // Fetch user's current location
-  Future<void> _getCurrentLocation() async {
-    try {
-      Position position = await Geolocator.getCurrentPosition(
-          desiredAccuracy: LocationAccuracy.high);
-      setState(() {
-        _userLocation = LatLng(position.latitude, position.longitude);
-        _locationFetched = true; // Mark location as fetched
-        _mapController.move(_userLocation!, _currentZoom);
-      });
-    } catch (e) {
-      print('Error getting location: $e');
-    }
+    _fetchBtsLocations();
   }
 
   // Fetch BTS locations from the API
@@ -71,7 +57,8 @@ class _CoverageAreaState extends State<CoverageArea> {
 
         // Parse the locations from the response
         for (var location in data) {
-          locations.add(LatLng(double.parse(location['lat']), double.parse(location['lang'])));
+          locations.add(LatLng(
+              double.parse(location['lat']), double.parse(location['lang'])));
         }
 
         setState(() {
@@ -92,9 +79,10 @@ class _CoverageAreaState extends State<CoverageArea> {
 
   // Calculate pixel radius based on zoom level and latitude
   double _calculatePixelRadius(double meters, double latitude, double zoom) {
-    const double earthCircumference = 40075016.686; // Earth's circumference in meters
-    double metersPerPixel = earthCircumference * cos(latitude * pi / 180) / 
-        pow(2, zoom + 8); // Conversion formula
+    const double earthCircumference =
+        40075016.686; // Earth's circumference in meters
+    double metersPerPixel = earthCircumference *
+        cos(latitude * pi / 180) / pow(2, zoom + 8); // Conversion formula
     return meters / metersPerPixel; // Convert meters to pixels
   }
 
@@ -140,7 +128,6 @@ class _CoverageAreaState extends State<CoverageArea> {
                 urlTemplate: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
                 subdomains: ['a', 'b', 'c'],
               ),
-              // Add a marker for the user's location with a custom blue pin icon
               MarkerLayer(
                 markers: [
                   if (_userLocation != null)
@@ -148,8 +135,8 @@ class _CoverageAreaState extends State<CoverageArea> {
                       point: _userLocation!,
                       builder: (ctx) => Icon(
                         Icons.person_pin_circle, // Use location pin icon
-                        color: Colors.blue,  // Set the color to blue
-                        size: 30.0,          // Adjust size of the icon
+                        color: Colors.blue, // Set the color to blue
+                        size: 30.0, // Adjust size of the icon
                       ),
                     ),
                 ],
@@ -162,7 +149,7 @@ class _CoverageAreaState extends State<CoverageArea> {
                     borderStrokeWidth: 0.5,
                     color: Colors.blueAccent.withOpacity(0.3),
                     radius: _calculatePixelRadius(
-                      _radiusMeters, 
+                      _radiusMeters,
                       location.latitude,
                       _currentZoom,
                     ), // Set radius for each BTS location
