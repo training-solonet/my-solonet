@@ -17,7 +17,7 @@ class _CoverageAreaState extends State<CoverageArea> {
 
   // Coordinates for Surakarta (Solo)
   final LatLng _surakartaLocation = LatLng(-7.5667, 110.8231);
-  double _radiusMeters = 1000; // 1 km radius
+  double _radiusMeters = 2000; 
 
   @override
   void initState() {
