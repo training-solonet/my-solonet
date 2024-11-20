@@ -1,8 +1,10 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:geolocator/geolocator.dart';
 import 'dart:math';
+import 'package:http/http.dart' as http;
 
 class CoverageArea extends StatefulWidget {
   @override
@@ -10,21 +12,22 @@ class CoverageArea extends StatefulWidget {
 }
 
 class _CoverageAreaState extends State<CoverageArea> {
-  LatLng? _userLocation; // Use nullable type to ensure it's uninitialized initially
+  LatLng? _userLocation; // User's location
   double _currentZoom = 13.0;
   final MapController _mapController = MapController();
   bool _permissionGranted = false;
-
-  // Coordinates for Surakarta (Solo)
-  final LatLng _surakartaLocation = LatLng(-7.5667, 110.8231);
-  double _radiusMeters = 2000; 
+  bool _locationFetched = false; // Track if location is fetched
+  List<LatLng> _btsLocations = []; // To store BTS locations
+  double _radiusMeters = 2000; // Coverage radius in meters
 
   @override
   void initState() {
     super.initState();
     _requestLocationPermission();
+    _fetchBtsLocations(); // Fetch BTS locations from the API
   }
 
+  // Request location permission
   Future<void> _requestLocationPermission() async {
     LocationPermission permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
@@ -42,12 +45,14 @@ class _CoverageAreaState extends State<CoverageArea> {
     }
   }
 
+  // Fetch user's current location
   Future<void> _getCurrentLocation() async {
     try {
       Position position = await Geolocator.getCurrentPosition(
           desiredAccuracy: LocationAccuracy.high);
       setState(() {
         _userLocation = LatLng(position.latitude, position.longitude);
+        _locationFetched = true; // Mark location as fetched
         _mapController.move(_userLocation!, _currentZoom);
       });
     } catch (e) {
@@ -55,6 +60,37 @@ class _CoverageAreaState extends State<CoverageArea> {
     }
   }
 
+  // Fetch BTS locations from the API
+  Future<void> _fetchBtsLocations() async {
+    final url = 'https://api.connectis.my.id/bts-location'; // API URL
+    try {
+      final response = await http.get(Uri.parse(url));
+      if (response.statusCode == 200) {
+        final List<dynamic> data = jsonDecode(response.body);
+        List<LatLng> locations = [];
+
+        // Parse the locations from the response
+        for (var location in data) {
+          locations.add(LatLng(double.parse(location['lat']), double.parse(location['lang'])));
+        }
+
+        setState(() {
+          _btsLocations = locations;
+        });
+
+        if (_btsLocations.isNotEmpty && _userLocation != null) {
+          // Center map on the user's location if it's fetched, else on the first BTS location
+          _mapController.move(_userLocation!, _currentZoom);
+        }
+      } else {
+        print('Failed to load BTS locations: ${response.reasonPhrase}');
+      }
+    } catch (e) {
+      print('Error fetching BTS locations: $e');
+    }
+  }
+
+  // Calculate pixel radius based on zoom level and latitude
   double _calculatePixelRadius(double meters, double latitude, double zoom) {
     const double earthCircumference = 40075016.686; // Earth's circumference in meters
     double metersPerPixel = earthCircumference * cos(latitude * pi / 180) / 
@@ -62,9 +98,17 @@ class _CoverageAreaState extends State<CoverageArea> {
     return meters / metersPerPixel; // Convert meters to pixels
   }
 
+  // Function to move map to user's location
+  void _goToUserLocation() {
+    if (_userLocation != null) {
+      _mapController.move(_userLocation!, _currentZoom);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    if (!_permissionGranted || _userLocation == null) {
+    // Show a loading indicator while waiting for the user's location
+    if (!_permissionGranted || !_locationFetched) {
       return Center(
         child: CircularProgressIndicator(),
       );
@@ -77,7 +121,8 @@ class _CoverageAreaState extends State<CoverageArea> {
           child: FlutterMap(
             mapController: _mapController,
             options: MapOptions(
-              center: _userLocation ?? _surakartaLocation,
+              // Ensure the map centers on the user's location once it's fetched
+              center: _userLocation ?? LatLng(0, 0), // Fallback to (0, 0) if user location is null
               zoom: _currentZoom,
               interactiveFlags: InteractiveFlag.pinchZoom | InteractiveFlag.drag,
               maxZoom: 18.0,
@@ -95,20 +140,34 @@ class _CoverageAreaState extends State<CoverageArea> {
                 urlTemplate: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
                 subdomains: ['a', 'b', 'c'],
               ),
-              CircleLayer(
-                circles: [
-                  CircleMarker(
-                    point: _surakartaLocation,
-                    borderColor: Colors.blue,
-                    borderStrokeWidth: 2.0,
-                    color: Colors.blue.withOpacity(0.2),
-                    radius: _calculatePixelRadius(
-                      _radiusMeters,
-                      _surakartaLocation.latitude,
-                      _currentZoom,
-                    ), // Use dynamically calculated pixel radius
-                  ),
+              // Add a marker for the user's location with a custom blue pin icon
+              MarkerLayer(
+                markers: [
+                  if (_userLocation != null)
+                    Marker(
+                      point: _userLocation!,
+                      builder: (ctx) => Icon(
+                        Icons.person_pin_circle, // Use location pin icon
+                        color: Colors.blue,  // Set the color to blue
+                        size: 30.0,          // Adjust size of the icon
+                      ),
+                    ),
                 ],
+              ),
+              CircleLayer(
+                circles: _btsLocations.map((location) {
+                  return CircleMarker(
+                    point: location,
+                    borderColor: Colors.blueAccent.withOpacity(0.3),
+                    borderStrokeWidth: 0.5,
+                    color: Colors.blueAccent.withOpacity(0.3),
+                    radius: _calculatePixelRadius(
+                      _radiusMeters, 
+                      location.latitude,
+                      _currentZoom,
+                    ), // Set radius for each BTS location
+                  );
+                }).toList(),
               ),
             ],
           ),
@@ -119,6 +178,17 @@ class _CoverageAreaState extends State<CoverageArea> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
+              // My Location button above zoom-in button
+              FloatingActionButton(
+                onPressed: _goToUserLocation,
+                backgroundColor: Colors.black54, // Transparent background
+                foregroundColor: Colors.white, // Blue accent icon
+                elevation: 0, // Remove the shadow
+                child: Icon(Icons.my_location), // Using the my_location icon
+                mini: true,
+              ),
+              SizedBox(height: 10),
+              // Zoom-in button
               FloatingActionButton(
                 onPressed: () {
                   setState(() {
@@ -133,6 +203,7 @@ class _CoverageAreaState extends State<CoverageArea> {
                 mini: true,
               ),
               SizedBox(height: 10),
+              // Zoom-out button
               FloatingActionButton(
                 onPressed: () {
                   setState(() {
