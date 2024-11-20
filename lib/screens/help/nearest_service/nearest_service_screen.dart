@@ -18,15 +18,6 @@ class _NearestServiceScreenState extends State<NearestServiceScreen> {
   final MapController _mapController = MapController();
   List<NearbyLocation> _nearbyLocations = [];
 
-  static const double EARTH_RADIUS = 6371000; // meter
-  double _radiusMeters = 4000; // 5 km
-
-  // Fungsi menghitung radius pixel yang konsisten
-  double calculateConsistentRadius(double zoom) {
-    double resolution = 156543.03392 * cos(0 * pi / 180) / pow(2, zoom);
-    return _radiusMeters / resolution;
-  }
-
   @override
   void initState() {
     super.initState();
@@ -115,7 +106,6 @@ class _NearestServiceScreenState extends State<NearestServiceScreen> {
   void _zoomIn() {
     setState(() {
       if (_currentZoom < 18) {
-        // Batasi zoom maksimal
         _currentZoom++;
         _mapController.move(_mapController.center, _currentZoom);
       }
@@ -125,7 +115,6 @@ class _NearestServiceScreenState extends State<NearestServiceScreen> {
   void _zoomOut() {
     setState(() {
       if (_currentZoom > 3) {
-        // Batasi zoom minimal
         _currentZoom--;
         _mapController.move(_mapController.center, _currentZoom);
       }
@@ -189,18 +178,6 @@ class _NearestServiceScreenState extends State<NearestServiceScreen> {
                     );
                   }).toList(),
                 ],
-              ),
-              CircleLayer(
-                circles: _nearbyLocations.map((location) {
-                  return CircleMarker(
-                    point: LatLng(location.latitude, location.longitude),
-                    radius: calculateConsistentRadius(
-                        _currentZoom), // Gunakan fungsi baru
-                    color: Colors.blue.withOpacity(0.15),
-                    borderStrokeWidth: 2,
-                    borderColor: Colors.blueAccent,
-                  );
-                }).toList(),
               ),
             ],
           ),
