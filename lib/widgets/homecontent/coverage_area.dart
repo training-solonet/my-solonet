@@ -10,7 +10,7 @@ class CoverageArea extends StatefulWidget {
   final bool permissionGranted;
   final bool locationFetched;
   final double initialZoom;
-  final MapController mapController;
+  final MapController? mapController; 
 
   CoverageArea({
     super.key,
@@ -18,7 +18,7 @@ class CoverageArea extends StatefulWidget {
     required this.permissionGranted,
     required this.locationFetched,
     required this.initialZoom,
-    required this.mapController,
+    this.mapController,
   });
 
   @override
@@ -37,7 +37,7 @@ class _CoverageAreaState extends State<CoverageArea> {
   @override
   void initState() {
     super.initState();
-    _mapController = widget.mapController;
+    _mapController = widget.mapController!;
     _locationFetched = widget.locationFetched;
     _permissionGranted = widget.permissionGranted;
     _userLocation = widget.userLocation;
@@ -102,7 +102,7 @@ class _CoverageAreaState extends State<CoverageArea> {
       );
     }
 
-    return Stack(
+    return widget.userLocation != null && widget.mapController != null ? Stack(
       children: [
         SizedBox(
           height: 300, // Set height of the map
@@ -208,6 +208,6 @@ class _CoverageAreaState extends State<CoverageArea> {
           ),
         ),
       ],
-    );
+    ) : const Center(child: Text("Map not available"));
   }
 }

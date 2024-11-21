@@ -31,7 +31,8 @@ class HomePageContent extends StatefulWidget {
 
 class _HomePageContentState extends State<HomePageContent> {
   final PageController _pageController = PageController();
-  final ValueNotifier<int> _currentPageNotifier = ValueNotifier<int>(0); // Tambahkan ValueNotifier
+  final ValueNotifier<int> _currentPageNotifier =
+      ValueNotifier<int>(0); // Tambahkan ValueNotifier
   late Timer _timer;
   List<dynamic> _banners = [];
   List<dynamic> _products = [];
@@ -41,7 +42,7 @@ class _HomePageContentState extends State<HomePageContent> {
   bool _locationFetched = false;
   bool _locationInitialized = false;
   double _currentZoom = 13.0;
-  final MapController _mapController = MapController();
+  MapController? _mapController;
 
   Future<void> _fetchBanners() async {
     final url = Uri.parse('${baseUrl}/banner');
@@ -115,10 +116,10 @@ class _HomePageContentState extends State<HomePageContent> {
     try {
       Position position = await Geolocator.getCurrentPosition(
           desiredAccuracy: LocationAccuracy.high);
+
       setState(() {
         _userLocation = LatLng(position.latitude, position.longitude);
         _locationFetched = true;
-        _mapController.move(_userLocation!, _currentZoom);
       });
     } catch (e) {
       print('Error getting location: $e');
@@ -143,16 +144,18 @@ class _HomePageContentState extends State<HomePageContent> {
   @override
   void initState() {
     super.initState();
+    _mapController = MapController();
     _fetchBanners();
     _fetchProducts();
     _requestLocationPermission();
+    _getCurrentLocation();
   }
 
   @override
   void dispose() {
     _timer.cancel();
     _pageController.dispose();
-    _mapController.dispose();
+    _mapController = null;
     _currentPageNotifier.dispose(); // Pastikan ValueNotifier dihapus
     super.dispose();
   }
@@ -247,7 +250,7 @@ class _HomePageContentState extends State<HomePageContent> {
                         permissionGranted: _permissionGranted,
                         locationFetched: _locationFetched,
                         initialZoom: _currentZoom,
-                        mapController: _mapController,
+                        mapController: _mapController!,
                       ),
                     ],
                   ),
