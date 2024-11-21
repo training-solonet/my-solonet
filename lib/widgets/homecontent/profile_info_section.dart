@@ -34,6 +34,7 @@ class ProfileInfoSection extends StatelessWidget {
         ],
       ),
       padding: const EdgeInsets.all(20),
+      margin: const EdgeInsets.only(bottom: 20),
       width: double.infinity,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
