@@ -4,6 +4,7 @@ import 'package:mysolonet/screens/detail/promo/detail_promo.dart';
 class PromoSection extends StatelessWidget {
   final List<dynamic> banners;
   final PageController pageController;
+
   final int currentPage;
   final Function(int) onPageChanged;
 

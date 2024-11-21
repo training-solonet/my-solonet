@@ -31,7 +31,7 @@ class HomePageContent extends StatefulWidget {
 
 class _HomePageContentState extends State<HomePageContent> {
   final PageController _pageController = PageController();
-  int _currentPage = 0;
+  final ValueNotifier<int> _currentPageNotifier = ValueNotifier<int>(0); // Tambahkan ValueNotifier
   late Timer _timer;
   List<dynamic> _banners = [];
   List<dynamic> _products = [];
@@ -39,6 +39,7 @@ class _HomePageContentState extends State<HomePageContent> {
   LatLng? _userLocation;
   bool _permissionGranted = false;
   bool _locationFetched = false;
+  bool _locationInitialized = false;
   double _currentZoom = 13.0;
   final MapController _mapController = MapController();
 
@@ -56,6 +57,10 @@ class _HomePageContentState extends State<HomePageContent> {
         setState(() {
           _banners = data;
         });
+
+        if (_banners.isNotEmpty) {
+          _startBannerTimer();
+        }
       } else {
         throw Exception('Failed to fetch banners');
       }
@@ -103,14 +108,16 @@ class _HomePageContentState extends State<HomePageContent> {
     }
   }
 
-  // Fetch user's current location
   Future<void> _getCurrentLocation() async {
+    if (_locationInitialized) return;
+    _locationInitialized = true;
+
     try {
       Position position = await Geolocator.getCurrentPosition(
           desiredAccuracy: LocationAccuracy.high);
       setState(() {
         _userLocation = LatLng(position.latitude, position.longitude);
-        _locationFetched = true; // Mark location as fetched
+        _locationFetched = true;
         _mapController.move(_userLocation!, _currentZoom);
       });
     } catch (e) {
@@ -119,17 +126,18 @@ class _HomePageContentState extends State<HomePageContent> {
   }
 
   void _startBannerTimer() {
-    _timer = Timer.periodic(const Duration(seconds: 3), (timer) {
-      setState(() {
-        _currentPage = (_currentPage + 1) % _banners.length;
-      });
+    if (_banners.isNotEmpty) {
+      _timer = Timer.periodic(const Duration(seconds: 3), (timer) {
+        final nextPage = (_currentPageNotifier.value + 1) % _banners.length;
+        _currentPageNotifier.value = nextPage;
 
-      _pageController.animateToPage(
-        _currentPage,
-        duration: const Duration(milliseconds: 750),
-        curve: Curves.easeInOutCubic,
-      );
-    });
+        _pageController.animateToPage(
+          nextPage,
+          duration: const Duration(milliseconds: 750),
+          curve: Curves.easeInOutCubic,
+        );
+      });
+    }
   }
 
   @override
@@ -138,15 +146,14 @@ class _HomePageContentState extends State<HomePageContent> {
     _fetchBanners();
     _fetchProducts();
     _requestLocationPermission();
-    _startBannerTimer();
   }
 
   @override
   void dispose() {
     _timer.cancel();
     _pageController.dispose();
-    _pageController.dispose();
     _mapController.dispose();
+    _currentPageNotifier.dispose(); // Pastikan ValueNotifier dihapus
     super.dispose();
   }
 
@@ -158,7 +165,7 @@ class _HomePageContentState extends State<HomePageContent> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (_isConnect == true && widget.userId > 0)
+            if (_isConnect && widget.userId > 0)
               const ProfileInfoSection(
                 packageName: 'Paket 30 Mbps',
                 isActive: true,
@@ -168,15 +175,11 @@ class _HomePageContentState extends State<HomePageContent> {
                 paymentDate: '17 Agustus 2024',
               ),
 
-            if (_isConnect == false) const SizedBox(height: 10),
-
-            if (_isConnect == false && _userLocation != null)
-              LocationCoveredSection(
-                userLocation: _userLocation,
-              ),
+            if (!_isConnect && _userLocation != null)
+              LocationCoveredSection(userLocation: _userLocation),
 
             if (widget.userId > 0 &&
-                _isConnect == false &&
+                !_isConnect &&
                 widget.email.isNotEmpty &&
                 widget.nama.isNotEmpty)
               ConnectAccountSection(
@@ -185,21 +188,29 @@ class _HomePageContentState extends State<HomePageContent> {
                 email: widget.email,
               ),
 
+            const SizedBox(height: 10),
+
             const Text(
               'Promo',
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
             ),
             const SizedBox(height: 10),
-            PromoSection(
-              banners: _banners,
-              pageController: _pageController,
-              currentPage: _currentPage,
-              onPageChanged: (index) {
-                setState(() {
-                  _currentPage = index;
-                });
+
+            // Gunakan ValueListenableBuilder untuk hanya memperbarui PromoSection
+            ValueListenableBuilder<int>(
+              valueListenable: _currentPageNotifier,
+              builder: (context, currentPage, _) {
+                return PromoSection(
+                  banners: _banners,
+                  pageController: _pageController,
+                  currentPage: currentPage,
+                  onPageChanged: (index) {
+                    _currentPageNotifier.value = index;
+                  },
+                );
               },
             ),
+
             const SizedBox(height: 20),
             const Text(
               'Rekomendasi Produk',
@@ -212,7 +223,6 @@ class _HomePageContentState extends State<HomePageContent> {
 
             const SizedBox(height: 20),
 
-            // Add the CoverageArea widget here
             if (_userLocation != null && _permissionGranted && _locationFetched)
               Card(
                 elevation: 4.0,
