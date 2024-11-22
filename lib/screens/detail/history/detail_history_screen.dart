@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -60,7 +59,7 @@ class _DetailHistoryScreenState extends State<DetailHistoryScreen> {
   Future<void> fetchTransactionDetails() async {
     final token = await getToken();
     final response = await http.get(
-      Uri.parse('${baseUrl}/detail-tagihan/${widget.id}'),
+      Uri.parse('$baseUrl/detail-tagihan/${widget.id}'),
       headers: {
         'Authorization': 'Bearer $token',
       },
@@ -114,7 +113,7 @@ class _DetailHistoryScreenState extends State<DetailHistoryScreen> {
       } catch (e) {
         print("Error during capture and share: $e");
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to share receipt')),
+          const SnackBar(content: Text('Failed to share receipt')),
         );
       }
     });
@@ -176,7 +175,7 @@ class _DetailHistoryScreenState extends State<DetailHistoryScreen> {
         border: Border.all(color: Colors.blueAccent),
       ),
       child: IconButton(
-        icon: Icon(Icons.download, color: Colors.blueAccent),
+        icon: const Icon(Icons.download, color: Colors.blueAccent),
         onPressed: _downloadReceiptWithWhiteBackground,
       ),
     );
@@ -249,20 +248,20 @@ class _DetailHistoryScreenState extends State<DetailHistoryScreen> {
                   onPressed: () {
                     Navigator.pop(context);
                   },
-                  child: const Text(
-                    'Selesai',
-                    style: TextStyle(
-                      fontFamily: 'Poppins',
-                      color: Colors.white,
-                      fontSize: 14,
-                    ),
-                  ),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blueAccent,
                     padding: const EdgeInsets.symmetric(
                         vertical: 14, horizontal: 40),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(24),
+                    ),
+                  ),
+                  child: const Text(
+                    'Selesai',
+                    style: TextStyle(
+                      fontFamily: 'Poppins',
+                      color: Colors.white,
+                      fontSize: 14,
                     ),
                   ),
                 ),
@@ -307,7 +306,7 @@ class _DetailHistoryScreenState extends State<DetailHistoryScreen> {
       ),
       body: SafeArea(
         child: isLoading
-            ? Center(child: CircularProgressIndicator())
+            ? const Center(child: CircularProgressIndicator())
             : RepaintBoundary(
                 key: _repaintBoundaryKey,
                 child: Padding(
@@ -372,7 +371,7 @@ class _DetailHistoryScreenState extends State<DetailHistoryScreen> {
                               border: Border.all(color: Colors.blueAccent),
                             ),
                             child: IconButton(
-                              icon: Icon(Icons.share, color: Colors.blueAccent),
+                              icon: const Icon(Icons.share, color: Colors.blueAccent),
                               onPressed: _captureAndSharePng,
                             ),
                           ),
@@ -383,20 +382,20 @@ class _DetailHistoryScreenState extends State<DetailHistoryScreen> {
                             onPressed: () {
                               Navigator.pop(context);
                             },
-                            child: const Text(
-                              'Selesai',
-                              style: TextStyle(
-                                fontFamily: 'Poppins',
-                                color: Colors.white,
-                                fontSize: 14,
-                              ),
-                            ),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.blueAccent,
                               padding: const EdgeInsets.symmetric(
                                   vertical: 14, horizontal: 40),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(24),
+                              ),
+                            ),
+                            child: const Text(
+                              'Selesai',
+                              style: TextStyle(
+                                fontFamily: 'Poppins',
+                                color: Colors.white,
+                                fontSize: 14,
                               ),
                             ),
                           ),

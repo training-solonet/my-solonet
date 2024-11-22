@@ -5,7 +5,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:mysolonet/screens/help/nearest_service/nearest_service_screen.dart';
 
 class HelpScreen extends StatelessWidget {
-  const HelpScreen({Key? key}) : super(key: key);
+  const HelpScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +30,7 @@ class HelpScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               _buildHelpCard('assets/images/1.png', 'Reboot Modem', 0, () {
-               Navigator.push(context, MaterialPageRoute(builder: (context) =>  RebootScreen()));
+               Navigator.push(context, MaterialPageRoute(builder: (context) =>  const RebootScreen()));
 
               }),
               _buildHelpCard('assets/images/2.png', 'Lihat Pertanyaan', 1, () {
@@ -40,7 +40,7 @@ class HelpScreen extends StatelessWidget {
                 _launchWhatsApp('6281542017888'); // No plus sign
               }),
               _buildHelpCard('assets/images/4.png', 'Cari SoloNet Terdekat', 3, () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) => NearestServiceScreen()));
+                Navigator.push(context, MaterialPageRoute(builder: (context) => const NearestServiceScreen()));
               }),
             ],
           ),

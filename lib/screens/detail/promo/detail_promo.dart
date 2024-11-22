@@ -5,7 +5,7 @@ class DetailPromoScreen extends StatefulWidget {
   final String title;
   final String description;
 
-  const DetailPromoScreen({Key? key, required this.imagePath, required this.title, required this.description}) : super(key: key);
+  const DetailPromoScreen({super.key, required this.imagePath, required this.title, required this.description});
 
   @override
   _DetailPromoScreenState createState() => _DetailPromoScreenState();
@@ -53,10 +53,10 @@ class _DetailPromoScreenState extends State<DetailPromoScreen> {
             ),
             const SizedBox(height: 10),
             Padding(
-              padding: EdgeInsets.fromLTRB(0, 5, 0, 0),
+              padding: const EdgeInsets.fromLTRB(0, 5, 0, 0),
               child: Text(
                 widget.title,
-                style: TextStyle(
+                style: const TextStyle(
                   fontFamily: 'Poppins',
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -64,10 +64,10 @@ class _DetailPromoScreenState extends State<DetailPromoScreen> {
               ),
             ),
             Padding(
-              padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+              padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
               child: Text(
                 widget.description,
-                style: TextStyle(
+                style: const TextStyle(
                   fontFamily: 'Poppins',
                   fontSize: 11,
                   color: Colors.grey,
@@ -111,13 +111,13 @@ class _DetailPromoScreenState extends State<DetailPromoScreen> {
               ),
             ),
             if (_isExpanded)
-              Padding(
-                padding: const EdgeInsets.all(15.0),
+              const Padding(
+                padding: EdgeInsets.all(15.0),
                 child: Text(
                   '1. Paket berlaku untuk pengguna baru.\n'
                   '2. Pembayaran harus dilakukan sebelum akhir bulan.\n'
                   '3. Tidak dapat digabung dengan promo lainnya.',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontFamily: 'Poppins',
                     color: Colors.grey,
                   ),

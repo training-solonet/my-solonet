@@ -7,7 +7,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class ForgotPasswordScreen extends StatefulWidget {
-  ForgotPasswordScreen({super.key});
+  const ForgotPasswordScreen({super.key});
 
   @override
   _ForgotPasswordScreenState createState() => _ForgotPasswordScreenState();
@@ -33,14 +33,14 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       _isLoading = true;
     });
 
-    final url = Uri.parse('${baseUrl}/request-otp');
+    final url = Uri.parse('$baseUrl/request-otp');
     final headers = {
       "Access-Control-Allow-Origin": "*",
       'Content-Type': 'application/json',
       'Accept': '*/*',
     };
     final body = json.encode({
-      "phone_number": "62" + _phoneController.text,
+      "phone_number": "62${_phoneController.text}",
     });
 
     try {
@@ -261,7 +261,7 @@ class _NoAccountText extends StatelessWidget {
           onTap: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => SignUpScreen()),
+              MaterialPageRoute(builder: (context) => const SignUpScreen()),
             );
           },
           child: const Text(

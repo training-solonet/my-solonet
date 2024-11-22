@@ -9,7 +9,7 @@ class BankPayment {
   // CREATE BRI VA
   Future<void> briPayment(BuildContext context, String tokenJwt, int customerId, int tagihanId) async {
     try {
-      final url = Uri.parse('${baseUrl}/bri');
+      final url = Uri.parse('$baseUrl/bri');
       final headers = {
         'Content-Type': 'application/json',
         'X-Authorization': tokenBri,
@@ -66,7 +66,7 @@ class BankPayment {
   Future<void> bniPayment(BuildContext context, String tokenJwt, int customerId,
       int tagihanId) async {
     try {
-      final url = Uri.parse('${baseUrl}/bni');
+      final url = Uri.parse('$baseUrl/bni');
       final headers = {
         'Content-Type': 'application/json',
         'X-Authorization': tokenBni,

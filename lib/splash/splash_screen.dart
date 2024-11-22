@@ -4,6 +4,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:mysolonet/splash/splash_slide.dart';
 
 class SplashScreen extends StatefulWidget {
+  const SplashScreen({super.key});
+
   @override
   SplashScreenState createState() => SplashScreenState();
 }
@@ -29,13 +31,13 @@ class SplashScreenState extends State<SplashScreen> {
       // Jika ini adalah peluncuran pertama, navigasi ke SplashSlide
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => SplashSlide()),
+        MaterialPageRoute(builder: (context) => const SplashSlide()),
       );
     } else {
       // Jika bukan peluncuran pertama, navigasi ke halaman utama
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => HomeScreen()), // Ganti dengan layar utama Anda
+        MaterialPageRoute(builder: (context) => const HomeScreen()), // Ganti dengan layar utama Anda
       );
     }
   }

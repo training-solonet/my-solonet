@@ -9,14 +9,14 @@ class ProfileInfoSection extends StatelessWidget {
   final String? paymentDate;
 
   const ProfileInfoSection({
-    Key? key,
+    super.key,
     required this.packageName,
     required this.isActive,
     required this.period,
     required this.billAmount,
     this.paymentStatus,
     this.paymentDate,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

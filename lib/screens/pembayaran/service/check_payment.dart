@@ -11,7 +11,7 @@ class CheckPayment {
   // CHECK BRI 
   Future<void> checkBri(BuildContext context, String tokenJwt, int customerId, int tagihanId) async {
     try {
-      final url = Uri.parse('${baseUrl}/bri-inquiry');
+      final url = Uri.parse('$baseUrl/bri-inquiry');
       final headers = {
         'Content-Type': 'application/json',
         'X-Authorization': tokenBri,
@@ -50,7 +50,7 @@ class CheckPayment {
   // Check BNI
   Future<void> checkBni(BuildContext context, String tokenJwt, int customerId, String trxId, int tagihanId) async {
     try {
-      final url = Uri.parse('${baseUrl}/bni-inquiry');
+      final url = Uri.parse('$baseUrl/bni-inquiry');
       final headers = {
         'Content-Type': 'application/json',
         'X-Authorization': tokenBni,

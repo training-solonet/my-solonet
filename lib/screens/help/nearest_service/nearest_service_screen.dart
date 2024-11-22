@@ -3,10 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:geolocator/geolocator.dart';
-import 'dart:math';
 import 'package:http/http.dart' as http;
 
 class NearestServiceScreen extends StatefulWidget {
+  const NearestServiceScreen({super.key});
+
   @override
   _NearestServiceScreenState createState() => _NearestServiceScreenState();
 }
@@ -51,7 +52,7 @@ class _NearestServiceScreenState extends State<NearestServiceScreen> {
   }
 
   Future<void> _fetchNearbyLocations(double latitude, double longitude) async {
-    final url = 'https://api.connectis.my.id/nearLocation';
+    const url = 'https://api.connectis.my.id/nearLocation';
     final response = await http.post(
       Uri.parse(url),
       headers: {'Content-Type': 'application/json'},
@@ -155,7 +156,7 @@ class _NearestServiceScreenState extends State<NearestServiceScreen> {
               TileLayer(
                 urlTemplate:
                     "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-                subdomains: ['a', 'b', 'c'],
+                subdomains: const ['a', 'b', 'c'],
               ),
               MarkerLayer(
                 markers: [
@@ -176,7 +177,7 @@ class _NearestServiceScreenState extends State<NearestServiceScreen> {
                         size: 40,
                       ),
                     );
-                  }).toList(),
+                  }),
                 ],
               ),
             ],
@@ -217,7 +218,7 @@ class _NearestServiceScreenState extends State<NearestServiceScreen> {
             left: 0,
             right: 0,
             child: _nearbyLocations.isNotEmpty
-                ? Container(
+                ? SizedBox(
                     height: 130,
                     child: PageView.builder(
                       itemCount: _nearbyLocations.length,

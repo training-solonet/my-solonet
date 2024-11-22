@@ -45,7 +45,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     context: context,
     barrierDismissible: false,
     builder: (BuildContext context) {
-      return LoadingScreen(); // Pastikan Anda memiliki LoadingScreen yang sesuai
+      return const LoadingScreen(); // Pastikan Anda memiliki LoadingScreen yang sesuai
     },
   );
 
@@ -96,7 +96,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   backgroundColor: Colors.green,
                   child: Text(
                     _profileText(nama),
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 24,
                       color: Colors.white,
                       fontWeight: FontWeight.w600,
@@ -186,11 +186,11 @@ class _MenuItem extends StatelessWidget {
   final VoidCallback onTap;
 
   const _MenuItem({
-    Key? key,
+    super.key,
     required this.icon,
     required this.title,
     required this.onTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

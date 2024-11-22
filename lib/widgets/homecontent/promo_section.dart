@@ -9,12 +9,12 @@ class PromoSection extends StatelessWidget {
   final Function(int) onPageChanged;
 
   const PromoSection({
-    Key? key,
+    super.key,
     required this.banners,
     required this.pageController,
     required this.currentPage,
     required this.onPageChanged,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

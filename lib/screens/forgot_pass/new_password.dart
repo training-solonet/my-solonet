@@ -10,7 +10,7 @@ import 'dart:convert';
 class NewPasswordScreen extends StatefulWidget {
   final String phone;
 
-  NewPasswordScreen({super.key, required this.phone});
+  const NewPasswordScreen({super.key, required this.phone});
 
   @override
   _NewPasswordState createState() => _NewPasswordState();
@@ -37,14 +37,14 @@ class _NewPasswordState extends State<NewPasswordScreen> {
       _isLoading = true;
     });
 
-    final url = Uri.parse("${baseUrl}/reset-password");
+    final url = Uri.parse("$baseUrl/reset-password");
     final headers = {
       "Access-Control-Allow-Origin": "*",
       'Content-Type': 'application/json',
       'Accept': '*/*',
     };
     final body = json.encode({
-      "phone_number": "62" + widget.phone,
+      "phone_number": "62${widget.phone}",
       "otp": _otpController.text,
       "new_password": _passwordController.text,
       "confirm_new_password": _confirmPasswordController.text
@@ -61,7 +61,7 @@ class _NewPasswordState extends State<NewPasswordScreen> {
 
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => SignInScreen()),
+          MaterialPageRoute(builder: (context) => const SignInScreen()),
         );
         print("password changed");
 
@@ -117,7 +117,7 @@ class _NewPasswordState extends State<NewPasswordScreen> {
                           borderRadius: BorderRadius.all(Radius.circular(50)),
                         ),
                       ),
-                      style: TextStyle(fontFamily: 'Poppins', fontSize: 14),
+                      style: const TextStyle(fontFamily: 'Poppins', fontSize: 14),
                       validator: (value) {
                         if (value!.isEmpty) {
                           return 'Masukkan kata sandi';
@@ -141,7 +141,7 @@ class _NewPasswordState extends State<NewPasswordScreen> {
                             borderRadius: BorderRadius.all(Radius.circular(50)),
                           ),
                         ),
-                        style: TextStyle(fontFamily: 'Poppins', fontSize: 14),
+                        style: const TextStyle(fontFamily: 'Poppins', fontSize: 14),
                         validator: (value) {
                           if (value != _passwordController.text) {
                             return 'Kata sandi tidak cocok';
@@ -170,7 +170,7 @@ class _NewPasswordState extends State<NewPasswordScreen> {
                             borderRadius: BorderRadius.all(Radius.circular(50)),
                           ),
                         ),
-                        style: TextStyle(fontFamily: 'Poppins', fontSize: 14),
+                        style: const TextStyle(fontFamily: 'Poppins', fontSize: 14),
                         keyboardType: TextInputType.number,
                         validator: (value) {
                           if (value!.isEmpty) {
@@ -200,7 +200,7 @@ class _NewPasswordState extends State<NewPasswordScreen> {
                 ),
                 child: Text(
                   _isLoading ? "Loading..." : "Ubah Kata Sandi",
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontFamily: 'Poppins',
                     fontWeight: FontWeight.w600,
                     fontSize: 16,
@@ -211,13 +211,13 @@ class _NewPasswordState extends State<NewPasswordScreen> {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => SignInScreen()),
+                    MaterialPageRoute(builder: (context) => const SignInScreen()),
                   );
                 },
                 child: Text.rich(
                   TextSpan(
                     text: "Sudah punya akun? ",
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 12,
                       color: Colors.grey,
                       fontFamily: 'Poppins',
@@ -251,11 +251,10 @@ class LogoWithTitle extends StatelessWidget {
   final List<Widget> children;
 
   const LogoWithTitle(
-      {Key? key,
+      {super.key,
       required this.title,
       this.subText = '',
-      required this.children})
-      : super(key: key);
+      required this.children});
   @override
   Widget build(BuildContext context) {
     return SafeArea(

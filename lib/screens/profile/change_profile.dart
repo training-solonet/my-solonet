@@ -24,7 +24,7 @@ class _ChangeProfileState extends State<ChangeProfileScreen> {
     final token = await authservice.getToken();
     print(token);
 
-    final url = Uri.parse('${baseUrl}/users');
+    final url = Uri.parse('$baseUrl/users');
 
     try {
       final response = await http.get(
@@ -77,7 +77,7 @@ class _ChangeProfileState extends State<ChangeProfileScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           'Change Profile',
           style: TextStyle(
             color: Colors.white,
@@ -109,7 +109,7 @@ class _ChangeProfileState extends State<ChangeProfileScreen> {
         elevation: 0,
       ),
       body: _isLoading 
-          ? Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator())
           : Padding(
               padding: const EdgeInsets.all(20.0),
               child: Column(
@@ -195,9 +195,9 @@ class _ChangeProfileState extends State<ChangeProfileScreen> {
         const SizedBox(height: 6.5),
         TextField(
           controller: controller,
-          decoration: InputDecoration(
+          decoration: const InputDecoration(
             border: OutlineInputBorder(),
-            contentPadding: const EdgeInsets.all(10),
+            contentPadding: EdgeInsets.all(10),
           ),
           style: const TextStyle(
             fontFamily: 'Poppins',
@@ -227,9 +227,9 @@ class _ChangeProfileState extends State<ChangeProfileScreen> {
             Expanded(
               child: TextField(
                 controller: controller,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   border: OutlineInputBorder(),
-                  contentPadding: const EdgeInsets.all(10),
+                  contentPadding: EdgeInsets.all(10),
                 ),
                 style: const TextStyle(
                   fontFamily: 'Poppins',

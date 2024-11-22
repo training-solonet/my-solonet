@@ -23,7 +23,6 @@ class _SignInScreenState extends State<SignInScreen> {
 
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  bool _isLoading = false;
   bool _isPasswordVisible = false;
 
   final GoogleSignIn _googleSignIn = GoogleSignIn(
@@ -38,19 +37,17 @@ class _SignInScreenState extends State<SignInScreen> {
   Future<void> _loginUser(BuildContext context) async {
     if (!_formKey.currentState!.validate()) return;
 
-    setState(() {
-      _isLoading = true;
-    });
+   
 
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (BuildContext context) {
-        return LoadingScreen();
+        return const LoadingScreen();
       },
     );
 
-    final url = Uri.parse('${baseUrl}/login');
+    final url = Uri.parse('$baseUrl/login');
     final headers = {
       "Access-Control-Allow-Origin": "*",
       'Content-Type': 'application/json',
@@ -260,7 +257,7 @@ class _SignInScreenState extends State<SignInScreen> {
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) =>
-                                          ForgotPasswordScreen()),
+                                          const ForgotPasswordScreen()),
                                 );
                               },
                               child: const Text(

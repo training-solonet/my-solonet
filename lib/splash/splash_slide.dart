@@ -5,6 +5,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'slide_page.dart';
 
 class SplashSlide extends StatefulWidget {
+  const SplashSlide({super.key});
+
   @override
   SplashSlideState createState() => SplashSlideState();
 }
@@ -38,7 +40,7 @@ class SplashSlideState extends State<SplashSlide> {
                 currentPage = page;
               });
             },
-            children: [
+            children: const [
               SlidePage(
                 imagePath: 'assets/images/slide1.png', // Update sesuai path
                 title: 'Kecepatan Tinggi, \n Akses Tanpa Batas',
@@ -68,7 +70,7 @@ class SplashSlideState extends State<SplashSlide> {
                 SmoothPageIndicator(
                   controller: _pageController,
                   count: 3,
-                  effect: ExpandingDotsEffect(
+                  effect: const ExpandingDotsEffect(
                     activeDotColor: Colors.blue,
                     dotColor: Colors.grey,
                     dotHeight: 10,
@@ -84,17 +86,17 @@ class SplashSlideState extends State<SplashSlide> {
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => HomeScreen(),
+                          builder: (context) => const HomeScreen(),
                         ),
                       );
                     },
-                    child: Icon(Icons.keyboard_arrow_right_outlined),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blue,
                       foregroundColor: Colors.white,
-                      shape: CircleBorder(),
-                      padding: EdgeInsets.all(6),
+                      shape: const CircleBorder(),
+                      padding: const EdgeInsets.all(6),
                     ),
+                    child: const Icon(Icons.keyboard_arrow_right_outlined),
                   ),
               ],
             ),

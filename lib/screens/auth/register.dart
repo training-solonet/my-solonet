@@ -46,10 +46,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
       context: context,
       barrierDismissible: false,
       builder: (BuildContext context) {
-        return LoadingScreen();
+        return const LoadingScreen();
       },
     );
-    final url = Uri.parse('${baseUrl}/register');
+    final url = Uri.parse('$baseUrl/register');
     final headers = {
       "Access-Control-Allow-Origin": "*",
       'Content-Type': 'application/json',
@@ -57,7 +57,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     };
     final body = json.encode({
       "name": _fullnameController.text,
-      "phone_number": "62" + _whatsappController.text,
+      "phone_number": "62${_whatsappController.text}",
       "email": _emailController.text,
       "password": _passwordController.text,
       "confirm_password": _confirmpasswordController.text
@@ -352,7 +352,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       ),
       child: Text(
         _isLoading ? "Loading..." : "Register",
-        style: TextStyle(
+        style: const TextStyle(
           fontFamily: 'Poppins',
           fontWeight: FontWeight.bold,
         ),

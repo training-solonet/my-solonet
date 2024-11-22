@@ -5,10 +5,10 @@ class FaqDetailScreen extends StatelessWidget {
   final String answer;
 
   const FaqDetailScreen({
-    Key? key,
+    super.key,
     required this.question,
     required this.answer,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

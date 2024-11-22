@@ -7,6 +7,8 @@ import 'package:geocoding/geocoding.dart';
 import 'package:mysolonet/screens/profile/address/add_address_screen.dart';
 
 class LocationAddressScreen extends StatefulWidget {
+  const LocationAddressScreen({super.key});
+
   @override
   _LocationAddressScreenState createState() => _LocationAddressScreenState();
 }
@@ -21,7 +23,7 @@ class _LocationAddressScreenState extends State<LocationAddressScreen> {
   String _currentAddress = ''; // To store current address details
 
   Timer? _debounce;
-  bool _isLoading = false; // Variable for debounce timer
+  final bool _isLoading = false; // Variable for debounce timer
 
   @override
   void initState() {
@@ -116,8 +118,9 @@ class _LocationAddressScreenState extends State<LocationAddressScreen> {
                               _markerLocation = position.center!;
 
                               // Cancel previous timer if exists
-                              if (_debounce?.isActive ?? false)
+                              if (_debounce?.isActive ?? false) {
                                 _debounce!.cancel();
+                              }
 
                               // Set a new timer for 300 ms
                               _debounce =
@@ -133,7 +136,7 @@ class _LocationAddressScreenState extends State<LocationAddressScreen> {
                         TileLayer(
                           urlTemplate:
                               "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-                          subdomains: ['a', 'b', 'c'],
+                          subdomains: const ['a', 'b', 'c'],
                         ),
                         MarkerLayer(
                           markers: [
@@ -224,7 +227,7 @@ class _LocationAddressScreenState extends State<LocationAddressScreen> {
                         borderRadius: BorderRadius.circular(12.0)),
                   ),
                   style:
-                      TextStyle(fontFamily: 'Poppins'), // Set text field font
+                      const TextStyle(fontFamily: 'Poppins'), // Set text field font
                   onSubmitted: (value) {
                     // Implement location search here
                   },
@@ -254,7 +257,7 @@ class _LocationAddressScreenState extends State<LocationAddressScreen> {
                         borderRadius: BorderRadius.circular(12.0)),
                   ),
                   style:
-                      TextStyle(fontFamily: 'Poppins'), // Set text field font
+                      const TextStyle(fontFamily: 'Poppins'), // Set text field font
                   maxLines: 2,
                 ),
 
@@ -265,7 +268,7 @@ class _LocationAddressScreenState extends State<LocationAddressScreen> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => AddAddressScreen()),
+                          builder: (context) => const AddAddressScreen()),
                     );
                   },
                   style: ElevatedButton.styleFrom(

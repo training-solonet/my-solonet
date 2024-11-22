@@ -5,7 +5,7 @@ import 'dart:convert';
 import 'package:mysolonet/screens/help/faq/faq_detail_screen.dart';
 
 class FaqScreen extends StatefulWidget {
-  const FaqScreen({Key? key}) : super(key: key);
+  const FaqScreen({super.key});
 
   @override
   _FaqScreenState createState() => _FaqScreenState();

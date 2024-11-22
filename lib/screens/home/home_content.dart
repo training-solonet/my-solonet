@@ -19,11 +19,11 @@ class HomePageContent extends StatefulWidget {
   final String email;
 
   const HomePageContent({
-    Key? key,
+    super.key,
     required this.userId,
     required this.nama,
     required this.email,
-  }) : super(key: key);
+  });
 
   @override
   _HomePageContentState createState() => _HomePageContentState();
@@ -36,16 +36,16 @@ class _HomePageContentState extends State<HomePageContent> {
   late Timer _timer;
   List<dynamic> _banners = [];
   List<dynamic> _products = [];
-  bool _isConnect = false;
+  final bool _isConnect = false;
   LatLng? _userLocation;
   bool _permissionGranted = false;
   bool _locationFetched = false;
   bool _locationInitialized = false;
-  double _currentZoom = 13.0;
+  final double _currentZoom = 13.0;
   MapController? _mapController;
 
   Future<void> _fetchBanners() async {
-    final url = Uri.parse('${baseUrl}/banner');
+    final url = Uri.parse('$baseUrl/banner');
 
     try {
       final response = await http.get(url, headers: {
@@ -71,7 +71,7 @@ class _HomePageContentState extends State<HomePageContent> {
   }
 
   Future<void> _fetchProducts() async {
-    final url = Uri.parse('${baseUrl}/paket');
+    final url = Uri.parse('$baseUrl/paket');
 
     try {
       final response = await http.get(url, headers: {
