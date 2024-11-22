@@ -7,11 +7,11 @@ class ConnectAccountSection extends StatelessWidget {
   final String email;
 
   const ConnectAccountSection({
-    Key? key,
+    super.key,
     required this.userId,
     required this.nama,
     required this.email,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +48,7 @@ class ConnectAccountSection extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => ConnectingAccountScreen(),
+                  builder: (context) => const ConnectingAccountScreen(),
                 ),
               );
             },

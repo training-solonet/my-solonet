@@ -10,7 +10,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class HistoryScreen extends StatefulWidget {
-  const HistoryScreen({Key? key}) : super(key: key);
+  const HistoryScreen({super.key});
 
   @override
   _HistoryScreenState createState() => _HistoryScreenState();
@@ -53,7 +53,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
       }
 
       final response = await http.get(
-        Uri.parse('${baseUrl}/tagihan-user'),
+        Uri.parse('$baseUrl/tagihan-user'),
         headers: {
           'Authorization': 'Bearer $token',
         },

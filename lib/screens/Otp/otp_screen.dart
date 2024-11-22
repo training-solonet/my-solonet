@@ -24,9 +24,7 @@ class _OtpScreenState extends State<OtpScreen> {
       List.generate(6, (index) => TextEditingController());
   final List<FocusNode> _focusNodes = List.generate(6, (index) => FocusNode());
 
-  bool _isLoading = false;
   bool _isResendOtp = false;
-  bool _isLoadingResend = false;
   int _start = 60;
   Timer? _timer;
 
@@ -74,27 +72,26 @@ class _OtpScreenState extends State<OtpScreen> {
 
   Future<void> _submitOtp(BuildContext context) async {
     setState(() {
-      _isLoading = true;
     });
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (BuildContext context) {
-        return LoadingScreen();
+        return const LoadingScreen();
       },
     );
     print(widget.phone);
 
     String otp = _controllers.map((controller) => controller.text).join();
 
-    final url = Uri.parse("${baseUrl}/verify-otp");
+    final url = Uri.parse("$baseUrl/verify-otp");
     final headers = {
       "Access-Control-Allow-Origin": "*",
       'Content-Type': 'application/json',
       'Accept': '*/*',
     };
     final body = json.encode({
-      "phone_number": "62" + widget.phone,
+      "phone_number": "62${widget.phone}",
       "otp": otp,
     });
 
@@ -110,7 +107,7 @@ class _OtpScreenState extends State<OtpScreen> {
 
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => SignInScreen()),
+          MaterialPageRoute(builder: (context) => const SignInScreen()),
         );
       } else {
         final responseData = json.decode(response.body);
@@ -118,7 +115,6 @@ class _OtpScreenState extends State<OtpScreen> {
         showFailedMessage(context, responseData['message']);
       }
     } catch (e) {
-      // Tutup LoadingScreen jika terjadi error
       Navigator.of(context).pop();
       showFailedMessage(context, "An error occurred while sending the OTP");
     }
@@ -128,7 +124,6 @@ class _OtpScreenState extends State<OtpScreen> {
     setState(() {
       _start = 60;
       _isResendOtp = false;
-      _isLoadingResend = true;
     });
     _startTimer();
 
@@ -136,18 +131,18 @@ class _OtpScreenState extends State<OtpScreen> {
       context: context,
       barrierDismissible: false,
       builder: (BuildContext context) {
-        return LoadingScreen();
+        return const LoadingScreen();
       },
     );
 
-    final url = Uri.parse('${baseUrl}/send-otp');
+    final url = Uri.parse('$baseUrl/send-otp');
     final headers = {
       "Access-Control-Allow-Origin": "*",
       'Content-Type': 'application/json',
       'Accept': '*/*',
     };
     final body = json.encode({
-      "phone_number": "62" + widget.phone,
+      "phone_number": "62${widget.phone}",
     });
 
     try {
@@ -165,7 +160,6 @@ class _OtpScreenState extends State<OtpScreen> {
         showFailedMessage(context, responseData['message']);
       }
     } catch (e) {
-      // Tutup LoadingScreen jika terjadi error
       Navigator.of(context).pop();
       showFailedMessage(context, "An error occurred while sending the OTP");
     }
@@ -177,7 +171,7 @@ class _OtpScreenState extends State<OtpScreen> {
       child: Scaffold(
         backgroundColor: const Color(0xFFF8F9FA),
         appBar: PreferredSize(
-          preferredSize: Size.fromHeight(56.0),
+          preferredSize: const Size.fromHeight(56.0),
           child: Container(
             height: 56.0,
             color: Colors.transparent,
@@ -240,7 +234,7 @@ class _OtpScreenState extends State<OtpScreen> {
                       borderRadius: BorderRadius.circular(5),
                     ),
                   ),
-                  child: Text(
+                  child: const Text(
                     'Kirim Kode',
                     style: TextStyle(
                       fontFamily: 'Poppins',
@@ -266,7 +260,7 @@ class _OtpScreenState extends State<OtpScreen> {
                   style: TextStyle(
                     fontFamily: 'Poppins',
                     fontSize: 14,
-                    color: _isResendOtp ? Colors.blue : Color(0xFF333333),
+                    color: _isResendOtp ? Colors.blue : const Color(0xFF333333),
                   ),
                 ),
                 const SizedBox(height: 10),
@@ -281,7 +275,7 @@ class _OtpScreenState extends State<OtpScreen> {
                         borderRadius: BorderRadius.circular(5),
                       ),
                     ),
-                    child: Text(
+                    child: const Text(
                       "Resend OTP",
                       style: TextStyle(
                         fontFamily: 'Poppins',

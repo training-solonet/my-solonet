@@ -16,8 +16,8 @@ class PaymentScreen extends StatefulWidget {
   final String token;
   final String trxId;
 
-  PaymentScreen({
-    Key? key,
+  const PaymentScreen({
+    super.key,
     required this.bankName,
     required this.virtualAccount,
     required this.amount,
@@ -27,7 +27,7 @@ class PaymentScreen extends StatefulWidget {
     required this.customerId,
     required this.token,
     required this.trxId,
-  }) : super(key: key);
+  });
 
   @override
   _PaymentScreenState createState() => _PaymentScreenState();

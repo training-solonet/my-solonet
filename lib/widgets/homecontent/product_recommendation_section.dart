@@ -6,10 +6,10 @@ class ProductRecommendationSection extends StatelessWidget {
   final String Function(int) formatRupiah;
 
   const ProductRecommendationSection({
-    Key? key,
+    super.key,
     required this.products,
     required this.formatRupiah,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

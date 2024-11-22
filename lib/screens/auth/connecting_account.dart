@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class ConnectingAccountScreen extends StatelessWidget {
-  const ConnectingAccountScreen({Key? key}) : super(key: key);
+  const ConnectingAccountScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

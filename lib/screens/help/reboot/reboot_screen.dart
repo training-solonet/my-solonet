@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class RebootScreen extends StatefulWidget {
+  const RebootScreen({super.key});
+
   @override
   _RebootScreenState createState() => _RebootScreenState();
 }
@@ -13,7 +15,7 @@ class _RebootScreenState extends State<RebootScreen> {
   void _goToNextPage() {
     if (_currentIndex < 3) { // Since we have 3 slides (index 0, 1, 2)
       _pageController.nextPage(
-        duration: Duration(milliseconds: 300),
+        duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
       );
     }
@@ -31,7 +33,7 @@ class _RebootScreenState extends State<RebootScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFF8CA2F8),
+      backgroundColor: const Color(0xFF8CA2F8),
       appBar: AppBar(
         title: const Text(
           'Gangguan Koneksi',
@@ -100,7 +102,7 @@ class CustomRebootCard extends StatelessWidget {
   final String buttonText;
   final VoidCallback onButtonPressed;
 
-  CustomRebootCard({
+  const CustomRebootCard({super.key, 
     required this.title,
     this.titleAlign = TextAlign.center,
     required this.iconPath,

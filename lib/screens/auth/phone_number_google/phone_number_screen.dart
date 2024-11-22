@@ -17,7 +17,7 @@ class SignUpScreen extends StatefulWidget {
 class _SignUpScreenState extends State<SignUpScreen> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _whatsappController = TextEditingController();
-  bool _isLoading = false;
+  final bool _isLoading = false;
 
   @override
   void dispose() {
@@ -162,7 +162,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       ),
       child: Text(
         _isLoading ? "Loading..." : "Register",
-        style: TextStyle(
+        style: const TextStyle(
           fontFamily: 'Poppins',
           fontWeight: FontWeight.bold,
         ),

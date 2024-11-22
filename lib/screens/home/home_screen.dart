@@ -11,7 +11,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+  const HomeScreen({super.key});
 
   @override
   State<HomeScreen> createState() => HomeScreenState();
@@ -29,7 +29,7 @@ class HomeScreenState extends State<HomeScreen> {
     token = await authService.getToken();
 
     if (token != null) {
-      final url = Uri.parse('${baseUrl}/users');
+      final url = Uri.parse('$baseUrl/users');
 
       try {
         final response = await http.get(url, headers: {
@@ -67,7 +67,7 @@ class HomeScreenState extends State<HomeScreen> {
           ),
         );
       } else {
-        final url = Uri.parse('${baseUrl}/users');
+        final url = Uri.parse('$baseUrl/users');
         try {
           final response = await http.get(url, headers: {
             'Authorization': 'Bearer $token',

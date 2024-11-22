@@ -8,7 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class DetailProductScreen extends StatefulWidget {
   final dynamic productData;
 
-  DetailProductScreen({required this.productData});
+  const DetailProductScreen({super.key, required this.productData});
 
   @override
   _DetailProductScreenState createState() => _DetailProductScreenState();
@@ -29,7 +29,7 @@ class _DetailProductScreenState extends State<DetailProductScreen> {
           'Beli', () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => LocationAddressScreen()),
+          MaterialPageRoute(builder: (context) => const LocationAddressScreen()),
         );
       });
     } else {

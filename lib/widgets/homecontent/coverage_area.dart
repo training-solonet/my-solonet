@@ -12,7 +12,7 @@ class CoverageArea extends StatefulWidget {
   final double initialZoom;
   final MapController? mapController; 
 
-  CoverageArea({
+  const CoverageArea({
     super.key,
     required this.userLocation,
     required this.permissionGranted,
@@ -27,7 +27,7 @@ class CoverageArea extends StatefulWidget {
 
 class _CoverageAreaState extends State<CoverageArea> {
   List<LatLng> _btsLocations = []; // To store BTS locations
-  double _radiusMeters = 2000; // Coverage radius in meters
+  final double _radiusMeters = 2000; // Coverage radius in meters
   late MapController _mapController;
   late bool _locationFetched;
   late LatLng? _userLocation;
@@ -48,7 +48,7 @@ class _CoverageAreaState extends State<CoverageArea> {
 
   // Fetch BTS locations from the API
   Future<void> _fetchBtsLocations() async {
-    final url = 'https://api.connectis.my.id/bts-location'; // API URL
+    const url = 'https://api.connectis.my.id/bts-location'; // API URL
     try {
       final response = await http.get(Uri.parse(url));
       if (response.statusCode == 200) {
@@ -97,7 +97,7 @@ class _CoverageAreaState extends State<CoverageArea> {
   Widget build(BuildContext context) {
     // Show a loading indicator while waiting for the user's location
     if (!_permissionGranted || !_locationFetched) {
-      return Center(
+      return const Center(
         child: CircularProgressIndicator(),
       );
     }
@@ -126,14 +126,14 @@ class _CoverageAreaState extends State<CoverageArea> {
             children: [
               TileLayer(
                 urlTemplate: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-                subdomains: ['a', 'b', 'c'],
+                subdomains: const ['a', 'b', 'c'],
               ),
               MarkerLayer(
                 markers: [
                   if (_userLocation != null)
                     Marker(
                       point: _userLocation!,
-                      builder: (ctx) => Icon(
+                      builder: (ctx) => const Icon(
                         Icons.person_pin_circle, // Use location pin icon
                         color: Colors.blue, // Set the color to blue
                         size: 30.0, // Adjust size of the icon
@@ -170,11 +170,11 @@ class _CoverageAreaState extends State<CoverageArea> {
                 onPressed: _goToUserLocation,
                 backgroundColor: Colors.black54, // Transparent background
                 foregroundColor: Colors.white, // Blue accent icon
-                elevation: 0, // Remove the shadow
-                child: Icon(Icons.my_location), // Using the my_location icon
-                mini: true,
+                elevation: 0, // Using the my_location icon
+                mini: true, // Remove the shadow
+                child: const Icon(Icons.my_location),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               // Zoom-in button
               FloatingActionButton(
                 onPressed: () {
@@ -186,10 +186,10 @@ class _CoverageAreaState extends State<CoverageArea> {
                 backgroundColor: Colors.black54, // Transparent background
                 foregroundColor: Colors.white, // Blue accent icon
                 elevation: 0, // Remove the shadow
-                child: Icon(Icons.zoom_in),
                 mini: true,
+                child: const Icon(Icons.zoom_in),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               // Zoom-out button
               FloatingActionButton(
                 onPressed: () {
@@ -201,8 +201,8 @@ class _CoverageAreaState extends State<CoverageArea> {
                 backgroundColor: Colors.black54, // Transparent background
                 foregroundColor: Colors.white, // Blue accent icon
                 elevation: 0, // Remove the shadow
-                child: Icon(Icons.zoom_out),
                 mini: true,
+                child: const Icon(Icons.zoom_out),
               ),
             ],
           ),

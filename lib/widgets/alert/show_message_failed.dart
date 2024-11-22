@@ -6,7 +6,7 @@ void showFailedMessage(BuildContext context, String message) {
       mainAxisSize: MainAxisSize.min, // Sesuaikan panjang row dengan konten
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Icon(
+        const Icon(
           Icons.error_rounded,  // Menggunakan ikon checklist
           color: Colors.white,  // Warna putih untuk ikon
           size: 20,  // Ukuran ikon
@@ -14,7 +14,7 @@ void showFailedMessage(BuildContext context, String message) {
         const SizedBox(width: 10), // Jarak antara ikon dan teks
         Text(
           message, // Respon dari API
-          style: TextStyle(
+          style: const TextStyle(
             fontFamily: 'Poppins',
             fontSize: 13,
             fontWeight: FontWeight.w500,

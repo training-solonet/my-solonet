@@ -6,11 +6,11 @@ class SlidePage extends StatelessWidget {
   final String description;
 
   const SlidePage({
-    Key? key,
+    super.key,
     required this.imagePath,
     required this.title,
     required this.description,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +28,7 @@ class SlidePage extends StatelessWidget {
           const SizedBox(height: 4),
           Text(
             title,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
               color: Colors.blueAccent,
@@ -39,7 +39,7 @@ class SlidePage extends StatelessWidget {
           const SizedBox(height: 12),
           Text(
             description,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 13,
               color: Colors.black,
               fontFamily: 'Poppins',

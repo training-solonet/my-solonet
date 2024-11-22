@@ -6,9 +6,8 @@ import 'package:http/http.dart' as http;
 class LocationCoveredSection extends StatelessWidget {
   final LatLng? _userLocation;
 
-  const LocationCoveredSection({Key? key, required LatLng? userLocation})
-      : _userLocation = userLocation,
-        super(key: key);
+  const LocationCoveredSection({super.key, required LatLng? userLocation})
+      : _userLocation = userLocation;
 
   @override
   Widget build(BuildContext context) {
