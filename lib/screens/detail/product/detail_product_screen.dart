@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:mysolonet/screens/address_customer/address_customer_screen.dart';
 import 'package:mysolonet/widgets/alert/confirm_popup.dart';
 import 'package:mysolonet/screens/auth/login.dart';
 import 'package:mysolonet/utils/constants.dart';
-import 'package:mysolonet/screens/profile/address/location_address_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class DetailProductScreen extends StatefulWidget {
@@ -29,7 +29,7 @@ class _DetailProductScreenState extends State<DetailProductScreen> {
           'Beli', () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => const LocationAddressScreen()),
+          MaterialPageRoute(builder: (context) => AddressCustomerScreen()),
         );
       });
     } else {
