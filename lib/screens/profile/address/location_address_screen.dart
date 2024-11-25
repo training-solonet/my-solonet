@@ -24,11 +24,37 @@ class _LocationAddressScreenState extends State<LocationAddressScreen> {
 
   Timer? _debounce;
   final bool _isLoading = false; // Variable for debounce timer
+  List<Location> _locationSuggestions = [];
 
   @override
   void initState() {
     super.initState();
     _getCurrentLocation(); // Get current location on initialization
+  }
+
+  Future<void> _searchLocation(String address) async {
+    try {
+      List<Location> locations = await locationFromAddress(address);
+      setState(() {
+        _locationSuggestions = locations; // Simpan hasil pencarian
+      });
+      if (locations.isNotEmpty) {
+        final Location location = locations.first;
+        final LatLng newLocation =
+            LatLng(location.latitude, location.longitude);
+        setState(() {
+          _markerLocation = newLocation;
+          _mapController.move(newLocation, _zoom);
+          _updateAddress(newLocation);
+        });
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Lokasi tidak ditemukan")),
+        );
+      }
+    } catch (e) {
+      debugPrint("Error while searching location: $e");
+    }
   }
 
   Future<void> _getCurrentLocation() async {
@@ -94,8 +120,7 @@ class _LocationAddressScreenState extends State<LocationAddressScreen> {
               children: [
                 Container(
                   padding: const EdgeInsets.symmetric(
-                      horizontal: 15.0,
-                      vertical: 10.0), 
+                      horizontal: 15.0, vertical: 10.0),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(
                         12.0), // Set the border radius here
@@ -226,12 +251,69 @@ class _LocationAddressScreenState extends State<LocationAddressScreen> {
                     border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12.0)),
                   ),
-                  style:
-                      const TextStyle(fontFamily: 'Poppins'), // Set text field font
-                  onSubmitted: (value) {
-                    // Implement location search here
+                  style: const TextStyle(fontFamily: 'Poppins'),
+                  onChanged: (value) {
+                    if (_debounce?.isActive ?? false) {
+                      _debounce!.cancel();
+                    }
+                    _debounce = Timer(const Duration(milliseconds: 300), () {
+                      if (value.isNotEmpty) {
+                        _searchLocation(
+                            value); // Panggil fungsi pencarian lokasi
+                      } else {
+                        setState(() {
+                          _locationSuggestions
+                              .clear(); // Bersihkan hasil jika input kosong
+                        });
+                      }
+                    });
                   },
                 ),
+                const SizedBox(height: 8),
+                if (_locationSuggestions.isNotEmpty)
+                  Container(
+                    constraints:
+                        const BoxConstraints(maxHeight: 200), // Maksimal tinggi
+                    child: ListView.builder(
+                      shrinkWrap: true, // Sesuaikan dengan konten
+                      itemCount: _locationSuggestions.length,
+                      itemBuilder: (context, index) {
+                        final location = _locationSuggestions[index];
+                        return ListTile(
+                          title: Text(
+                            '${location.latitude}, ${location.longitude}',
+                            style: const TextStyle(fontFamily: 'Poppins'),
+                          ),
+                          subtitle: FutureBuilder<List<Placemark>>(
+                            future: placemarkFromCoordinates(
+                                location.latitude, location.longitude),
+                            builder: (context, snapshot) {
+                              if (snapshot.hasData &&
+                                  snapshot.data!.isNotEmpty) {
+                                final place = snapshot.data!.first;
+                                return Text(
+                                  '${place.street}, ${place.locality}, ${place.country}',
+                                  style: const TextStyle(fontFamily: 'Poppins'),
+                                );
+                              }
+                              return const Text('Loading address...');
+                            },
+                          ),
+                          onTap: () {
+                            final LatLng selectedLocation =
+                                LatLng(location.latitude, location.longitude);
+                            setState(() {
+                              _markerLocation = selectedLocation;
+                              _mapController.move(selectedLocation, _zoom);
+                              _updateAddress(
+                                  selectedLocation); // Update address
+                              _locationSuggestions.clear(); // Clear suggestions
+                            });
+                          },
+                        );
+                      },
+                    ),
+                  ),
               ],
             ),
           ),
@@ -256,8 +338,8 @@ class _LocationAddressScreenState extends State<LocationAddressScreen> {
                     border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12.0)),
                   ),
-                  style:
-                      const TextStyle(fontFamily: 'Poppins'), // Set text field font
+                  style: const TextStyle(
+                      fontFamily: 'Poppins'), // Set text field font
                   maxLines: 2,
                 ),
 
