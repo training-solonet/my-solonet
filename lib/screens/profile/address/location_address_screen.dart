@@ -1,10 +1,12 @@
 import 'dart:async'; // Import Timer
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:mysolonet/screens/profile/address/add_address_screen.dart';
+import 'package:http/http.dart' as http;
 
 class LocationAddressScreen extends StatefulWidget {
   const LocationAddressScreen({super.key});
@@ -30,6 +32,131 @@ class _LocationAddressScreenState extends State<LocationAddressScreen> {
   void initState() {
     super.initState();
     _getCurrentLocation(); // Get current location on initialization
+  }
+
+  double _calculateDistance(LatLng loc1, LatLng loc2) {
+    final double distanceInMeters = Geolocator.distanceBetween(
+        loc1.latitude, loc1.longitude, loc2.latitude, loc2.longitude);
+
+    return distanceInMeters / 2000;
+  }
+
+  Future<bool> _validateLocation(BuildContext context) async {
+    try {
+      final double userLat = _markerLocation.latitude;
+      final double userLng = _markerLocation.longitude;
+
+      final response = await http.get(
+        Uri.parse('https://api.connectis.my.id/bts-location'),
+        headers: {'Content-Type': 'application/json'},
+      );
+
+      print("Status Code: ${response.statusCode}");
+      print("Response Body: ${response.body}");
+
+      if (response.statusCode == 200) {
+        // Parsing JSON dengan penanganan yang lebih aman
+        final dynamic responseData = jsonDecode(response.body);
+
+        // Validasi struktur response
+        if (responseData is! Map) {
+          _showErrorDialog(context, "Format respons tidak valid");
+          return false;
+        }
+
+        // Pengecekan kunci dengan null-aware
+        final status = responseData['status'];
+        final data = responseData['data'];
+
+        // Validasi status
+        if (status != 'success') {
+          _showErrorDialog(context, "Validasi lokasi gagal");
+          return false;
+        }
+
+        // Validasi data
+        if (data is! Map) {
+          _showErrorDialog(context, "Data lokasi tidak valid");
+          return false;
+        }
+
+        // Konversi koordinat dengan penanganan yang aman
+        final double? referenceLat = _parseDouble(data['latitude']);
+        final double? referenceLng = _parseDouble(data['longitude']);
+
+        // Validasi koordinat
+        if (referenceLat == null || referenceLng == null) {
+          _showErrorDialog(context, "Koordinat referensi tidak valid");
+          return false;
+        }
+
+        final LatLng userLocation = LatLng(userLat, userLng);
+        final LatLng referenceLocation = LatLng(referenceLat, referenceLng);
+
+        double distance = _calculateDistance(userLocation, referenceLocation);
+
+        print("Jarak: $distance km");
+
+        if (distance <= 2.0) {
+          return true;
+        } else {
+          _showLocationOutOfRangeDialog(context);
+          return false;
+        }
+      } else {
+        _showErrorDialog(context, "Gagal mengambil data lokasi");
+        return false;
+      }
+    } catch (e) {
+      print("Error validasi lokasi: $e");
+      _showErrorDialog(context, "Terjadi kesalahan: $e");
+      return false;
+    }
+  }
+
+// Fungsi parsing double yang aman
+  double? _parseDouble(dynamic value) {
+    if (value == null) return null;
+
+    // Konversi ke string terlebih dahulu
+    String strValue = value.toString();
+
+    // Coba parsing
+    return double.tryParse(strValue);
+  }
+
+// Fungsi dialog terpisah untuk kemudahan
+  void _showErrorDialog(BuildContext context, String message) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text("Error"),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text("OK"),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showLocationOutOfRangeDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text("Lokasi di Luar Cakupan"),
+        content: Text(
+            "Lokasi Anda tidak berada dalam cakupan 2 km dari titik referensi."),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text("OK"),
+          ),
+        ],
+      ),
+    );
   }
 
   Future<void> _searchLocation(String address) async {
@@ -346,12 +473,15 @@ class _LocationAddressScreenState extends State<LocationAddressScreen> {
                 const SizedBox(height: 16), // Add spacing here
 
                 ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const AddAddressScreen()),
-                    );
+                  onPressed: () async {
+                    bool isValid = await _validateLocation(context);
+                    if (isValid) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const AddAddressScreen()),
+                      );
+                    }
                   },
                   style: ElevatedButton.styleFrom(
                     elevation: 0,
