@@ -6,6 +6,8 @@ import 'package:mysolonet/screens/profile/address/location_address_screen.dart';
 import 'package:mysolonet/utils/constants.dart';
 
 class AddressCustomerScreen extends StatefulWidget {
+  const AddressCustomerScreen({super.key});
+
   @override
   _AddressCustomerScreenState createState() => _AddressCustomerScreenState();
 }

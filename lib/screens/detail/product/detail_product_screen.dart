@@ -29,7 +29,7 @@ class _DetailProductScreenState extends State<DetailProductScreen> {
           'Beli', () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => AddressCustomerScreen()),
+          MaterialPageRoute(builder: (context) => const AddressCustomerScreen()),
         );
       });
     } else {

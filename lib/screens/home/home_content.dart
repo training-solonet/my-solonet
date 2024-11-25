@@ -6,6 +6,7 @@ import 'package:mysolonet/widgets/homecontent/profile_info_section.dart';
 import 'package:mysolonet/widgets/homecontent/coverage_area.dart';
 import 'package:mysolonet/widgets/homecontent/promo_section.dart';
 import 'package:mysolonet/widgets/homecontent/location_covered_section.dart';
+import 'package:mysolonet/widgets/homecontent/installation_info_section.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:flutter_map/flutter_map.dart';
@@ -43,6 +44,7 @@ class _HomePageContentState extends State<HomePageContent> {
   bool _locationInitialized = false;
   final double _currentZoom = 13.0;
   MapController? _mapController;
+  bool _showInfoSection = true;
 
   Future<void> _fetchBanners() async {
     final url = Uri.parse('$baseUrl/banner');
@@ -176,6 +178,15 @@ class _HomePageContentState extends State<HomePageContent> {
                 billAmount: 'Rp 1.500.000',
                 paymentStatus: 'Dibayar via BCA',
                 paymentDate: '17 Agustus 2024',
+              ),
+
+            if (_showInfoSection)
+              InstallationInfoSection(
+                onClose: () {
+                  setState(() {
+                    _showInfoSection = false;
+                  });
+                },
               ),
 
             if (!_isConnect && _userLocation != null)
