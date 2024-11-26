@@ -151,7 +151,7 @@ class _SignInScreenState extends State<SignInScreen> {
                             child: Align(
                               alignment: Alignment.centerLeft,
                               child: Text(
-                                'Email',
+                                'No. Whatsapp',
                                 style: TextStyle(
                                   color: Colors.black87,
                                   fontSize: 14.5,
