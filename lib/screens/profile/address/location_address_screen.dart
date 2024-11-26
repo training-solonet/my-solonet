@@ -41,124 +41,6 @@ class _LocationAddressScreenState extends State<LocationAddressScreen> {
     return distanceInMeters / 2000;
   }
 
-  Future<bool> _validateLocation(BuildContext context) async {
-    try {
-      final double userLat = _markerLocation.latitude;
-      final double userLng = _markerLocation.longitude;
-
-      final response = await http.get(
-        Uri.parse('https://api.connectis.my.id/bts-location'),
-        headers: {'Content-Type': 'application/json'},
-      );
-
-      print("Status Code: ${response.statusCode}");
-      print("Response Body: ${response.body}");
-
-      if (response.statusCode == 200) {
-        // Parsing JSON dengan penanganan yang lebih aman
-        final dynamic responseData = jsonDecode(response.body);
-
-        // Validasi struktur response
-        if (responseData is! Map) {
-          _showErrorDialog(context, "Format respons tidak valid");
-          return false;
-        }
-
-        // Pengecekan kunci dengan null-aware
-        final status = responseData['status'];
-        final data = responseData['data'];
-
-        // Validasi status
-        if (status != 'success') {
-          _showErrorDialog(context, "Validasi lokasi gagal");
-          return false;
-        }
-
-        // Validasi data
-        if (data is! Map) {
-          _showErrorDialog(context, "Data lokasi tidak valid");
-          return false;
-        }
-
-        // Konversi koordinat dengan penanganan yang aman
-        final double? referenceLat = _parseDouble(data['latitude']);
-        final double? referenceLng = _parseDouble(data['longitude']);
-
-        // Validasi koordinat
-        if (referenceLat == null || referenceLng == null) {
-          _showErrorDialog(context, "Koordinat referensi tidak valid");
-          return false;
-        }
-
-        final LatLng userLocation = LatLng(userLat, userLng);
-        final LatLng referenceLocation = LatLng(referenceLat, referenceLng);
-
-        double distance = _calculateDistance(userLocation, referenceLocation);
-
-        print("Jarak: $distance km");
-
-        if (distance <= 2.0) {
-          return true;
-        } else {
-          _showLocationOutOfRangeDialog(context);
-          return false;
-        }
-      } else {
-        _showErrorDialog(context, "Gagal mengambil data lokasi");
-        return false;
-      }
-    } catch (e) {
-      print("Error validasi lokasi: $e");
-      _showErrorDialog(context, "Terjadi kesalahan: $e");
-      return false;
-    }
-  }
-
-// Fungsi parsing double yang aman
-  double? _parseDouble(dynamic value) {
-    if (value == null) return null;
-
-    // Konversi ke string terlebih dahulu
-    String strValue = value.toString();
-
-    // Coba parsing
-    return double.tryParse(strValue);
-  }
-
-// Fungsi dialog terpisah untuk kemudahan
-  void _showErrorDialog(BuildContext context, String message) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text("Error"),
-        content: Text(message),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: Text("OK"),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _showLocationOutOfRangeDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text("Lokasi di Luar Cakupan"),
-        content: Text(
-            "Lokasi Anda tidak berada dalam cakupan 2 km dari titik referensi."),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: Text("OK"),
-          ),
-        ],
-      ),
-    );
-  }
-
   Future<void> _searchLocation(String address) async {
     try {
       List<Location> locations = await locationFromAddress(address);
@@ -222,6 +104,61 @@ class _LocationAddressScreenState extends State<LocationAddressScreen> {
       });
     }
   }
+
+  Future<bool> _validateLocation(BuildContext context) async {
+  const String apiUrl = 'https://api.connectis.my.id/bts-location';
+  
+  double selectedLat = _markerLocation.latitude;
+  double selectedLng = _markerLocation.longitude;
+
+  try {
+    final response = await http.get(Uri.parse(apiUrl));
+    
+    if (response.statusCode == 200) {
+      print("API Response: ${response.body}");  // Log the full API response
+      List<dynamic> data = jsonDecode(response.body);
+      
+      for (var location in data) {
+        // Convert lat and lng to double if they are not already
+        double lat = double.tryParse(location['lat'].toString()) ?? 0.0;  // Default to 0.0 if parsing fails
+        double lng = double.tryParse(location['lang'].toString()) ?? 0.0;  // Default to 0.0 if parsing fails
+        
+        // Log parsed lat/lng to check the values
+        print("Parsed lat: $lat, lng: $lng");
+
+        // Calculate distance
+        double distance = Geolocator.distanceBetween(selectedLat, selectedLng, lat, lng);
+        
+        // Log the calculated distance
+        print("Calculated Distance: $distance");
+        
+        // Check if the distance is within 2 km (2000 meters)
+        if (distance <= 2000) {
+          return true;
+        }
+      }
+      
+      // Show error message if no valid location is found within 2 km
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Lokasi tidak valid, silakan pilih lokasi lain")),
+      );
+      return false;
+    } else {
+      // If the API request fails
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Gagal memuat lokasi BTS")),
+      );
+      return false;
+    }
+  } catch (e) {
+    print("Error: $e");  // Log error for better debugging
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("Terjadi kesalahan, coba lagi")),
+    );
+    return false;
+  }
+}
+
 
   Future<void> _goToCurrentLocation() async {
     // Call function to get current location
