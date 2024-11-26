@@ -52,7 +52,7 @@ class _SignInScreenState extends State<SignInScreen> {
       'Accept': '*/*',
     };
     final body = json.encode({
-      "phone_number": "62" + _phoneController.text,
+      "phone_number": "62${_phoneController.text}",
       "password": _passwordController.text,
     });
 

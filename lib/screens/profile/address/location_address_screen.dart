@@ -7,6 +7,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:mysolonet/screens/profile/address/add_address_screen.dart';
 import 'package:http/http.dart' as http;
+import 'package:mysolonet/widgets/alert/show_message_failed.dart';
 
 class LocationAddressScreen extends StatefulWidget {
   const LocationAddressScreen({super.key});
@@ -139,22 +140,17 @@ class _LocationAddressScreenState extends State<LocationAddressScreen> {
       }
       
       // Show error message if no valid location is found within 2 km
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Lokasi tidak valid, silakan pilih lokasi lain")),
-      );
+           showFailedMessage(context, 'Coverage Area Terdekat Tidak Ditemukan');
       return false;
     } else {
       // If the API request fails
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Gagal memuat lokasi BTS")),
-      );
+           showFailedMessage(context, 'Gagal Memuat BTS');
+
       return false;
     }
   } catch (e) {
     print("Error: $e");  // Log error for better debugging
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("Terjadi kesalahan, coba lagi")),
-    );
+         showFailedMessage(context, 'An error occurred: $e');
     return false;
   }
 }
