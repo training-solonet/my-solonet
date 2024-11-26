@@ -20,7 +20,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _whatsappController = TextEditingController();
   final TextEditingController _fullnameController = TextEditingController();
-  final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmpasswordController =
       TextEditingController();
@@ -31,7 +30,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
   void dispose() {
     _whatsappController.dispose();
     _fullnameController.dispose();
-    _emailController.dispose();
     _passwordController.dispose();
     _confirmpasswordController.dispose();
     super.dispose();
@@ -58,7 +56,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
     final body = json.encode({
       "name": _fullnameController.text,
       "phone_number": "62${_whatsappController.text}",
-      "email": _emailController.text,
       "password": _passwordController.text,
       "confirm_password": _confirmpasswordController.text
     });
@@ -149,20 +146,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             const SizedBox(height: 16.0),
                             _buildLabel('Nomor Whatsapp'),
                             _buildWhatsappTextField(),
-                            const SizedBox(height: 16.0),
-                            _buildLabel('Email'),
-                            _buildTextField(_emailController, 'Masukkan Email',
-                                TextInputType.emailAddress, (value) {
-                              if (value!.isEmpty) {
-                                return "Email tidak boleh kosong";
-                              }
-                              if (!RegExp(
-                                      r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
-                                  .hasMatch(value)) {
-                                return "Email tidak valid";
-                              }
-                              return null;
-                            }),
                             const SizedBox(height: 16.0),
                             _buildLabel('Kata Sandi'),
                             _buildPasswordField(

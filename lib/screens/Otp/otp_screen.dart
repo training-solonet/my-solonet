@@ -13,7 +13,7 @@ import 'package:mysolonet/widgets/loading/loading_screen.dart';
 class OtpScreen extends StatefulWidget {
   final String phone;
 
-  const OtpScreen({super.key, required this.phone});
+  const OtpScreen({Key? key, required this.phone}) : super(key: key);
 
   @override
   _OtpScreenState createState() => _OtpScreenState();
@@ -71,8 +71,13 @@ class _OtpScreenState extends State<OtpScreen> {
   }
 
   Future<void> _submitOtp(BuildContext context) async {
-    setState(() {
-    });
+    String otp = _controllers.map((controller) => controller.text).join();
+
+    if (otp.length < 6) {
+      showFailedMessage(context, "Kode OTP harus terdiri dari 6 digit.");
+      return;
+    }
+
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -80,13 +85,9 @@ class _OtpScreenState extends State<OtpScreen> {
         return const LoadingScreen();
       },
     );
-    print(widget.phone);
-
-    String otp = _controllers.map((controller) => controller.text).join();
 
     final url = Uri.parse("$baseUrl/verify-otp");
     final headers = {
-      "Access-Control-Allow-Origin": "*",
       'Content-Type': 'application/json',
       'Accept': '*/*',
     };
@@ -102,21 +103,18 @@ class _OtpScreenState extends State<OtpScreen> {
 
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
-        print(responseData['message']);
         showSuccessMessage(context, responseData['message']);
-
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => const SignInScreen()),
         );
       } else {
         final responseData = json.decode(response.body);
-        print(responseData['message']);
         showFailedMessage(context, responseData['message']);
       }
     } catch (e) {
       Navigator.of(context).pop();
-      showFailedMessage(context, "An error occurred while sending the OTP");
+      showFailedMessage(context, "Terjadi kesalahan saat memverifikasi OTP.");
     }
   }
 
@@ -137,7 +135,6 @@ class _OtpScreenState extends State<OtpScreen> {
 
     final url = Uri.parse('$baseUrl/send-otp');
     final headers = {
-      "Access-Control-Allow-Origin": "*",
       'Content-Type': 'application/json',
       'Accept': '*/*',
     };
@@ -152,35 +149,28 @@ class _OtpScreenState extends State<OtpScreen> {
 
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
-        print(responseData['message']);
         showSuccessMessage(context, responseData['message']);
       } else {
         final responseData = json.decode(response.body);
-        print(responseData['message']);
         showFailedMessage(context, responseData['message']);
       }
     } catch (e) {
       Navigator.of(context).pop();
-      showFailedMessage(context, "An error occurred while sending the OTP");
+      showFailedMessage(context, "Terjadi kesalahan saat mengirim ulang OTP.");
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Scaffold(
-        backgroundColor: const Color(0xFFF8F9FA),
-        appBar: PreferredSize(
-          preferredSize: const Size.fromHeight(56.0),
+    return Scaffold(
+      backgroundColor: const Color(0xFFF8F9FA),
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+      ),
+      body: SingleChildScrollView(
+        child: Center(
           child: Container(
-            height: 56.0,
-            color: Colors.transparent,
-          ),
-        ),
-        body: Center(
-          child: Container(
-            width: double.infinity,
-            margin: const EdgeInsets.symmetric(horizontal: 20),
             padding: const EdgeInsets.all(20),
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -209,7 +199,6 @@ class _OtpScreenState extends State<OtpScreen> {
                   style: TextStyle(
                     fontFamily: 'Poppins',
                     fontSize: 12,
-                    fontWeight: FontWeight.bold,
                     color: Color(0xFF666666),
                   ),
                 ),
@@ -220,16 +209,11 @@ class _OtpScreenState extends State<OtpScreen> {
                 ),
                 const SizedBox(height: 20),
                 ElevatedButton(
-                  onPressed: () {
-                    String otp =
-                        _controllers.map((controller) => controller.text).join();
-                    _submitOtp(context);
-                    print("OTP entered: $otp");
-                  },
+                  onPressed: () => _submitOtp(context),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF00BCD4),
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 30, vertical: 10),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(5),
                     ),
@@ -244,45 +228,18 @@ class _OtpScreenState extends State<OtpScreen> {
                   ),
                 ),
                 const SizedBox(height: 20),
-                const Text(
-                  "Belum menerima kode?",
-                  style: TextStyle(
-                    fontFamily: 'Poppins',
-                    fontSize: 14,
-                    color: Color(0xFF666666),
-                  ),
-                ),
-                const SizedBox(height: 5),
-                Text(
-                  _isResendOtp
-                      ? 'Minta kode baru sekarang'
-                      : 'Minta kode baru dalam 00:${_start.toString().padLeft(2, '0')} detik',
-                  style: TextStyle(
-                    fontFamily: 'Poppins',
-                    fontSize: 14,
-                    color: _isResendOtp ? Colors.blue : const Color(0xFF333333),
-                  ),
-                ),
-                const SizedBox(height: 10),
                 if (_isResendOtp)
-                  ElevatedButton(
+                  TextButton(
                     onPressed: _handleResendOtp,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF00BCD4),
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 30, vertical: 10),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(5),
-                      ),
-                    ),
                     child: const Text(
-                      "Resend OTP",
-                      style: TextStyle(
-                        fontFamily: 'Poppins',
-                        fontSize: 16,
-                        color: Colors.white,
-                      ),
+                      "Kirim Ulang OTP",
+                      style: TextStyle(color: Colors.blue),
                     ),
+                  ),
+                if (!_isResendOtp)
+                  Text(
+                    "Kirim ulang dalam ${_start}s",
+                    style: const TextStyle(color: Colors.grey),
                   ),
               ],
             ),
@@ -296,82 +253,32 @@ class _OtpScreenState extends State<OtpScreen> {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 5),
       width: 40,
-      height: 40,
+      height: 50,
       child: TextFormField(
         controller: _controllers[index],
         focusNode: _focusNodes[index],
         maxLength: 1,
         textAlign: TextAlign.center,
         keyboardType: TextInputType.number,
-        inputFormatters: [
-          FilteringTextInputFormatter.digitsOnly,
-        ],
-        onChanged: (value) {
-          // Jika field tidak kosong dan bukan di field terakhir, pindah fokus ke field berikutnya
-          if (value.isNotEmpty && index < 5) {
-            FocusScope.of(context).requestFocus(_focusNodes[index + 1]);
-          }
-          // Jika field kosong dan bukan di field pertama, pindah fokus ke field sebelumnya
-          else if (value.isEmpty && index > 0) {
-            FocusScope.of(context).requestFocus(_focusNodes[index - 1]);
-          }
-
-          // Cek apakah semua field sudah terisi
-          if (value.isNotEmpty && _isOtpComplete()) {
-            _submitOtp(context); // Lakukan verifikasi otomatis
-          }
-        },
-        onTap: () async {
-          ClipboardData? data = await Clipboard.getData(Clipboard.kTextPlain);
-          if (data != null && data.text!.length == 6) {
-            _handlePaste(data.text!); // Jika ada OTP di clipboard, tempelkan
-          }
-        },
+        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
         decoration: InputDecoration(
           counterText: "",
           hintText: "•",
-          hintStyle: const TextStyle(
-            fontFamily: 'Poppins',
-            fontSize: 18,
-            color: Colors.grey,
-          ),
           filled: true,
           fillColor: const Color(0xFFE0E0E0),
-          contentPadding: const EdgeInsets.all(10),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(5),
-            borderSide: const BorderSide(
-              color: Colors.transparent,
-            ),
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(5),
-            borderSide: const BorderSide(
-              color: Colors.transparent,
-            ),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(5),
-            borderSide: const BorderSide(
-              color: Colors.blue,
-            ),
+            borderSide: BorderSide.none,
           ),
         ),
-        style: const TextStyle(
-          fontFamily: 'Poppins',
-          fontSize: 18,
-          color: Colors.black,
-        ),
+        onChanged: (value) {
+          if (value.isNotEmpty && index < 5) {
+            FocusScope.of(context).requestFocus(_focusNodes[index + 1]);
+          } else if (value.isEmpty && index > 0) {
+            FocusScope.of(context).requestFocus(_focusNodes[index - 1]);
+          }
+        },
       ),
     );
-  }
-
-  bool _isOtpComplete() {
-    for (var controller in _controllers) {
-      if (controller.text.isEmpty) {
-        return false;
-      }
-    }
-    return true; // Jika semua field terisi, kembalikan true
   }
 }
