@@ -13,7 +13,7 @@ import 'package:mysolonet/widgets/loading/loading_screen.dart';
 class OtpScreen extends StatefulWidget {
   final String phone;
 
-  const OtpScreen({Key? key, required this.phone}) : super(key: key);
+  const OtpScreen({super.key, required this.phone});
 
   @override
   _OtpScreenState createState() => _OtpScreenState();
