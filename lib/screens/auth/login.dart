@@ -9,6 +9,7 @@ import 'package:mysolonet/widgets/alert/show_message_success.dart';
 import 'package:mysolonet/screens/home/home_screen.dart';
 import 'package:mysolonet/screens/forgot_pass/forgot_password.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:flutter/services.dart';
 import 'package:mysolonet/widgets/loading/loading_screen.dart';
 
 class SignInScreen extends StatefulWidget {
@@ -21,7 +22,7 @@ class SignInScreen extends StatefulWidget {
 class _SignInScreenState extends State<SignInScreen> {
   final _formKey = GlobalKey<FormState>();
 
-  final _emailController = TextEditingController();
+  final _phoneController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _isPasswordVisible = false;
 
@@ -36,9 +37,6 @@ class _SignInScreenState extends State<SignInScreen> {
 
   Future<void> _loginUser(BuildContext context) async {
     if (!_formKey.currentState!.validate()) return;
-
-   
-
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -54,7 +52,7 @@ class _SignInScreenState extends State<SignInScreen> {
       'Accept': '*/*',
     };
     final body = json.encode({
-      "email": _emailController.text,
+      "phone_number": "62" + _phoneController.text,
       "password": _passwordController.text,
     });
 
@@ -94,7 +92,7 @@ class _SignInScreenState extends State<SignInScreen> {
     if (googleUser != null) {
       final GoogleSignInAuthentication googleAuth =
           await googleUser.authentication;
-          // print('ID Token: ${googleAuth.id}');
+      // print('ID Token: ${googleAuth.id}');
       print('ID Token: ${googleAuth.idToken}');
       print('email: ${googleUser.email}');
       print('displayName: ${googleUser.displayName}');
@@ -164,33 +162,7 @@ class _SignInScreenState extends State<SignInScreen> {
                             ),
                           ),
                           const SizedBox(height: 6.0),
-                          TextFormField(
-                            controller: _emailController,
-                            decoration: const InputDecoration(
-                              hintText: 'Masukkan Email',
-                              hintStyle: TextStyle(
-                                color: Colors.grey,
-                                fontFamily: 'Poppins',
-                                fontSize: 13.5,
-                              ),
-                              filled: true,
-                              fillColor: Color(0xFFF5FCF9),
-                              contentPadding: EdgeInsets.symmetric(
-                                  horizontal: 24.0, vertical: 10.0),
-                              border: OutlineInputBorder(
-                                borderSide: BorderSide.none,
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(50)),
-                              ),
-                            ),
-                            keyboardType: TextInputType.emailAddress,
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Email tidak boleh kosong';
-                              }
-                              return null;
-                            },
-                          ),
+                          _buildWhatsappTextField(),
                           const SizedBox(height: 16.0),
                           const Padding(
                             padding: EdgeInsets.only(left: 8.0),
@@ -286,12 +258,12 @@ class _SignInScreenState extends State<SignInScreen> {
                               shape: const StadiumBorder(),
                             ),
                             child: const Text(
-                                    'Login',
-                                    style: TextStyle(
-                                      fontFamily: 'Poppins',
-                                      fontSize: 18.0,
-                                    ),
-                                  ),
+                              'Login',
+                              style: TextStyle(
+                                fontFamily: 'Poppins',
+                                fontSize: 18.0,
+                              ),
+                            ),
                           ),
                           const SizedBox(height: 16.0),
                           Text(
@@ -347,6 +319,54 @@ class _SignInScreenState extends State<SignInScreen> {
             ),
           ),
         ),
+      ],
+    );
+  }
+
+  TextFormField _buildWhatsappTextField() {
+    return TextFormField(
+      controller: _phoneController,
+      decoration: const InputDecoration(
+        filled: true,
+        fillColor: Color(0xFFF5FCF9),
+        contentPadding: EdgeInsets.symmetric(horizontal: 12.0, vertical: 10.0),
+        border: OutlineInputBorder(
+          borderSide: BorderSide.none,
+          borderRadius: BorderRadius.all(Radius.circular(50)),
+        ),
+        errorStyle: TextStyle(
+          color: Colors.red,
+          fontSize: 12.0,
+          fontFamily: 'Poppins',
+        ),
+        prefixIcon: Padding(
+          padding: EdgeInsets.only(left: 12.0, right: 8.0),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                "+62",
+                style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.w500),
+              ),
+              SizedBox(width: 8.0),
+              Text(
+                "|",
+                style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.w500),
+              ),
+            ],
+          ),
+        ),
+      ),
+      keyboardType: TextInputType.phone,
+      validator: (value) {
+        if (value!.isEmpty) {
+          return "Nomor Whatsapp tidak boleh kosong";
+        }
+        return null;
+      },
+      inputFormatters: [
+        FilteringTextInputFormatter.digitsOnly,
+        LengthLimitingTextInputFormatter(15),
       ],
     );
   }
