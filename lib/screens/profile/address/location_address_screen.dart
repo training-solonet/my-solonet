@@ -415,7 +415,7 @@ class _LocationAddressScreenState extends State<LocationAddressScreen> {
                             builder: (context) => AddAddressScreen(
                               lat: _markerLocation.latitude,
                               long: _markerLocation.longitude,
-                              address: _addressController.text,
+                              address: _detailsController.text,
                             )),
                       );
                     }
