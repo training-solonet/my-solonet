@@ -165,7 +165,7 @@ class _LocationAddressScreenState extends State<LocationAddressScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Set Your Location',
+        title: const Text('Pilih Lokasi Anda',
             style: TextStyle(
                 fontFamily: 'Poppins',
                 fontWeight: FontWeight.bold,
@@ -412,7 +412,11 @@ class _LocationAddressScreenState extends State<LocationAddressScreen> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => const AddAddressScreen()),
+                            builder: (context) => AddAddressScreen(
+                              lat: _markerLocation.latitude,
+                              long: _markerLocation.longitude,
+                              address: _addressController.text,
+                            )),
                       );
                     }
                   },
