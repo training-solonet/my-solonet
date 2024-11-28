@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mysolonet/screens/profile/address/address_customer.dart';
 import 'package:mysolonet/widgets/alert/confirm_popup.dart';
 import 'package:mysolonet/screens/auth/login.dart';
 import 'package:mysolonet/screens/auth/service/service.dart';
@@ -142,6 +143,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
             Expanded(
               child: ListView(
                 children: [
+                  _MenuItem(
+                    icon: Icons.airline_seat_recline_extra_sharp,
+                    title: 'Address',
+                    onTap: () {
+                     Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      const ProfileAddressCustomerScreen(),
+                                ),
+                     );
+                    },
+                  ),
                   _MenuItem(
                     icon: Icons.task,
                     title: 'My Activity',
