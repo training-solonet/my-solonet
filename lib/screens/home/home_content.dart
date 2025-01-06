@@ -44,7 +44,7 @@ class _HomePageContentState extends State<HomePageContent> {
   bool _locationInitialized = false;
   final double _currentZoom = 13.0;
   MapController? _mapController;
-  bool _showInfoSection = true;
+  final bool _showInfoSection = true;
 
   Future<void> _fetchBanners() async {
     final url = Uri.parse('$baseUrl/banner');
@@ -180,14 +180,14 @@ class _HomePageContentState extends State<HomePageContent> {
                 paymentDate: '17 Agustus 2024',
               ),
 
-            if (_showInfoSection)
-              InstallationInfoSection(
-                onClose: () {
-                  setState(() {
-                    _showInfoSection = false;
-                  });
-                },
-              ),
+            // if (_showInfoSection)
+            //   InstallationInfoSection(
+            //     onClose: () {
+            //       setState(() {
+            //         _showInfoSection = false;
+            //       });
+            //     },
+            //   ),     Informasi Pemasangan Di Sembunyikan
 
             if (!_isConnect && _userLocation != null)
               LocationCoveredSection(userLocation: _userLocation),
@@ -231,8 +231,7 @@ class _HomePageContentState extends State<HomePageContent> {
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
             ),
             ProductRecommendationSection(
-              products: _products,
-              formatRupiah: (price) => 'Rp $price',
+              products: _products
             ),
 
             const SizedBox(height: 20),

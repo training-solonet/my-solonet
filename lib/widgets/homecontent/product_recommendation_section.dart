@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:mysolonet/screens/detail/product/detail_product_screen.dart';
+import 'package:mysolonet/utils/constants.dart';
+
 
 class ProductRecommendationSection extends StatelessWidget {
   final List<dynamic> products;
-  final String Function(int) formatRupiah;
 
   const ProductRecommendationSection({
     super.key,
     required this.products,
-    required this.formatRupiah,
   });
 
   @override
