@@ -6,7 +6,6 @@ import 'package:mysolonet/widgets/homecontent/profile_info_section.dart';
 import 'package:mysolonet/widgets/homecontent/coverage_area.dart';
 import 'package:mysolonet/widgets/homecontent/promo_section.dart';
 import 'package:mysolonet/widgets/homecontent/location_covered_section.dart';
-import 'package:mysolonet/widgets/homecontent/installation_info_section.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:flutter_map/flutter_map.dart';
