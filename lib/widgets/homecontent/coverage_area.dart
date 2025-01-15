@@ -28,6 +28,7 @@ class CoverageArea extends StatefulWidget {
 class _CoverageAreaState extends State<CoverageArea> {
   List<LatLng> _btsLocations = []; // To store BTS locations
   final double _radiusMeters = 2000; // Coverage radius in meters
+  final LatLng _defaultLocation = LatLng(-7.5593449,110.8289958); // Surakarta, Indonesia
   late MapController _mapController;
   late bool _locationFetched;
   late LatLng? _userLocation;
@@ -37,10 +38,10 @@ class _CoverageAreaState extends State<CoverageArea> {
   @override
   void initState() {
     super.initState();
-    _mapController = widget.mapController!;
+    _mapController = widget.mapController ?? MapController();
     _locationFetched = widget.locationFetched;
     _permissionGranted = widget.permissionGranted;
-    _userLocation = widget.userLocation;
+    _userLocation = widget.userLocation ?? _defaultLocation;
     _currentZoom = widget.initialZoom;
 
     _fetchBtsLocations();
@@ -65,10 +66,8 @@ class _CoverageAreaState extends State<CoverageArea> {
           _btsLocations = locations;
         });
 
-        if (_btsLocations.isNotEmpty && _userLocation != null) {
-          // Center map on the user's location if it's fetched, else on the first BTS location
-          _mapController.move(_userLocation!, _currentZoom);
-        }
+        // Center map on user's location if available, else on default location
+        _mapController.move(_userLocation!, _currentZoom);
       } else {
         print('Failed to load BTS locations: ${response.reasonPhrase}');
       }
@@ -88,29 +87,32 @@ class _CoverageAreaState extends State<CoverageArea> {
 
   // Function to move map to user's location
   void _goToUserLocation() {
-    if (_userLocation != null) {
+    if (_permissionGranted && _userLocation != null) {
+      // Move the map to the user's location
       _mapController.move(_userLocation!, _currentZoom);
+    } else {
+      // If permission is denied, show the default location instead
+      _mapController.move(_defaultLocation, _currentZoom);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Location permission denied, default location used"),
+          duration: Duration(seconds: 2),
+        ),
+      );
     }
   }
 
+
   @override
   Widget build(BuildContext context) {
-    // Show a loading indicator while waiting for the user's location
-    if (!_permissionGranted || !_locationFetched) {
-      return const Center(
-        child: CircularProgressIndicator(),
-      );
-    }
-
-    return widget.userLocation != null && widget.mapController != null ? Stack(
+    return Stack(
       children: [
         SizedBox(
           height: 300, // Set height of the map
           child: FlutterMap(
             mapController: _mapController,
             options: MapOptions(
-              // Ensure the map centers on the user's location once it's fetched
-              center: _userLocation ?? LatLng(0, 0), // Fallback to (0, 0) if user location is null
+              center: _userLocation ?? _defaultLocation, // Default location if user location is null
               zoom: _currentZoom,
               interactiveFlags: InteractiveFlag.pinchZoom | InteractiveFlag.drag,
               maxZoom: 18.0,
@@ -130,15 +132,14 @@ class _CoverageAreaState extends State<CoverageArea> {
               ),
               MarkerLayer(
                 markers: [
-                  if (_userLocation != null)
-                    Marker(
-                      point: _userLocation!,
-                      builder: (ctx) => const Icon(
-                        Icons.person_pin_circle, // Use location pin icon
-                        color: Colors.blue, // Set the color to blue
-                        size: 30.0, // Adjust size of the icon
-                      ),
+                  Marker(
+                    point: _userLocation!,
+                    builder: (ctx) => Icon(
+                      Icons.person_pin_circle, // Location pin icon
+                      color: _permissionGranted ? Colors.blue : Colors.grey, // Color based on permission
+                      size: 30.0, // Adjust size of the icon
                     ),
+                  ),
                 ],
               ),
               CircleLayer(
@@ -152,7 +153,7 @@ class _CoverageAreaState extends State<CoverageArea> {
                       _radiusMeters,
                       location.latitude,
                       _currentZoom,
-                    ), // Set radius for each BTS location
+                    ),
                   );
                 }).toList(),
               ),
@@ -167,11 +168,11 @@ class _CoverageAreaState extends State<CoverageArea> {
             children: [
               // My Location button above zoom-in button
               FloatingActionButton(
-                onPressed: _goToUserLocation,
-                backgroundColor: Colors.black54, // Transparent background
-                foregroundColor: Colors.white, // Blue accent icon
-                elevation: 0, // Using the my_location icon
-                mini: true, // Remove the shadow
+                onPressed:  _goToUserLocation,  // Disable if permission not granted
+                backgroundColor:  Colors.black54, // Set background color based on permission
+                foregroundColor: Colors.white,
+                elevation: 0,
+                mini: true,
                 child: const Icon(Icons.my_location),
               ),
               const SizedBox(height: 10),
@@ -183,9 +184,9 @@ class _CoverageAreaState extends State<CoverageArea> {
                     _mapController.move(_mapController.center, _currentZoom);
                   });
                 },
-                backgroundColor: Colors.black54, // Transparent background
-                foregroundColor: Colors.white, // Blue accent icon
-                elevation: 0, // Remove the shadow
+                backgroundColor: Colors.black54,
+                foregroundColor: Colors.white,
+                elevation: 0,
                 mini: true,
                 child: const Icon(Icons.zoom_in),
               ),
@@ -198,9 +199,9 @@ class _CoverageAreaState extends State<CoverageArea> {
                     _mapController.move(_mapController.center, _currentZoom);
                   });
                 },
-                backgroundColor: Colors.black54, // Transparent background
-                foregroundColor: Colors.white, // Blue accent icon
-                elevation: 0, // Remove the shadow
+                backgroundColor: Colors.black54,
+                foregroundColor: Colors.white,
+                elevation: 0,
                 mini: true,
                 child: const Icon(Icons.zoom_out),
               ),
@@ -208,6 +209,6 @@ class _CoverageAreaState extends State<CoverageArea> {
           ),
         ),
       ],
-    ) : const Center(child: Text("Map not available"));
+    );
   }
 }
