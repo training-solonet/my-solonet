@@ -107,7 +107,10 @@ class _HomePageContentState extends State<HomePageContent> {
       });
       await _getCurrentLocation();
     } else {
-      print('Permission denied');
+      setState(() {
+        _userLocation = LatLng(-7.5593449,110.8289958); // Default to Surakarta
+        _locationFetched = true;
+      });
     }
   }
 
@@ -125,6 +128,10 @@ class _HomePageContentState extends State<HomePageContent> {
       });
     } catch (e) {
       print('Error getting location: $e');
+      setState(() {
+        _userLocation = LatLng(-7.5593449,110.8289958); // Default to Surakarta
+        _locationFetched = true;
+      });
     }
   }
 
@@ -180,15 +187,6 @@ class _HomePageContentState extends State<HomePageContent> {
                 paymentDate: '17 Agustus 2024',
               ),
 
-            // if (_showInfoSection)
-            //   InstallationInfoSection(
-            //     onClose: () {
-            //       setState(() {
-            //         _showInfoSection = false;
-            //       });
-            //     },
-            //   ),     Informasi Pemasangan Di Sembunyikan
-
             if (!_isConnect && _userLocation != null)
               LocationCoveredSection(userLocation: _userLocation),
 
@@ -210,7 +208,6 @@ class _HomePageContentState extends State<HomePageContent> {
             ),
             const SizedBox(height: 10),
 
-            // Gunakan ValueListenableBuilder untuk hanya memperbarui PromoSection
             ValueListenableBuilder<int>(
               valueListenable: _currentPageNotifier,
               builder: (context, currentPage, _) {
@@ -236,7 +233,7 @@ class _HomePageContentState extends State<HomePageContent> {
 
             const SizedBox(height: 20),
 
-            if (_userLocation != null && _permissionGranted && _locationFetched)
+            if (_userLocation != null && _locationFetched)
               Card(
                 elevation: 4.0,
                 shape: RoundedRectangleBorder(
