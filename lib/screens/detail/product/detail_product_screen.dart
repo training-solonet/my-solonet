@@ -118,8 +118,8 @@ class _DetailProductScreenState extends State<DetailProductScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        _buildTabButton('Benefits', 0),
-                        _buildTabButton('Terms & Conditions', 1),
+                        _buildTabButton('Keuntungan', 0),
+                        _buildTabButton('Syarat & Ketentuan', 1),
                       ],
                     ),
                     const SizedBox(height: 10),

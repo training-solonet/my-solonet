@@ -57,7 +57,7 @@ class _AddressCustomerScreenState extends State<AddressCustomerScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'Customer Address',
+          'Alamat Pemasangan',
           style: TextStyle(
             fontFamily: 'Poppins',
             fontWeight: FontWeight.bold,
