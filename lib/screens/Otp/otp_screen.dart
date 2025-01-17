@@ -6,8 +6,8 @@ import 'package:mysolonet/screens/auth/login.dart';
 import 'package:mysolonet/utils/constants.dart';
 import 'package:mysolonet/widgets/alert/show_message_success.dart';
 import 'package:http/http.dart' as http;
+import 'package:mysolonet/widgets/input/otp_field.dart';
 import 'dart:convert';
-
 import 'package:mysolonet/widgets/loading/loading_screen.dart';
 
 class OtpScreen extends StatefulWidget {
@@ -160,6 +160,14 @@ class _OtpScreenState extends State<OtpScreen> {
     }
   }
 
+  void handleOtpChange(String value, int index) {
+    if (value.isNotEmpty && index < 5) {
+      FocusScope.of(context).requestFocus(_focusNodes[index + 1]);
+    } else if (value.isEmpty && index > 0) {
+      FocusScope.of(context).requestFocus(_focusNodes[index - 1]);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -205,7 +213,15 @@ class _OtpScreenState extends State<OtpScreen> {
                 const SizedBox(height: 20),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: List.generate(6, (index) => _buildOtpField(index)),
+                  children: List.generate(
+                        6,
+                        (index) => OtpField(
+                          controller: _controllers[index],
+                          focusNode: _focusNodes[index],
+                          index: index,
+                          onChanged: handleOtpChange,
+                        ),
+                      ),
                 ),
                 const SizedBox(height: 20),
                 ElevatedButton(
@@ -238,46 +254,13 @@ class _OtpScreenState extends State<OtpScreen> {
                   ),
                 if (!_isResendOtp)
                   Text(
-                    "Kirim ulang dalam ${_start}s",
+                    "Kirim ulang dalam ${_start} detik",
                     style: const TextStyle(color: Colors.grey),
                   ),
               ],
             ),
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildOtpField(int index) {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 5),
-      width: 40,
-      height: 50,
-      child: TextFormField(
-        controller: _controllers[index],
-        focusNode: _focusNodes[index],
-        maxLength: 1,
-        textAlign: TextAlign.center,
-        keyboardType: TextInputType.number,
-        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-        decoration: InputDecoration(
-          counterText: "",
-          hintText: "•",
-          filled: true,
-          fillColor: const Color(0xFFE0E0E0),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(5),
-            borderSide: BorderSide.none,
-          ),
-        ),
-        onChanged: (value) {
-          if (value.isNotEmpty && index < 5) {
-            FocusScope.of(context).requestFocus(_focusNodes[index + 1]);
-          } else if (value.isEmpty && index > 0) {
-            FocusScope.of(context).requestFocus(_focusNodes[index - 1]);
-          }
-        },
       ),
     );
   }

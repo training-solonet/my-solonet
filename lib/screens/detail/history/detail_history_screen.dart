@@ -15,7 +15,6 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:gallery_saver/gallery_saver.dart';
 
 class DetailHistoryScreen extends StatefulWidget {
   final int id;
@@ -157,9 +156,6 @@ class _DetailHistoryScreenState extends State<DetailHistoryScreen> {
       final imagePath = '${directory.path}/receipt_with_white_background.png';
       final file = File(imagePath);
       await file.writeAsBytes(whiteBgPngBytes);
-
-      final result = await GallerySaver.saveImage(imagePath);
-      print('Gallery save result: $result');
 
       showSuccessMessage(context, 'Gambar berhasil disimpan ke galeri');
     } catch (e) {

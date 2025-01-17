@@ -67,7 +67,7 @@ class ProductRecommendationSection extends StatelessWidget {
                           Text(
                             productName,
                             style: TextStyle(
-                              fontSize: 8.0,
+                              fontSize: 11.0,
                               fontFamily: 'Poppins',
                               color: Colors.grey[800],
                               fontWeight: FontWeight.w600,
@@ -77,10 +77,10 @@ class ProductRecommendationSection extends StatelessWidget {
                           Text(
                             productPrice,
                             style: const TextStyle(
-                              fontSize: 8.0,
+                              fontSize: 11.5,
                               fontFamily: 'Poppins',
                               color: Color.fromARGB(255, 34, 50, 64),
-                              fontWeight: FontWeight.w500,
+                              fontWeight: FontWeight.w700,
                             ),
                           ),
                         ],

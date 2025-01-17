@@ -191,9 +191,7 @@ class _HomePageContentState extends State<HomePageContent> {
               LocationCoveredSection(userLocation: _userLocation),
 
             if (widget.userId > 0 &&
-                !_isConnect &&
-                widget.email.isNotEmpty &&
-                widget.nama.isNotEmpty)
+                !_isConnect)
               ConnectAccountSection(
                 userId: widget.userId,
                 nama: widget.nama,
@@ -204,7 +202,7 @@ class _HomePageContentState extends State<HomePageContent> {
 
             const Text(
               'Promo',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, fontFamily: 'Poppins'),
             ),
             const SizedBox(height: 10),
 
@@ -225,7 +223,7 @@ class _HomePageContentState extends State<HomePageContent> {
             const SizedBox(height: 20),
             const Text(
               'Rekomendasi Produk',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, fontFamily: 'Poppins'),
             ),
             ProductRecommendationSection(
               products: _products
