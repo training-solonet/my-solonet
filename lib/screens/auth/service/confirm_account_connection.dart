@@ -97,7 +97,7 @@ class _ConfirmAccountConnectionScreenState
               child: Text(
                 'Konfirmasi',
                 style: TextStyle(
-                  fontSize: 25,
+                  fontSize: 24,
                   fontWeight: FontWeight.bold,
                   fontFamily: 'Poppins',
                 ),
