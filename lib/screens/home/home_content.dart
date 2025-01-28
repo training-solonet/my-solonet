@@ -190,8 +190,8 @@ class _HomePageContentState extends State<HomePageContent> {
             if (!_isConnect && _userLocation != null)
               LocationCoveredSection(userLocation: _userLocation),
 
-            if (widget.userId > 0 &&
-                !_isConnect)
+
+            if (widget.userId >= 0 &&!_isConnect)
               ConnectAccountSection(
                 userId: widget.userId,
                 nama: widget.nama,
