@@ -22,7 +22,7 @@ class ConfirmAccountConnectionScreen extends StatefulWidget {
 class _ConfirmAccountConnectionScreenState
     extends State<ConfirmAccountConnectionScreen> {
   final TextEditingController _idPelangganController = TextEditingController();
-  // final TextEditingController _otpController = TextEditingController();
+  final TextEditingController _otpController = TextEditingController();
 
   @override
   void initState() {
@@ -32,7 +32,7 @@ class _ConfirmAccountConnectionScreenState
 
    Future<void> _connectAccount() async {
     final String idPelanggan = _idPelangganController.text;
-    // final String otp = _otpController.text;
+    final String otp = _otpController.text;
     final String token = widget.token; // Retrieve the token
 
     final Uri url = Uri.parse('https://api.connectis.my.id/hubungkan-account');
@@ -44,7 +44,7 @@ class _ConfirmAccountConnectionScreenState
       },
       body: json.encode({
         'id_pelanggan': idPelanggan,
-        // 'otp': otp,
+        'otp': otp,
         'hubungkan_account': true,
       }),
     );
@@ -60,7 +60,7 @@ class _ConfirmAccountConnectionScreenState
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(builder: (context) => const HomeScreen()),
-        (route) => false, // This will remove all previous routes
+        (route) => false,
       );
     } else {
       final data = json.decode(response.body);
