@@ -254,7 +254,7 @@ class _OtpScreenState extends State<OtpScreen> {
                   ),
                 if (!_isResendOtp)
                   Text(
-                    "Kirim ulang dalam ${_start} detik",
+                    "Kirim ulang dalam $_start detik",
                     style: const TextStyle(color: Colors.grey),
                   ),
               ],

@@ -43,7 +43,7 @@ class ConnectingAccountScreen extends StatefulWidget {
 class _ConnectingAccountScreenState extends State<ConnectingAccountScreen> {
   bool showOtpField = false;
   final TextEditingController _idPelangganController = TextEditingController();
-  final List<TextEditingController> _controllers =
+  final List<TextEditingController> _otpcontrollers =
       List.generate(6, (index) => TextEditingController());
   final List<FocusNode> _focusNodes = List.generate(6, (index) => FocusNode());
 
@@ -58,7 +58,7 @@ class _ConnectingAccountScreenState extends State<ConnectingAccountScreen> {
   void dispose() {
     _timer?.cancel();
     _idPelangganController.dispose();
-    for (var controller in _controllers) {
+    for (var controller in _otpcontrollers) {
       controller.dispose();
     }
     for (var focusNode in _focusNodes) {
@@ -118,7 +118,8 @@ class _ConnectingAccountScreenState extends State<ConnectingAccountScreen> {
         });
         _startTimer();
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(data['message'])),
+          SnackBar(
+              content: Text(data['message']), backgroundColor: Colors.green),
         );
       } else {
         throw Exception(data['message'] ?? 'Terjadi kesalahan');
@@ -136,7 +137,7 @@ class _ConnectingAccountScreenState extends State<ConnectingAccountScreen> {
   }
 
   Future<void> _verifyOtp() async {
-    final otp = _controllers.map((c) => c.text).join();
+    final otp = _otpcontrollers.map((c) => c.text).join();
     if (otp.length != 6) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Masukkan 6 digit kode OTP')),
@@ -169,10 +170,13 @@ class _ConnectingAccountScreenState extends State<ConnectingAccountScreen> {
         });
         Navigator.push(
           context,
-          MaterialPageRoute(
-            builder: (context) =>
-                ConfirmAccountConnectionScreen(customerData: data['customer'], token: token),
-          ),
+            MaterialPageRoute(
+            builder: (context) => ConfirmAccountConnectionScreen(
+              customerData: data['customer'], 
+              token: token,
+              verifiedOtp: otp,  // Mengirim OTP yang sudah diverifikasi
+            ),
+            ),
         );
       } else {
         throw Exception(data['message'] ?? 'Kode OTP tidak valid');
@@ -246,7 +250,7 @@ class _ConnectingAccountScreenState extends State<ConnectingAccountScreen> {
                           children: List.generate(
                             6,
                             (index) => OtpField(
-                              controller: _controllers[index],
+                              controller: _otpcontrollers[index],
                               focusNode: _focusNodes[index],
                               index: index,
                               onChanged: handleOtpChange,
