@@ -1,17 +1,24 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;  // Import http package
+import 'package:http/http.dart' as http;
+import 'package:mysolonet/screens/auth/service/service.dart';
 import 'dart:convert';
 import 'package:mysolonet/screens/home/home_screen.dart';
+import 'package:mysolonet/widgets/alert/show_message_failed.dart';
+import 'package:mysolonet/widgets/alert/show_message_success.dart';
 
 class ConfirmAccountConnectionScreen extends StatefulWidget {
   final Map<String, dynamic> customerData;
     final String token;  // Pass token to the screen
+      final String verifiedOtp;  // Tambahkan parameter verifiedOtp
+
 
 
  const ConfirmAccountConnectionScreen({
     super.key,
     required this.customerData,
     required this.token, // Pass token to the screen
+    required this.verifiedOtp,  // Tambahkan ke constructor
+
   });
 
   @override
@@ -22,7 +29,7 @@ class ConfirmAccountConnectionScreen extends StatefulWidget {
 class _ConfirmAccountConnectionScreenState
     extends State<ConfirmAccountConnectionScreen> {
   final TextEditingController _idPelangganController = TextEditingController();
-  final TextEditingController _otpController = TextEditingController();
+  // final TextEditingController _otpController = TextEditingController();
 
   @override
   void initState() {
@@ -30,48 +37,45 @@ class _ConfirmAccountConnectionScreenState
     _idPelangganController.text = widget.customerData['id_pelanggan'];
   }
 
-   Future<void> _connectAccount() async {
+ Future<void> _connectAccount() async {
     final String idPelanggan = _idPelangganController.text;
-    final String otp = _otpController.text;
-    final String token = widget.token; // Retrieve the token
+    final String token = widget.token;
+    final String verifiedOtp = widget.verifiedOtp;  // Gunakan OTP yang sudah diverifikasi
 
-    final Uri url = Uri.parse('https://api.connectis.my.id/hubungkan-account');
-    final response = await http.post(
-      url,
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token', 
-      },
-      body: json.encode({
-        'id_pelanggan': idPelanggan,
-        'otp': otp,
-        'hubungkan_account': true,
-      }),
-    );
 
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(data['message']),
-          backgroundColor: Colors.green,
-        ),
+    try {
+      final Uri url = Uri.parse('https://api.connectis.my.id/hubungkan-account');
+      final response = await http.post(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: json.encode({
+          'id_pelanggan': idPelanggan,
+          'otp': verifiedOtp,  // Gunakan OTP yang sudah diverifikasi
+          'hubungkan_account': true
+        }),
       );
-      Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(builder: (context) => const HomeScreen()),
-        (route) => false,
-      );
-    } else {
-      final data = json.decode(response.body);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(data['message'] ?? 'Error occurred'),
-          backgroundColor: Colors.red,
-        ),
-      );
+
+      final responseData = json.decode(response.body);
+
+      if (response.statusCode == 200) {
+        showSuccessMessage(context, responseData['message']);
+        
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => const HomeScreen()),
+          (route) => false,
+        );
+      } else {
+        showFailedMessage(context, responseData['message']);
+      }
+    } catch (e) {
+      showFailedMessage(context, 'Terjadi kesalahan saat menghubungkan akun');
     }
-  }
+  
+}
 
   @override
   Widget build(BuildContext context) {
