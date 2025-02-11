@@ -59,6 +59,54 @@ class _PaymentScreenState extends State<PaymentScreen> {
     }
   }
 
+  String formatDateTime(String dateTime) {
+  try {
+    // Handle different possible input formats
+    DateTime parsedDate;
+    
+    // Remove any 'WIB', 'WITA', 'WIT' timezone indicators if present
+    dateTime = dateTime.replaceAll(RegExp(r'\s*(WIB|WITA|WIT)'), '');
+    
+    // Try parsing different common formats
+    try {
+      // Try ISO format first (yyyy-MM-dd HH:mm:ss)
+      parsedDate = DateTime.parse(dateTime);
+    } catch (e) {
+      try {
+        // Try dd/MM/yyyy HH:mm:ss format
+        var parts = dateTime.split(' ');
+        var dateParts = parts[0].split('/');
+        var timeParts = parts[1].split(':');
+        
+        parsedDate = DateTime(
+          int.parse(dateParts[2]), // year
+          int.parse(dateParts[1]), // month
+          int.parse(dateParts[0]), // day
+          int.parse(timeParts[0]), // hour
+          int.parse(timeParts[1]), // minute
+          int.parse(timeParts[2]), // second
+        );
+      } catch (e) {
+        // If all parsing attempts fail, throw an error
+        throw FormatException('Invalid date format: $dateTime');
+      }
+    }
+    
+    // Format to dd/mm/yy HH:mm:ss
+    String day = parsedDate.day.toString().padLeft(2, '0');
+    String month = parsedDate.month.toString().padLeft(2, '0');
+    String year = (parsedDate.year % 100).toString().padLeft(2, '0');
+    String hour = parsedDate.hour.toString().padLeft(2, '0');
+    String minute = parsedDate.minute.toString().padLeft(2, '0');
+    String second = parsedDate.second.toString().padLeft(2, '0');
+    
+    return '$day/$month/$year $hour:$minute:$second';
+  } catch (e) {
+    print('Error formatting date: $e');
+    return dateTime; // Return original string if parsing fails
+  }
+}
+
   Future<bool> _onWillPop() {
     return confirmPopupBack(
       context,
