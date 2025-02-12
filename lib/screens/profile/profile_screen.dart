@@ -16,24 +16,33 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  bool isLoggedIn = false;
   int userId = 0;
   String nama = '';
   String email = '';
 
-  Future<void> _loadUserData() async {
+  @override
+  void initState() {
+    super.initState();
+    _checkLoginStatus();
+  }
+
+  Future<void> _checkLoginStatus() async {
     final authService = AuthService();
     final userData = await authService.getUserData();
     setState(() {
-      userId = userData['id'] ?? 0;
-      nama = userData['nama'] ?? '';
-      email = userData['email'] ?? '';
+      isLoggedIn = userData.isNotEmpty;
+      if (isLoggedIn) {
+        userId = userData['id'] ?? 0;
+        nama = userData['nama'] ?? '';
+        email = userData['email'] ?? '';
+      }
     });
   }
 
   String _profileText(String nama) {
     List<String> words = nama.split(' ');
-
-    if(words.length == 1) {
+    if (words.length == 1) {
       return words[0][0].toUpperCase();
     } else {
       return words[0][0].toUpperCase() + words[1][0].toUpperCase();
@@ -41,14 +50,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _logout() async {
-
     showDialog(
-    context: context,
-    barrierDismissible: false,
-    builder: (BuildContext context) {
-      return const LoadingScreen(); // Pastikan Anda memiliki LoadingScreen yang sesuai
-    },
-  );
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return const LoadingScreen();
+      },
+    );
 
     try {
       final authService = AuthService();
@@ -57,7 +65,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
         context,
         MaterialPageRoute(builder: (context) => const SignInScreen()),
       );
-
       showSuccessMessage(context, 'Logout successful');
     } catch (e) {
       Navigator.of(context).pop();
@@ -65,10 +72,157 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
-  @override
-  void initState() {
-    super.initState();
-    _loadUserData();
+  Widget _buildLoggedInContent() {
+    return Padding(
+      padding: const EdgeInsets.all(20.0),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              CircleAvatar(
+                radius: 30,
+                backgroundColor: Colors.green,
+                child: Text(
+                  _profileText(nama),
+                  style: const TextStyle(
+                    fontSize: 24,
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 15),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      nama,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: 'Poppins',
+                      ),
+                    ),
+                    Text(
+                      email,
+                      style: const TextStyle(
+                        fontSize: 9.5,
+                        fontWeight: FontWeight.w600,
+                        fontFamily: 'Poppins',
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              IconButton(
+                icon: const Icon(Icons.edit),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ChangeProfileScreen(userId: userId),
+                    ),
+                  );
+                },
+              ),
+            ],
+          ),
+          const Divider(),
+          Expanded(
+            child: ListView(
+              children: [
+                _MenuItem(
+                  icon: Icons.airline_seat_recline_extra_sharp,
+                  title: 'Address',
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const ProfileAddressCustomerScreen(),
+                      ),
+                    );
+                  },
+                ),
+                _MenuItem(
+                  icon: Icons.task,
+                  title: 'My Activity',
+                  onTap: () {
+                    // Navigate to My Activity screen
+                  },
+                ),
+                _MenuItem(
+                  icon: Icons.notifications,
+                  title: 'Notification',
+                  onTap: () {
+                    // Navigate to notifications screen
+                  },
+                ),
+                _MenuItem(
+                  icon: Icons.alternate_email,
+                  title: 'Follow us',
+                  onTap: () {
+                    // Navigate to follow us screen
+                  },
+                ),
+                _MenuItem(
+                  icon: Icons.logout,
+                  title: 'Logout',
+                  onTap: () {
+                    confirmPopup(context, 'Logout Confirmation',
+                        'Are you sure you want to logout?', 'Logout', _logout);
+                  },
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildNotLoggedInContent() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Text(
+            'Anda harus login untuk melihat profil.',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 16,
+              fontFamily: 'Poppins',
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(height: 20),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => const SignInScreen()),
+              );
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.blueAccent,
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(30),
+              ),
+            ),
+            child: const Text(
+              'Login Sekarang',
+              style: TextStyle(
+                color: Colors.white,
+                fontFamily: 'Poppins',
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -86,110 +240,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
         backgroundColor: Colors.blueAccent,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          children: [
-            Row(
-              children: [
-                CircleAvatar(
-                  radius: 30,
-                  backgroundColor: Colors.green,
-                  child: Text(
-                    _profileText(nama),
-                    style: const TextStyle(
-                      fontSize: 24,
-                      color: Colors.white,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 15),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        nama,  
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          fontFamily: 'Poppins',
-                        ),
-                      ),
-                      Text(
-                        email,
-                        style: const TextStyle(
-                          fontSize: 9.5,
-                          fontWeight: FontWeight.w600,
-                          fontFamily: 'Poppins',
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.edit),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => ChangeProfileScreen(userId: userId)),
-                    );
-                  },
-                ),
-              ],
-            ),
-            const Divider(),
-            Expanded(
-              child: ListView(
-                children: [
-                  _MenuItem(
-                    icon: Icons.airline_seat_recline_extra_sharp,
-                    title: 'Address',
-                    onTap: () {
-                     Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      const ProfileAddressCustomerScreen(),
-                                ),
-                     );
-                    },
-                  ),
-                  _MenuItem(
-                    icon: Icons.task,
-                    title: 'My Activity',
-                    onTap: () {
-                      // Navigasi ke layar "My Activity"
-                    },
-                  ),
-                  _MenuItem(
-                    icon: Icons.notifications,
-                    title: 'Notification',
-                    onTap: () {
-                      // Navigasi ke layar notifikasi
-                    },
-                  ),
-                  _MenuItem(
-                    icon: Icons.alternate_email,
-                    title: 'Follow us',
-                    onTap: () {
-                      // Navigasi ke layar follow us
-                    },
-                  ),
-                  _MenuItem(
-                    icon: Icons.logout,
-                    title: 'Logout',
-                    onTap: () {
-                      confirmPopup(context, 'Logout Confirmation', 'Are you sure you want to logout?', 'Logout', _logout);
-                    },
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
+      body: isLoggedIn ? _buildLoggedInContent() : _buildNotLoggedInContent(),
     );
   }
 }
