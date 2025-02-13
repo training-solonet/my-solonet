@@ -54,51 +54,9 @@ class HomeScreenState extends State<HomeScreen> {
   }
 
   void _onItemTapped(int index) async {
-    if (index == 3) {
-      if (token == null) {
-        confirmPopup(
-          context,
-          'Anda Belum Login',
-          'Silahkan login terlebih dahulu, untuk mengakses halaman ini',
-          'Login',
-          () => Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const SignInScreen()),
-          ),
-        );
-      } else {
-        final url = Uri.parse('$baseUrl/users');
-        try {
-          final response = await http.get(url, headers: {
-            'Authorization': 'Bearer $token',
-            'Content-Type': 'application/json',
-          });
-
-          if (response.statusCode == 401) {
-            confirmPopup(
-              context,
-              'Anda Belum Login',
-              'Silahkan login terlebih dahulu, untuk mengakses halaman ini',
-              'Login',
-              () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const SignInScreen()),
-              ),
-            );
-          } else {
-            setState(() {
-              selectedIndex = index;
-            });
-          }
-        } catch (e) {
-          print('Error checking token: $e');
-        }
-      }
-    } else {
-      setState(() {
+    setState(() {
         selectedIndex = index;
       });
-    }
   }
 
   List<Widget> _screens = [];
