@@ -14,6 +14,8 @@ import 'package:latlong2/latlong.dart';
 import 'package:geolocator/geolocator.dart';
 import 'dart:async';
 
+import 'package:shared_preferences/shared_preferences.dart';
+
 class HomePageContent extends StatefulWidget {
   final int userId;
   final String nama;
@@ -37,7 +39,7 @@ class _HomePageContentState extends State<HomePageContent> {
   late Timer _timer;
   List<dynamic> _banners = [];
   List<dynamic> _products = [];
-  final bool _isConnect = false;
+  bool _isConnect = false;
   LatLng? _userLocation;
   bool _permissionGranted = false;
   bool _locationFetched = false;
@@ -45,6 +47,21 @@ class _HomePageContentState extends State<HomePageContent> {
   final double _currentZoom = 13.0;
   MapController? _mapController;
   final bool _showInfoSection = true;
+  bool _hasToken = false;
+  String? _token;
+
+  Future<void> _checkToken() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final String? token = prefs.getString('token');
+
+    if (token != null && token.isNotEmpty) {
+      setState(() {
+        _hasToken = true;
+        _token = token;
+      });
+      _fetchTransactions();
+    }
+  }
 
   Future<void> _fetchBanners() async {
     final url = Uri.parse('$baseUrl/banner');
@@ -108,7 +125,7 @@ class _HomePageContentState extends State<HomePageContent> {
       await _getCurrentLocation();
     } else {
       setState(() {
-        _userLocation = LatLng(-7.5593449,110.8289958); // Default to Surakarta
+        _userLocation = LatLng(-7.5593449, 110.8289958); // Default to Surakarta
         _locationFetched = true;
       });
     }
@@ -129,7 +146,7 @@ class _HomePageContentState extends State<HomePageContent> {
     } catch (e) {
       print('Error getting location: $e');
       setState(() {
-        _userLocation = LatLng(-7.5593449,110.8289958); // Default to Surakarta
+        _userLocation = LatLng(-7.5593449, 110.8289958); // Default to Surakarta
         _locationFetched = true;
       });
     }
@@ -150,6 +167,33 @@ class _HomePageContentState extends State<HomePageContent> {
     }
   }
 
+  Future<void> _fetchTransactions() async {
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/tagihan-user'),
+        headers: {
+          'Authorization': 'Bearer $_token',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+
+        if (data['tagihan'].length == 0) {
+          setState(() {
+            _isConnect = false;
+          });
+        } else {
+          setState(() {
+            _isConnect = true;
+          });
+        }
+      }
+    } catch (e) {
+      print('Error fetching transactions: $e');
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -158,6 +202,7 @@ class _HomePageContentState extends State<HomePageContent> {
     _fetchProducts();
     _requestLocationPermission();
     _getCurrentLocation();
+    _checkToken();
   }
 
   @override
@@ -186,26 +231,23 @@ class _HomePageContentState extends State<HomePageContent> {
                 paymentStatus: 'Dibayar via BCA',
                 paymentDate: '17 Agustus 2024',
               ),
-
             if (!_isConnect && _userLocation != null)
               LocationCoveredSection(userLocation: _userLocation),
-
-
-            if (widget.userId >= 0 &&!_isConnect)
+            if (_hasToken && !_isConnect)
               ConnectAccountSection(
                 userId: widget.userId,
                 nama: widget.nama,
                 email: widget.email,
               ),
-
             const SizedBox(height: 10),
-
             const Text(
               'Promo',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, fontFamily: 'Poppins'),
+              style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                  fontFamily: 'Poppins'),
             ),
             const SizedBox(height: 10),
-
             ValueListenableBuilder<int>(
               valueListenable: _currentPageNotifier,
               builder: (context, currentPage, _) {
@@ -219,18 +261,16 @@ class _HomePageContentState extends State<HomePageContent> {
                 );
               },
             ),
-
             const SizedBox(height: 20),
             const Text(
               'Rekomendasi Produk',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, fontFamily: 'Poppins'),
+              style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                  fontFamily: 'Poppins'),
             ),
-            ProductRecommendationSection(
-              products: _products
-            ),
-
+            ProductRecommendationSection(products: _products),
             const SizedBox(height: 20),
-
             if (_userLocation != null && _locationFetched)
               Card(
                 elevation: 4.0,
